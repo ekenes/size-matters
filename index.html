@@ -5,6 +5,10 @@
     <title>Size matters</title>
     <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/css/main.css">
     <link rel="stylesheet" href="app/main.css">
+
+    <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
+    <script src="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/js/calcite-web.min.js"></script>
+
     <script>
       var locationPath = location.pathname.replace(/\/[^\/]+$/, "");
       window.dojoConfig = {
@@ -21,5 +25,55 @@
   <body>
     <div id="viewDiv"></div>
     <script>require(["app/main"]);</script>
+    <div id="ui-controls" class="esri-widget">
+      <div style="text-align: center;">
+        <div id="titleDiv" class="esri-widget">
+          Smart mapping with size
+        </div>
+        <div id="subtitleDiv" class="esri-widget">
+          Explore proposed size styles and themes
+        </div>
+        <div>
+          Field
+          <select id="theme-select" class="esri-select"></select>
+        </div>
+        <div>
+          Normalization Field
+          <select id="theme-select" class="esri-select"></select>
+        </div>
+        <div>
+          Arcade expression
+          <textarea></textarea>
+        </div>
+        <div>
+          Theme
+          <select id="theme-select" class="esri-select">
+            <option value="high-to-low" selected>High to low</option>
+            <option value="above-and-below">90/10</option>
+            <option value="above-and-below">Above average</option>
+            <option value="above-and-below">Below average</option>
+            <option value="above-and-below">Above and below</option>
+            <option value="extremes">Extremes</option>
+            <option value="centered-on">Centered on</option>
+          </select>
+        </div>
+        <div style="margin-top: 10px;">
+          Style
+          <select id="style-select" class="esri-select">
+            <option value="high-to-low" selected>Size</option>
+            <option value="above-and-below">Color and size</option>
+            <option value="above-and-below">Opacity and size</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <label class="toggle-switch modifier-class">
+          <input type="checkbox" class="toggle-switch-input" id="difference">
+          <span class="toggle-switch-track margin-right-1"></span>
+          <span class="toggle-switch-label font-size--1">Option switch</span>
+        </label>
+      </div>
+      <div id="size-slider-container"></div>
+    </div>
   </body>
 </html>

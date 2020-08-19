@@ -49,6 +49,7 @@ define(["require", "exports", "esri/Map", "esri/views/MapView"], function (requi
                 center: [-118.244, 34.052],
                 zoom: 12
             });
+            view.ui.add("ui-controls", "top-right");
             return [2 /*return*/];
         });
     }); })();
