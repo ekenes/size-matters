@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, Legend, layerUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./sliderUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, Legend, layerUtils_1, rendererUtils_1, sliderUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -54,7 +54,11 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
         function inputChange() {
             var field = fieldsSelect.value;
             var normalizationField = normalizationFieldSelect.value;
-            var valueExpression = valueExpressionTextArea.innerText;
+            var valueExpression = valueExpressionTextArea.value;
+            if (!field && !valueExpression && !normalizationField) {
+                clearEverything();
+                return;
+            }
             var theme = themeSelect.value;
             var style = styleSelect.value;
             var params = {
@@ -67,7 +71,16 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             };
             rendererUtils_1.updateRenderer(params);
         }
-        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
+        function clearEverything() {
+            layer.renderer = originalRenderer;
+            fieldsSelect.value = null;
+            normalizationFieldSelect.value = null;
+            valueExpressionTextArea.value = null;
+            themeSelect.value = "high-to-low";
+            styleSelect.value = "size";
+            sliderUtils_1.SliderVars.slider.container.style.display = "none";
+        }
+        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, sliderExpand, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -126,17 +139,19 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                         expanded: true,
                         group: "left"
                     }), "bottom-left");
-                    view.ui.add(new Expand({
+                    sliderExpand = new Expand({
                         expanded: true,
                         content: document.getElementById("size-slider-container"),
                         group: "left"
-                    }), "top-left");
+                    });
+                    view.ui.add(sliderExpand, "top-left");
                     return [4 /*yield*/, view.when()];
                 case 1:
                     _b.sent();
                     return [4 /*yield*/, layer.when()];
                 case 2:
                     _b.sent();
+                    originalRenderer = layer.renderer.clone();
                     return [4 /*yield*/, layer.queryExtent()];
                 case 3:
                     extent = (_b.sent()).extent;
@@ -154,7 +169,11 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     themeSelect = document.getElementById("theme-select");
                     styleSelect = document.getElementById("style-select");
                     fieldsSelect.addEventListener("change", inputChange);
-                    normalizationFieldSelect.addEventListener("change", inputChange);
+                    normalizationFieldSelect.addEventListener("change", function () {
+                        if (fieldsSelect.value) {
+                            inputChange();
+                        }
+                    });
                     valueExpressionTextArea.addEventListener("blur", inputChange);
                     themeSelect.addEventListener("change", inputChange);
                     styleSelect.addEventListener("change", inputChange);

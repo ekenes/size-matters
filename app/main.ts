@@ -10,6 +10,7 @@ import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect } from './layerUtils';
 import { updateRenderer ,SizeParams } from './rendererUtils';
+import { SliderVars } from './sliderUtils';
 
 ( async () => {
 
@@ -102,14 +103,17 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
     expanded: true,
     group: "left"
   }), "bottom-left");
-  view.ui.add(new Expand({
+  const sliderExpand = new Expand({
     expanded: true,
     content: document.getElementById("size-slider-container"),
     group: "left"
-  }), "top-left");
+  });
+  view.ui.add(sliderExpand, "top-left");
 
   await view.when();
   await layer.when();
+
+  const originalRenderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
 
   const { extent } = await layer.queryExtent();
   view.extent = extent;
@@ -129,7 +133,11 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
 
   fieldsSelect.addEventListener("change", inputChange);
-  normalizationFieldSelect.addEventListener("change", inputChange);
+  normalizationFieldSelect.addEventListener("change", () => {
+    if(fieldsSelect.value){
+      inputChange();
+    }
+  });
   valueExpressionTextArea.addEventListener("blur", inputChange);
   themeSelect.addEventListener("change", inputChange);
   styleSelect.addEventListener("change", inputChange);
@@ -137,7 +145,13 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   function inputChange (){
     const field = fieldsSelect.value;
     const normalizationField = normalizationFieldSelect.value;
-    const valueExpression = valueExpressionTextArea.innerText;
+    const valueExpression = valueExpressionTextArea.value;
+
+    if(!field && !valueExpression && !normalizationField){
+      clearEverything();
+      return;
+    }
+
     const theme = themeSelect.value as SizeParams["theme"];
     const style = styleSelect.value;
     const params = {
@@ -150,6 +164,17 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
     };
 
     updateRenderer(params);
+  }
+
+  function clearEverything(){
+    layer.renderer = originalRenderer;
+    fieldsSelect.value = null;
+    normalizationFieldSelect.value = null;
+    valueExpressionTextArea.value = null;
+    themeSelect.value = "high-to-low";
+    styleSelect.value = "size";
+
+    (SliderVars.slider.container as HTMLElement).style.display = "none";
   }
 
 })();

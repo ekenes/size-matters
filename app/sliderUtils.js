@@ -37,7 +37,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "./statUtils", "./rendererUtils"], function (require, exports, SizeSlider, statUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var slider = null;
+    var SliderVars = /** @class */ (function () {
+        function SliderVars() {
+        }
+        SliderVars.slider = null;
+        return SliderVars;
+    }());
+    exports.SliderVars = SliderVars;
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, view, rendererResult, sizeVariable, _a, field, normalizationField, valueExpression, histogramResult;
@@ -52,22 +58,23 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "./statUti
                             })];
                     case 1:
                         histogramResult = _b.sent();
-                        if (!slider) {
-                            slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
-                            slider.container = "size-slider-container";
-                            slider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
-                            slider.on([
+                        if (!SliderVars.slider) {
+                            SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
+                            SliderVars.slider.container = "size-slider-container";
+                            SliderVars.slider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
+                            SliderVars.slider.on([
                                 "thumb-change",
                                 "thumb-drag",
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = rendererUtils_1.updateRendererFromSizeSlider(layer.renderer, slider);
+                                var newRenderer = rendererUtils_1.updateRendererFromSizeSlider(layer.renderer, SliderVars.slider);
                                 layer.renderer = newRenderer;
                             });
                         }
                         else {
-                            slider.updateFromRendererResult(rendererResult, histogramResult);
+                            SliderVars.slider.container.style.display = "block";
+                            SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
                         }
                         return [2 /*return*/];
                 }

@@ -9,7 +9,9 @@ interface CreateSizeSliderParams {
   rendererResult: esri.sizeContinuousRendererResult
 }
 
-let slider: SizeSlider = null;
+export class SliderVars {
+  public static slider: SizeSlider = null;
+}
 
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
   const { layer, view, rendererResult } = params;
@@ -22,22 +24,23 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
     layer, view, field, normalizationField, valueExpression
   });
 
-  if(!slider){
-    slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
-    slider.container = "size-slider-container";
-    slider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
+  if(!SliderVars.slider){
+    SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
+    SliderVars.slider.container = "size-slider-container";
+    SliderVars.slider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
 
-    slider.on([
+    SliderVars.slider.on([
       "thumb-change",
       "thumb-drag",
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromSizeSlider(layer.renderer as esri.RendererWithVisualVariables, slider);
+      const newRenderer = updateRendererFromSizeSlider(layer.renderer as esri.RendererWithVisualVariables, SliderVars.slider);
       layer.renderer = newRenderer;
     });
   } else {
-    slider.updateFromRendererResult(rendererResult, histogramResult);
+    (SliderVars.slider.container as HTMLElement).style.display = "block";
+    SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
   }
 
 }

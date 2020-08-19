@@ -4,7 +4,8 @@ import { updateSizeSlider } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
-  theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on"
+  theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on",
+  style?: "size" | "color-and-size" | "opacity-and-size"
 }
 
 export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
@@ -20,7 +21,22 @@ export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVa
 
 export async function updateRenderer(params: SizeParams){
   const { layer } = params;
-  const result = await createSizeRenderer(params);
+  const style = params.style || "size";
+
+  let result = null;
+
+  switch( style ){
+    case "size":
+      result = await createSizeRenderer(params);
+      break;
+    case "color-and-size":
+      break;
+    case "opacity-and-size":
+      break;
+    default:
+      // return variables without modifications
+      break;
+  }
 
   layer.renderer = result.renderer.clone();
 }

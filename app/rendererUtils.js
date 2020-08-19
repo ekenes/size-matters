@@ -47,14 +47,30 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
     exports.updateRendererFromSizeSlider = updateRendererFromSizeSlider;
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, result;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var layer, style, result, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         layer = params.layer;
-                        return [4 /*yield*/, createSizeRenderer(params)];
-                    case 1:
-                        result = _a.sent();
+                        style = params.style || "size";
+                        result = null;
+                        _a = style;
+                        switch (_a) {
+                            case "size": return [3 /*break*/, 1];
+                            case "color-and-size": return [3 /*break*/, 3];
+                            case "opacity-and-size": return [3 /*break*/, 4];
+                        }
+                        return [3 /*break*/, 5];
+                    case 1: return [4 /*yield*/, createSizeRenderer(params)];
+                    case 2:
+                        result = _b.sent();
+                        return [3 /*break*/, 6];
+                    case 3: return [3 /*break*/, 6];
+                    case 4: return [3 /*break*/, 6];
+                    case 5: 
+                    // return variables without modifications
+                    return [3 /*break*/, 6];
+                    case 6:
                         layer.renderer = result.renderer.clone();
                         return [2 /*return*/];
                 }
