@@ -3,7 +3,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
     <title>Size matters</title>
-    <link rel="stylesheet" href="https://js.arcgis.com/4.16/esri/css/main.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/next/esri/css/main.css">
     <link rel="stylesheet" href="app/main.css">
 
     <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
@@ -20,7 +20,7 @@
         ]
       };
     </script>
-    <script src="https://js.arcgis.com/4.16/"></script>
+    <script src="https://js.arcgis.com/next/"></script>
   </head>
   <body>
     <div id="viewDiv"></div>
@@ -31,31 +31,19 @@
           Smart mapping with size
         </div>
         <div id="subtitleDiv" class="esri-widget">
-          Explore proposed size styles and themes
+          Explore proposed size defaults, styles, and themes
         </div>
         <div>
           Field
-          <select id="theme-select" class="esri-select"></select>
+          <select id="field-select" class="esri-select"></select>
         </div>
-        <div>
+        <div style="margin-top: 10px;">
           Normalization Field
-          <select id="theme-select" class="esri-select"></select>
+          <select id="normalization-field-select" class="esri-select"></select>
         </div>
-        <div>
+        <div style="margin-top: 10px;">
           Arcade expression
-          <textarea></textarea>
-        </div>
-        <div>
-          Theme
-          <select id="theme-select" class="esri-select">
-            <option value="high-to-low" selected>High to low</option>
-            <option value="above-and-below">90/10</option>
-            <option value="above-and-below">Above average</option>
-            <option value="above-and-below">Below average</option>
-            <option value="above-and-below">Above and below</option>
-            <option value="extremes">Extremes</option>
-            <option value="centered-on">Centered on</option>
-          </select>
+          <textarea id="value-expression"></textarea>
         </div>
         <div style="margin-top: 10px;">
           Style
@@ -63,6 +51,18 @@
             <option value="high-to-low" selected>Size</option>
             <option value="above-and-below">Color and size</option>
             <option value="above-and-below">Opacity and size</option>
+          </select>
+        </div>
+        <div style="margin-top: 10px;">
+          Theme
+          <select id="theme-select" class="esri-select">
+            <option value="high-to-low" selected>High to low</option>
+            <option value="90-10">90/10</option>
+            <option value="above-average">Above average</option>
+            <option value="below-average">Below average</option>
+            <option value="above-and-below">Above and below</option>
+            <option value="extremes">Extremes</option>
+            <option value="centered-on">Centered on</option>
           </select>
         </div>
       </div>

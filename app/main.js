@@ -34,23 +34,71 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/Map", "esri/views/MapView"], function (require, exports, EsriMap, MapView) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
-        var map, view;
-        return __generator(this, function (_a) {
-            map = new EsriMap({
-                basemap: "streets"
+        function getUrlParams() {
+            var queryParams = document.location.search.substr(1);
+            var result = {};
+            queryParams.split("&").forEach(function (part) {
+                var item = part.split("=");
+                result[item[0]] = decodeURIComponent(item[1]);
             });
-            view = new MapView({
-                map: map,
-                container: "viewDiv",
-                center: [-118.244, 34.052],
-                zoom: 12
-            });
-            view.ui.add("ui-controls", "top-right");
-            return [2 /*return*/];
+            return result;
+        }
+        // function to set an id as a url param
+        function setId(id) {
+            window.history.pushState("", "", window.location.pathname + "?id=" + id);
+        }
+        var _a, id, portal, layerId, layer, webmap, view, basemapGallery, extent;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId;
+                    if (!id) {
+                        id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
+                        setId(id);
+                    }
+                    layer = new FeatureLayer({
+                        portalItem: {
+                            id: id,
+                            portal: {
+                                url: portal ? portal : "https://arcgis.com/"
+                            }
+                        },
+                        layerId: parseInt(layerId)
+                    });
+                    webmap = new WebMap({
+                        basemap: {
+                            portalItem: {
+                                id: "3582b744bba84668b52a16b0b6942544"
+                            }
+                        },
+                        layers: [layer]
+                    });
+                    view = new MapView({
+                        map: webmap,
+                        container: "viewDiv"
+                    });
+                    view.ui.add("ui-controls", "top-right");
+                    basemapGallery = new BasemapGallery({ view: view });
+                    view.ui.add(new Expand({
+                        content: basemapGallery,
+                        expanded: false
+                    }), "top-left");
+                    return [4 /*yield*/, view.when()];
+                case 1:
+                    _b.sent();
+                    return [4 /*yield*/, layer.when()];
+                case 2:
+                    _b.sent();
+                    return [4 /*yield*/, layer.queryExtent()];
+                case 3:
+                    extent = (_b.sent()).extent;
+                    view.extent = extent;
+                    return [2 /*return*/];
+            }
         });
     }); })();
 });
