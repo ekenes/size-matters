@@ -1,6 +1,7 @@
 import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
 import { updateSizeSlider } from "./sliderUtils";
+import { calculate9010Percentile, PercentileStats } from "./statUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
   theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on"
@@ -25,13 +26,19 @@ export async function updateRenderer(params: SizeParams){
 }
 
 export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeContinuousRendererResult> {
-  const { layer, view } = params;
+  const { layer, view, field, normalizationField, valueExpression } = params;
 
   const theme = params.theme || "high-to-low";
 
   let result = await sizeRendererCreator.createContinuousRenderer(params);
 
-  const sizeVariables = updateVariablesFromTheme(result, params.theme);
+  const percentileStats = await calculate9010Percentile({
+    layer: layer as esri.FeatureLayer,
+    view: view as esri.MapView,
+    field, normalizationField, valueExpression
+  });
+
+  const sizeVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
   result.visualVariables = sizeVariables;
   result.renderer.visualVariables = sizeVariables;
 
@@ -44,7 +51,7 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   return result;
 }
 
-function updateVariablesFromTheme( rendererResult: esri.sizeContinuousRendererResult, theme: SizeParams["theme"]){
+function updateVariablesFromTheme( rendererResult: esri.sizeContinuousRendererResult, theme: SizeParams["theme"], percentileStats?: PercentileStats){
   const stats = rendererResult.statistics;
   let sizeVariable = rendererResult.visualVariables.filter( vv => vv.target !== "outline" )[0];
   let outlineVariable = rendererResult.visualVariables.filter( vv => vv.target === "outline" )[0];
@@ -55,6 +62,9 @@ function updateVariablesFromTheme( rendererResult: esri.sizeContinuousRendererRe
       break;
     case "below-average":
       updateVariableToBelowAverageTheme(sizeVariable, stats);
+      break;
+    case "90-10":
+      updateVariableTo9010Theme(sizeVariable, percentileStats);
       break;
     default:
       // return variables without modifications
@@ -71,6 +81,11 @@ function updateVariableToAboveAverageTheme( sizeVariable: esri.SizeVariable, sta
 function updateVariableToBelowAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
   sizeVariable.flipSizes();
   sizeVariable.maxDataValue = stats.avg;
+}
+
+function updateVariableTo9010Theme( sizeVariable: esri.SizeVariable, stats: PercentileStats ){
+  sizeVariable.minDataValue = stats["10"];
+  sizeVariable.maxDataValue = stats["90"];
 }
 
 export function getVisualVariableByType(renderer: esri.RendererWithVisualVariables, type: "size" | "color" | "opacity" | "outline") {

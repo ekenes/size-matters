@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/statistics/histogram"], function (require, exports, histogram) {
+define(["require", "exports", "esri/smartMapping/statistics/histogram", "esri/smartMapping/statistics/classBreaks"], function (require, exports, histogram, classBreaks) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function calculateHistogram(params) {
@@ -50,5 +50,28 @@ define(["require", "exports", "esri/smartMapping/statistics/histogram"], functio
         });
     }
     exports.calculateHistogram = calculateHistogram;
+    function calculate9010Percentile(params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var layer, field, normalizationField, valueExpression, view, classBreaksResult, classBreakInfos;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        layer = params.layer, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression, view = params.view;
+                        return [4 /*yield*/, classBreaks({
+                                layer: layer, field: field, normalizationField: normalizationField, valueExpression: valueExpression, view: view,
+                                numClasses: 10, classificationMethod: "quantile"
+                            })];
+                    case 1:
+                        classBreaksResult = _a.sent();
+                        classBreakInfos = classBreaksResult.classBreakInfos;
+                        return [2 /*return*/, {
+                                "90": classBreakInfos[9].minValue,
+                                "10": classBreakInfos[0].maxValue
+                            }];
+                }
+            });
+        });
+    }
+    exports.calculate9010Percentile = calculate9010Percentile;
 });
 //# sourceMappingURL=statUtils.js.map

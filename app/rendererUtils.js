@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils"], function (require, exports, sizeRendererCreator, sliderUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils", "./statUtils"], function (require, exports, sizeRendererCreator, sliderUtils_1, statUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function updateRendererFromSizeSlider(renderer, slider) {
@@ -64,16 +64,23 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
     exports.updateRenderer = updateRenderer;
     function createSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, theme, result, sizeVariables;
+            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, sizeVariables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        layer = params.layer, view = params.view;
+                        layer = params.layer, view = params.view, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression;
                         theme = params.theme || "high-to-low";
                         return [4 /*yield*/, sizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
-                        sizeVariables = updateVariablesFromTheme(result, params.theme);
+                        return [4 /*yield*/, statUtils_1.calculate9010Percentile({
+                                layer: layer,
+                                view: view,
+                                field: field, normalizationField: normalizationField, valueExpression: valueExpression
+                            })];
+                    case 2:
+                        percentileStats = _a.sent();
+                        sizeVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
                         result.visualVariables = sizeVariables;
                         result.renderer.visualVariables = sizeVariables;
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
@@ -81,7 +88,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
                                 view: view,
                                 rendererResult: result
                             })];
-                    case 2:
+                    case 3:
                         _a.sent();
                         return [2 /*return*/, result];
                 }
@@ -89,7 +96,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
         });
     }
     exports.createSizeRenderer = createSizeRenderer;
-    function updateVariablesFromTheme(rendererResult, theme) {
+    function updateVariablesFromTheme(rendererResult, theme, percentileStats) {
         var stats = rendererResult.statistics;
         var sizeVariable = rendererResult.visualVariables.filter(function (vv) { return vv.target !== "outline"; })[0];
         var outlineVariable = rendererResult.visualVariables.filter(function (vv) { return vv.target === "outline"; })[0];
@@ -99,6 +106,9 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
                 break;
             case "below-average":
                 updateVariableToBelowAverageTheme(sizeVariable, stats);
+                break;
+            case "90-10":
+                updateVariableTo9010Theme(sizeVariable, percentileStats);
                 break;
             default:
                 // return variables without modifications
@@ -112,6 +122,10 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
     function updateVariableToBelowAverageTheme(sizeVariable, stats) {
         sizeVariable.flipSizes();
         sizeVariable.maxDataValue = stats.avg;
+    }
+    function updateVariableTo9010Theme(sizeVariable, stats) {
+        sizeVariable.minDataValue = stats["10"];
+        sizeVariable.maxDataValue = stats["90"];
     }
     function getVisualVariableByType(renderer, type) {
         var visualVariables = renderer.visualVariables;
