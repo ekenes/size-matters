@@ -1,3 +1,4 @@
+import esri = __esri;
 import WebMap = require("esri/WebMap");
 import MapView = require("esri/views/MapView");
 
@@ -7,6 +8,7 @@ import BasemapGallery = require("esri/widgets/BasemapGallery");
 import { Extent } from "esri/geometry";
 
 import { getNumberFields, createFieldSelect } from './layerUtils';
+import { updateRenderer ,SizeParams } from './rendererUtils';
 
 ( async () => {
 
@@ -109,5 +111,33 @@ import { getNumberFields, createFieldSelect } from './layerUtils';
 
   const normalizationFieldSelect = createFieldSelect(numberFields);
   normalizationFieldContainer.appendChild(normalizationFieldSelect);
+
+  const valueExpressionTextArea = document.getElementById("value-expression") as HTMLTextAreaElement;
+  const themeSelect = document.getElementById("theme-select") as HTMLSelectElement;
+  const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
+
+  fieldsSelect.addEventListener("change", inputChange);
+  normalizationFieldSelect.addEventListener("change", inputChange);
+  valueExpressionTextArea.addEventListener("blur", inputChange);
+  themeSelect.addEventListener("change", inputChange);
+  styleSelect.addEventListener("change", inputChange);
+
+  function inputChange (){
+    const field = fieldsSelect.value;
+    const normalizationField = normalizationFieldSelect.value;
+    const valueExpression = valueExpressionTextArea.innerText;
+    const theme = themeSelect.value as SizeParams["theme"];
+    const style = styleSelect.value;
+    const params = {
+      layer,
+      view,
+      field,
+      normalizationField,
+      valueExpression,
+      theme
+    };
+
+    updateRenderer(params);
+  }
 
 })();

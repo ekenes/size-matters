@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "./layerUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, layerUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, layerUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -51,7 +51,23 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
         function setUrlParams() {
             window.history.pushState("", "", window.location.pathname + "?id=" + id + "&layerId=" + layerId + "&portal=" + portal);
         }
-        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect;
+        function inputChange() {
+            var field = fieldsSelect.value;
+            var normalizationField = normalizationFieldSelect.value;
+            var valueExpression = valueExpressionTextArea.innerText;
+            var theme = themeSelect.value;
+            var style = styleSelect.value;
+            var params = {
+                layer: layer,
+                view: view,
+                field: field,
+                normalizationField: normalizationField,
+                valueExpression: valueExpression,
+                theme: theme
+            };
+            rendererUtils_1.updateRenderer(params);
+        }
+        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -123,6 +139,14 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     fieldContainer.appendChild(fieldsSelect);
                     normalizationFieldSelect = layerUtils_1.createFieldSelect(numberFields);
                     normalizationFieldContainer.appendChild(normalizationFieldSelect);
+                    valueExpressionTextArea = document.getElementById("value-expression");
+                    themeSelect = document.getElementById("theme-select");
+                    styleSelect = document.getElementById("style-select");
+                    fieldsSelect.addEventListener("change", inputChange);
+                    normalizationFieldSelect.addEventListener("change", inputChange);
+                    valueExpressionTextArea.addEventListener("blur", inputChange);
+                    themeSelect.addEventListener("change", inputChange);
+                    styleSelect.addEventListener("change", inputChange);
                     return [2 /*return*/];
             }
         });
