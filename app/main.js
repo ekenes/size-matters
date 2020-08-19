@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, layerUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, Legend, layerUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -118,7 +118,18 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     basemapGallery = new BasemapGallery({ view: view });
                     view.ui.add(new Expand({
                         content: basemapGallery,
-                        expanded: false
+                        expanded: false,
+                        group: "left"
+                    }), "top-left");
+                    view.ui.add(new Expand({
+                        content: new Legend({ view: view }),
+                        expanded: true,
+                        group: "left"
+                    }), "bottom-left");
+                    view.ui.add(new Expand({
+                        expanded: true,
+                        content: document.getElementById("size-slider-container"),
+                        group: "left"
                     }), "top-left");
                     return [4 /*yield*/, view.when()];
                 case 1:

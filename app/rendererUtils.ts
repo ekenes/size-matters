@@ -1,8 +1,20 @@
 import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
+import { updateSizeSlider } from "./sliderUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
   theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on"
+}
+
+export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
+
+  let sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
+  const sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
+  renderer.visualVariables.splice(sizeVariableIndex, 1);
+
+  renderer.visualVariables.push(slider.updateVisualVariable(sizeVariable));
+
+  return renderer.clone();
 }
 
 export async function updateRenderer(params: SizeParams){
@@ -13,6 +25,7 @@ export async function updateRenderer(params: SizeParams){
 }
 
 export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeContinuousRendererResult> {
+  const { layer, view } = params;
 
   const theme = params.theme || "high-to-low";
 
@@ -21,6 +34,12 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   const sizeVariables = updateVariablesFromTheme(result, params.theme);
   result.visualVariables = sizeVariables;
   result.renderer.visualVariables = sizeVariables;
+
+  await updateSizeSlider({
+    layer: layer as esri.FeatureLayer,
+    view: view as esri.MapView,
+    rendererResult: result
+  });
 
   return result;
 }
@@ -51,5 +70,18 @@ function updateVariableToAboveAverageTheme( sizeVariable: esri.SizeVariable, sta
 
 function updateVariableToBelowAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
   sizeVariable.flipSizes();
-  sizeVariable.minDataValue = stats.avg;
+  sizeVariable.maxDataValue = stats.avg;
+}
+
+export function getVisualVariableByType(renderer: esri.RendererWithVisualVariables, type: "size" | "color" | "opacity" | "outline") {
+  const visualVariables = renderer.visualVariables;
+  return (
+    visualVariables &&
+    visualVariables.filter(function (vv) {
+      if (type === "outline"){
+        return vv.type === "size" && (vv as esri.SizeVariable).target === "outline";
+      }
+      return vv.type === type;
+    })[0]
+  );
 }

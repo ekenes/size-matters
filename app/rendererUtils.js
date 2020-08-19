@@ -34,9 +34,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/size"], function (require, exports, sizeRendererCreator) {
+define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils"], function (require, exports, sizeRendererCreator, sliderUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    function updateRendererFromSizeSlider(renderer, slider) {
+        var sizeVariable = getVisualVariableByType(renderer, "size");
+        var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
+        renderer.visualVariables.splice(sizeVariableIndex, 1);
+        renderer.visualVariables.push(slider.updateVisualVariable(sizeVariable));
+        return renderer.clone();
+    }
+    exports.updateRendererFromSizeSlider = updateRendererFromSizeSlider;
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, result;
@@ -56,10 +64,11 @@ define(["require", "exports", "esri/smartMapping/renderers/size"], function (req
     exports.updateRenderer = updateRenderer;
     function createSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var theme, result, sizeVariables;
+            var layer, view, theme, result, sizeVariables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        layer = params.layer, view = params.view;
                         theme = params.theme || "high-to-low";
                         return [4 /*yield*/, sizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
@@ -67,6 +76,13 @@ define(["require", "exports", "esri/smartMapping/renderers/size"], function (req
                         sizeVariables = updateVariablesFromTheme(result, params.theme);
                         result.visualVariables = sizeVariables;
                         result.renderer.visualVariables = sizeVariables;
+                        return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
+                                layer: layer,
+                                view: view,
+                                rendererResult: result
+                            })];
+                    case 2:
+                        _a.sent();
                         return [2 /*return*/, result];
                 }
             });
@@ -95,7 +111,18 @@ define(["require", "exports", "esri/smartMapping/renderers/size"], function (req
     }
     function updateVariableToBelowAverageTheme(sizeVariable, stats) {
         sizeVariable.flipSizes();
-        sizeVariable.minDataValue = stats.avg;
+        sizeVariable.maxDataValue = stats.avg;
     }
+    function getVisualVariableByType(renderer, type) {
+        var visualVariables = renderer.visualVariables;
+        return (visualVariables &&
+            visualVariables.filter(function (vv) {
+                if (type === "outline") {
+                    return vv.type === "size" && vv.target === "outline";
+                }
+                return vv.type === type;
+            })[0]);
+    }
+    exports.getVisualVariableByType = getVisualVariableByType;
 });
 //# sourceMappingURL=rendererUtils.js.map

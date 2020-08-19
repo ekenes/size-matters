@@ -5,7 +5,8 @@ import MapView = require("esri/views/MapView");
 import Expand = require("esri/widgets/Expand");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import BasemapGallery = require("esri/widgets/BasemapGallery");
-import { Extent } from "esri/geometry";
+import SizeSlider = require("esri/widgets/smartMapping/SizeSlider");
+import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect } from './layerUtils';
 import { updateRenderer ,SizeParams } from './rendererUtils';
@@ -93,7 +94,18 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   const basemapGallery = new BasemapGallery({ view });
   view.ui.add( new Expand({
     content: basemapGallery,
-    expanded: false
+    expanded: false,
+    group: "left"
+  }), "top-left");
+  view.ui.add( new Expand({
+    content: new Legend({ view }),
+    expanded: true,
+    group: "left"
+  }), "bottom-left");
+  view.ui.add(new Expand({
+    expanded: true,
+    content: document.getElementById("size-slider-container"),
+    group: "left"
   }), "top-left");
 
   await view.when();
