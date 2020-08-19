@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "./layerUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -48,27 +48,44 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             return result;
         }
         // function to set an id as a url param
-        function setId(id) {
-            window.history.pushState("", "", window.location.pathname + "?id=" + id);
+        function setUrlParams() {
+            window.history.pushState("", "", window.location.pathname + "?id=" + id + "&layerId=" + layerId + "&portal=" + portal);
         }
-        var _a, id, portal, layerId, layer, webmap, view, basemapGallery, extent;
+        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId;
-                    if (!id) {
-                        id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
-                        setId(id);
+                    _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId, url = _a.url;
+                    layer = null;
+                    if (!url) {
+                        if (!id) {
+                            id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
+                        }
+                        if (!layerId) {
+                            layerId = 0;
+                        }
+                        if (!portal) {
+                            portal = "https://www.arcgis.com/";
+                        }
+                        setUrlParams();
+                        layer = new FeatureLayer({
+                            portalItem: {
+                                id: id,
+                                portal: {
+                                    url: portal
+                                }
+                            },
+                            layerId: layerId
+                        });
                     }
-                    layer = new FeatureLayer({
-                        portalItem: {
-                            id: id,
-                            portal: {
-                                url: portal ? portal : "https://arcgis.com/"
-                            }
-                        },
-                        layerId: parseInt(layerId)
-                    });
+                    else {
+                        portal = null;
+                        id = null;
+                        layerId = null;
+                        layer = new FeatureLayer({
+                            url: url
+                        });
+                    }
                     webmap = new WebMap({
                         basemap: {
                             portalItem: {
@@ -97,6 +114,15 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                 case 3:
                     extent = (_b.sent()).extent;
                     view.extent = extent;
+                    fieldContainer = document.getElementById("field-container");
+                    normalizationFieldContainer = document.getElementById("normalization-field-container");
+                    return [4 /*yield*/, layerUtils_1.getNumberFields(layer)];
+                case 4:
+                    numberFields = _b.sent();
+                    fieldsSelect = layerUtils_1.createFieldSelect(numberFields);
+                    fieldContainer.appendChild(fieldsSelect);
+                    normalizationFieldSelect = layerUtils_1.createFieldSelect(numberFields);
+                    normalizationFieldContainer.appendChild(normalizationFieldSelect);
                     return [2 /*return*/];
             }
         });

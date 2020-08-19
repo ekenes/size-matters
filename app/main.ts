@@ -6,13 +6,16 @@ import FeatureLayer = require("esri/layers/FeatureLayer");
 import BasemapGallery = require("esri/widgets/BasemapGallery");
 import { Extent } from "esri/geometry";
 
+import { getNumberFields, createFieldSelect } from './layerUtils';
+
 ( async () => {
 
   // function to retrieve query parameters (in this case only id)
   interface UrlParams {
     id?: string,
     portal?: string,
-    layerId?: string
+    layerId?: string | number,
+    url?: string
   }
 
   function getUrlParams() {
@@ -27,27 +30,47 @@ import { Extent } from "esri/geometry";
     return result;
   }
 
+  let { id, portal, layerId, url } = getUrlParams();
+  let layer: FeatureLayer = null;
+
   // function to set an id as a url param
-  function setId(id:string) {
-    window.history.pushState("", "", `${window.location.pathname}?id=${id}`);
+  function setUrlParams() {
+    window.history.pushState("", "", `${window.location.pathname}?id=${id}&layerId=${layerId}&portal=${portal}`);
   }
 
-  let { id, portal, layerId } = getUrlParams();
+  if(!url){
+    if(!id){
+      id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
+    }
 
-  if(!id){
-    id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
-    setId(id);
+    if(!layerId){
+      layerId = 0;
+    }
+
+    if(!portal){
+      portal = "https://www.arcgis.com/";
+    }
+
+    setUrlParams();
+
+    layer = new FeatureLayer({
+      portalItem: {
+        id,
+        portal: {
+          url: portal
+        }
+      },
+      layerId: layerId as number
+    });
+  } else {
+    portal = null;
+    id = null;
+    layerId = null;
+
+    layer = new FeatureLayer({
+      url
+    });
   }
-
-  const layer = new FeatureLayer({
-    portalItem: {
-      id,
-      portal: {
-        url: portal ? portal : "https://arcgis.com/"
-      }
-    },
-    layerId: parseInt(layerId)
-  });
 
   const webmap = new WebMap({
     basemap: {
@@ -76,5 +99,15 @@ import { Extent } from "esri/geometry";
 
   const { extent } = await layer.queryExtent();
   view.extent = extent;
+
+  const fieldContainer = document.getElementById("field-container");
+  const normalizationFieldContainer = document.getElementById("normalization-field-container");
+
+  const numberFields = await getNumberFields(layer);
+  const fieldsSelect = createFieldSelect(numberFields);
+  fieldContainer.appendChild(fieldsSelect);
+
+  const normalizationFieldSelect = createFieldSelect(numberFields);
+  normalizationFieldContainer.appendChild(normalizationFieldSelect);
 
 })();
