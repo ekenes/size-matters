@@ -34,13 +34,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "./statUtils", "./rendererUtils"], function (require, exports, SizeSlider, statUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
         function SliderVars() {
         }
         SliderVars.slider = null;
+        SliderVars.colorSizeSlider = null;
         return SliderVars;
     }());
     exports.SliderVars = SliderVars;
@@ -68,7 +69,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "./statUti
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = rendererUtils_1.updateRendererFromSizeSlider(layer.renderer, SliderVars.slider);
+                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(layer.renderer, SliderVars.slider);
                                 layer.renderer = newRenderer;
                             });
                         }
@@ -82,5 +83,43 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "./statUti
         });
     }
     exports.updateSizeSlider = updateSizeSlider;
+    function updateColorSizeSlider(params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var layer, view, rendererResult, sizeVariable, _a, field, normalizationField, valueExpression, histogramResult;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        layer = params.layer, view = params.view, rendererResult = params.rendererResult;
+                        sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
+                        _a = sizeVariable, field = _a.field, normalizationField = _a.normalizationField, valueExpression = _a.valueExpression;
+                        return [4 /*yield*/, statUtils_1.calculateHistogram({
+                                layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
+                            })];
+                    case 1:
+                        histogramResult = _b.sent();
+                        if (!SliderVars.slider) {
+                            SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
+                            SliderVars.colorSizeSlider.container = "size-slider-container";
+                            SliderVars.colorSizeSlider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
+                            SliderVars.colorSizeSlider.on([
+                                "thumb-change",
+                                "thumb-drag",
+                                "min-change",
+                                "max-change"
+                            ], function () {
+                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(layer.renderer, SliderVars.slider);
+                                layer.renderer = newRenderer;
+                            });
+                        }
+                        else {
+                            SliderVars.colorSizeSlider.container.style.display = "block";
+                            SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    exports.updateColorSizeSlider = updateColorSizeSlider;
 });
 //# sourceMappingURL=sliderUtils.js.map
