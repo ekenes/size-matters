@@ -1,5 +1,7 @@
 import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
+import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
+
 import { updateSizeSlider } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
 
@@ -82,6 +84,8 @@ function updateVariablesFromTheme( rendererResult: esri.sizeContinuousRendererRe
     case "90-10":
       updateVariableTo9010Theme(sizeVariable, percentileStats);
       break;
+    case "above-and-below":
+      updateVariableToAboveAndBelowTheme(sizeVariable, stats);
     default:
       // return variables without modifications
       break;
@@ -102,6 +106,52 @@ function updateVariableToBelowAverageTheme( sizeVariable: esri.SizeVariable, sta
 function updateVariableTo9010Theme( sizeVariable: esri.SizeVariable, stats: PercentileStats ){
   sizeVariable.minDataValue = stats["10"];
   sizeVariable.maxDataValue = stats["90"];
+}
+
+function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
+  const { min, max, avg } = stats;
+  const oldSizeVariable = sizeVariable.clone();
+
+  const midDataValue = min < 0 && max > 0 ? 0 : avg;
+
+  let minSize: number, maxSize: number = null;
+
+  if( typeof oldSizeVariable.minSize === "object"){
+    const stops = oldSizeVariable.minSize.stops;
+    const numStops = stops.length;
+    const midIndex = Math.floor(numStops/2);
+    minSize = stops[midIndex].size;
+  } else {
+    minSize = oldSizeVariable.minSize;
+  }
+
+  if( typeof oldSizeVariable.maxSize === "object"){
+    const stops = oldSizeVariable.maxSize.stops;
+    const numStops = stops.length;
+    const midIndex = Math.floor(numStops/2);
+    maxSize = stops[midIndex].size;
+  } else {
+    maxSize = oldSizeVariable.maxSize;
+  }
+
+  const midSize = Math.round(( maxSize - minSize) / 2);
+  const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
+  const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
+
+  const stops = [
+    new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
+    new SizeStop({ value: minMidDataValue, size: midSize }),
+    new SizeStop({ value: midDataValue, size: minSize }),
+    new SizeStop({ value: maxMidDataValue, size: midSize }),
+    new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
+  ];
+
+  sizeVariable.minDataValue = null;
+  sizeVariable.maxDataValue = null;
+  sizeVariable.minSize = null;
+  sizeVariable.maxSize = null;
+
+  sizeVariable.stops = stops;
 }
 
 export function getVisualVariableByType(renderer: esri.RendererWithVisualVariables, type: "size" | "color" | "opacity" | "outline") {

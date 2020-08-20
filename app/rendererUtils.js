@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils", "./statUtils"], function (require, exports, sizeRendererCreator, sliderUtils_1, statUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderers/visualVariables/support/SizeStop", "./sliderUtils", "./statUtils"], function (require, exports, sizeRendererCreator, SizeStop, sliderUtils_1, statUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function updateRendererFromSizeSlider(renderer, slider) {
@@ -126,6 +126,8 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
             case "90-10":
                 updateVariableTo9010Theme(sizeVariable, percentileStats);
                 break;
+            case "above-and-below":
+                updateVariableToAboveAndBelowTheme(sizeVariable, stats);
             default:
                 // return variables without modifications
                 break;
@@ -142,6 +144,45 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
     function updateVariableTo9010Theme(sizeVariable, stats) {
         sizeVariable.minDataValue = stats["10"];
         sizeVariable.maxDataValue = stats["90"];
+    }
+    function updateVariableToAboveAndBelowTheme(sizeVariable, stats) {
+        var min = stats.min, max = stats.max, avg = stats.avg;
+        var oldSizeVariable = sizeVariable.clone();
+        var midDataValue = min < 0 && max > 0 ? 0 : avg;
+        var minSize, maxSize = null;
+        if (typeof oldSizeVariable.minSize === "object") {
+            var stops_1 = oldSizeVariable.minSize.stops;
+            var numStops = stops_1.length;
+            var midIndex = Math.floor(numStops / 2);
+            minSize = stops_1[midIndex].size;
+        }
+        else {
+            minSize = oldSizeVariable.minSize;
+        }
+        if (typeof oldSizeVariable.maxSize === "object") {
+            var stops_2 = oldSizeVariable.maxSize.stops;
+            var numStops = stops_2.length;
+            var midIndex = Math.floor(numStops / 2);
+            maxSize = stops_2[midIndex].size;
+        }
+        else {
+            maxSize = oldSizeVariable.maxSize;
+        }
+        var midSize = Math.round((maxSize - minSize) / 2);
+        var minMidDataValue = (midDataValue - oldSizeVariable.minDataValue) / 2;
+        var maxMidDataValue = (oldSizeVariable.maxDataValue - midDataValue) / 2;
+        var stops = [
+            new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
+            new SizeStop({ value: minMidDataValue, size: midSize }),
+            new SizeStop({ value: midDataValue, size: minSize }),
+            new SizeStop({ value: maxMidDataValue, size: midSize }),
+            new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
+        ];
+        sizeVariable.minDataValue = null;
+        sizeVariable.maxDataValue = null;
+        sizeVariable.minSize = null;
+        sizeVariable.maxSize = null;
+        sizeVariable.stops = stops;
     }
     function getVisualVariableByType(renderer, type) {
         var visualVariables = renderer.visualVariables;
