@@ -350,7 +350,6 @@ define(["require", "exports", "esri/symbols/CIMSymbol"], function (require, expo
         restColor[3] *= 255;
         symbol.data.symbol.symbolLayers[0].markerGraphics[0].symbol.symbolLayers[0].color = restColor;
         symbol.data.symbol.symbolLayers[0].markerGraphics[0].symbol.symbolLayers[0].width = width;
-        // console.log(symbol);
     }
     exports.updateSymbolStroke = updateSymbolStroke;
 });

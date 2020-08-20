@@ -353,6 +353,5 @@ export function updateSymbolStroke(symbol: CIMSymbol, width: number, color: Colo
 
   symbol.data.symbol.symbolLayers[0].markerGraphics[0].symbol.symbolLayers[0].color = restColor;
   symbol.data.symbol.symbolLayers[0].markerGraphics[0].symbol.symbolLayers[0].width = width;
-  // console.log(symbol);
 
 }

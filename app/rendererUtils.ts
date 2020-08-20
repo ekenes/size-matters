@@ -87,6 +87,9 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
       new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: donutSymbol }),
       new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
     ];
+
+    // avoid size slider
+    return result;
   }
 
   await updateSizeSlider({
@@ -138,10 +141,11 @@ function updateVariableTo9010Theme( sizeVariable: esri.SizeVariable, stats: Perc
 }
 
 function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
-  const { min, max, avg } = stats;
+  const { min, max, avg, stddev } = stats;
   const oldSizeVariable = sizeVariable.clone();
 
-  const midDataValue = min < 0 && max > 0 ? 0 : avg;
+
+  const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
 
   let minSize: number, maxSize: number = null;
 

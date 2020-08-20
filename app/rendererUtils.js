@@ -115,6 +115,8 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                                 new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: symbolUtils_1.donutSymbol }),
                                 new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
                             ];
+                            // avoid size slider
+                            return [2 /*return*/, result];
                         }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
@@ -163,9 +165,9 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         sizeVariable.maxDataValue = stats["90"];
     }
     function updateVariableToAboveAndBelowTheme(sizeVariable, stats) {
-        var min = stats.min, max = stats.max, avg = stats.avg;
+        var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
         var oldSizeVariable = sizeVariable.clone();
-        var midDataValue = min < 0 && max > 0 ? 0 : avg;
+        var midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
         var minSize, maxSize = null;
         if (typeof oldSizeVariable.minSize === "object") {
             var stops_1 = oldSizeVariable.minSize.stops;
