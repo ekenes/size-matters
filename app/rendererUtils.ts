@@ -1,9 +1,15 @@
 import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
 import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
+import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
+import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
+import Color = require("esri/Color");
 
 import { updateSizeSlider } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
+import { renderPreviewHTML } from "esri/symbols/support/symbolPreview";
+import { MarkerSymbol, SimpleLineSymbol, SimpleMarkerSymbol } from "esri/symbols";
+import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
   theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on",
@@ -59,6 +65,29 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   const sizeVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
   result.visualVariables = sizeVariables;
   result.renderer.visualVariables = sizeVariables;
+
+  if(theme === "above-and-below"){
+    const sizeVariable = getVisualVariableByType(result.renderer, "size") as esri.SizeVariable;
+    const stops = sizeVariable.stops;
+
+    const originalSymbol = (result.renderer.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
+    cimSymbolUtils.applyCIMSymbolColor(donutSymbol, originalSymbol.color);
+
+    const symbolSize = originalSymbol.size;
+    const outline = originalSymbol.outline;
+
+    cimSymbolUtils.scaleCIMSymbolTo(donutSymbol, symbolSize);
+
+    updateSymbolStroke(donutSymbol, outline.width, outline.color);
+
+    result.renderer.field = field;
+    result.renderer.normalizationField = normalizationField;
+    result.renderer.valueExpression = valueExpression;
+    result.renderer.classBreakInfos = [
+      new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: donutSymbol }),
+      new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
+    ];
+  }
 
   await updateSizeSlider({
     layer: layer as esri.FeatureLayer,

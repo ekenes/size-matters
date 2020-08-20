@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderers/visualVariables/support/SizeStop", "./sliderUtils", "./statUtils"], function (require, exports, sizeRendererCreator, SizeStop, sliderUtils_1, statUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderers/visualVariables/support/SizeStop", "esri/renderers/support/ClassBreakInfo", "esri/symbols/support/cimSymbolUtils", "./sliderUtils", "./statUtils", "./symbolUtils"], function (require, exports, sizeRendererCreator, SizeStop, ClassBreakInfo, cimSymbolUtils, sliderUtils_1, statUtils_1, symbolUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function updateRendererFromSizeSlider(renderer, slider) {
@@ -80,7 +80,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     exports.updateRenderer = updateRenderer;
     function createSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, sizeVariables;
+            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, sizeVariables, sizeVariable, stops, originalSymbol, symbolSize, outline;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -99,6 +99,23 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         sizeVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
                         result.visualVariables = sizeVariables;
                         result.renderer.visualVariables = sizeVariables;
+                        if (theme === "above-and-below") {
+                            sizeVariable = getVisualVariableByType(result.renderer, "size");
+                            stops = sizeVariable.stops;
+                            originalSymbol = result.renderer.classBreakInfos[0].symbol.clone();
+                            cimSymbolUtils.applyCIMSymbolColor(symbolUtils_1.donutSymbol, originalSymbol.color);
+                            symbolSize = originalSymbol.size;
+                            outline = originalSymbol.outline;
+                            cimSymbolUtils.scaleCIMSymbolTo(symbolUtils_1.donutSymbol, symbolSize);
+                            symbolUtils_1.updateSymbolStroke(symbolUtils_1.donutSymbol, outline.width, outline.color);
+                            result.renderer.field = field;
+                            result.renderer.normalizationField = normalizationField;
+                            result.renderer.valueExpression = valueExpression;
+                            result.renderer.classBreakInfos = [
+                                new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: symbolUtils_1.donutSymbol }),
+                                new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
+                            ];
+                        }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
                                 view: view,
