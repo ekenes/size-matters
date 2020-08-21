@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, Legend, layerUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -80,7 +80,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             themeSelect.value = "high-to-low";
             styleSelect.value = "size";
         }
-        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, sliderExpand, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
+        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
@@ -148,12 +148,14 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                         group: "left"
                     });
                     view.ui.add(sliderExpand, "top-left");
+                    view.ui.add("save-map", "top-left");
                     return [4 /*yield*/, view.when()];
                 case 1:
                     _b.sent();
                     return [4 /*yield*/, layer.when()];
                 case 2:
                     _b.sent();
+                    saveBtn = document.getElementById("save-map");
                     originalRenderer = layer.renderer.clone();
                     return [4 /*yield*/, layer.queryExtent()];
                 case 3:
@@ -180,6 +182,22 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     valueExpressionTextArea.addEventListener("blur", inputChange);
                     themeSelect.addEventListener("change", inputChange);
                     styleSelect.addEventListener("change", inputChange);
+                    saveBtn.addEventListener("click", function () { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, webmap.saveAs(new PortalItem({
+                                        title: styleSelect.innerText + " - " + themeSelect.innerText + " - " + layer.title,
+                                        tags: ["test", "size"],
+                                        description: "Webmap testing various size styles and themes."
+                                    }), {
+                                        ignoreUnsupported: true
+                                    })];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
                     return [2 /*return*/];
             }
         });

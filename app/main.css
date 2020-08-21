@@ -26,3 +26,9 @@ body,
 #sliders-container{
   display: flex;
 }
+
+#save-map{
+  height: 32px;
+  width: 32px;
+  display: none;
+}

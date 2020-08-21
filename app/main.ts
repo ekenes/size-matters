@@ -5,7 +5,7 @@ import MapView = require("esri/views/MapView");
 import Expand = require("esri/widgets/Expand");
 import FeatureLayer = require("esri/layers/FeatureLayer");
 import BasemapGallery = require("esri/widgets/BasemapGallery");
-import SizeSlider = require("esri/widgets/smartMapping/SizeSlider");
+import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect } from './layerUtils';
@@ -113,9 +113,12 @@ import { SliderVars } from './sliderUtils';
     group: "left"
   });
   view.ui.add(sliderExpand, "top-left");
+  view.ui.add("save-map", "top-left");
 
   await view.when();
   await layer.when();
+
+  const saveBtn = document.getElementById("save-map");
 
   const originalRenderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
 
@@ -179,5 +182,15 @@ import { SliderVars } from './sliderUtils';
     themeSelect.value = "high-to-low";
     styleSelect.value = "size";
   }
+
+  saveBtn.addEventListener("click", async () => {
+    await webmap.saveAs(new PortalItem({
+      title: `${styleSelect.innerText} - ${themeSelect.innerText} - ${layer.title}`,
+      tags: [ "test", "size" ],
+      description: `Webmap testing various size styles and themes.`
+    }), {
+      ignoreUnsupported: true
+    });
+  });
 
 })();
