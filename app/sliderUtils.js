@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/smartMapping/OpacitySlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, OpacitySlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
@@ -42,10 +42,13 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         }
         SliderVars.slider = null;
         SliderVars.colorSizeSlider = null;
+        SliderVars.opacitySlider = null;
         return SliderVars;
     }());
     exports.SliderVars = SliderVars;
-    var slidersContainer = document.getElementById("sliders-container");
+    // const slidersContainer = document.getElementById("sliders-container");
+    var sizeSlidersContainer = document.getElementById("size-slider-container");
+    var opacitySlidersContainer = document.getElementById("opacity-slider-container");
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, histogramResult;
@@ -63,7 +66,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                         if (!SliderVars.slider) {
                             SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
                             SliderVars.slider.container = document.createElement("div");
-                            slidersContainer.appendChild(SliderVars.slider.container);
+                            sizeSlidersContainer.appendChild(SliderVars.slider.container);
                             SliderVars.slider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
                             SliderVars.slider.on([
                                 "thumb-change",
@@ -102,7 +105,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                         if (!SliderVars.colorSizeSlider) {
                             SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
                             SliderVars.colorSizeSlider.container = document.createElement("div");
-                            slidersContainer.appendChild(SliderVars.colorSizeSlider.container);
+                            sizeSlidersContainer.appendChild(SliderVars.colorSizeSlider.container);
                             SliderVars.colorSizeSlider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
                             SliderVars.colorSizeSlider.on([
                                 "thumb-change",
@@ -124,5 +127,46 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         });
     }
     exports.updateColorSizeSlider = updateColorSizeSlider;
+    function updateOpacitySlider(params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var layer, view, visualVariableResult, opacityVariable, field, normalizationField, valueExpression, histogramResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        layer = params.layer, view = params.view, visualVariableResult = params.visualVariableResult;
+                        opacityVariable = visualVariableResult.visualVariable;
+                        field = opacityVariable.field, normalizationField = opacityVariable.normalizationField, valueExpression = opacityVariable.valueExpression;
+                        return [4 /*yield*/, statUtils_1.calculateHistogram({
+                                layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
+                            })];
+                    case 1:
+                        histogramResult = _a.sent();
+                        if (!SliderVars.opacitySlider) {
+                            SliderVars.opacitySlider = OpacitySlider.fromVisualVariableResult(visualVariableResult, histogramResult);
+                            SliderVars.opacitySlider.container = document.createElement("div");
+                            opacitySlidersContainer.appendChild(SliderVars.opacitySlider.container);
+                            SliderVars.opacitySlider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
+                            SliderVars.opacitySlider.on([
+                                "thumb-change",
+                                "thumb-drag",
+                                "min-change",
+                                "max-change"
+                            ], function () {
+                                var newRenderer = layer.renderer.clone();
+                                var opacityVariable = rendererUtils_1.getVisualVariableByType(newRenderer, "opacity");
+                                opacityVariable.stops = SliderVars.opacitySlider.stops;
+                                layer.renderer = newRenderer;
+                            });
+                        }
+                        else {
+                            SliderVars.opacitySlider.container.style.display = "block";
+                            SliderVars.opacitySlider.updateFromVisualVariableResult(visualVariableResult, histogramResult);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    exports.updateOpacitySlider = updateOpacitySlider;
 });
 //# sourceMappingURL=sliderUtils.js.map

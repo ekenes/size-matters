@@ -115,6 +115,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                             url: url
                         });
                     }
+                    layer.opacity = 1;
+                    layer.minScale = 0;
+                    layer.maxScale = 0;
                     webmap = new WebMap({
                         basemap: {
                             portalItem: {

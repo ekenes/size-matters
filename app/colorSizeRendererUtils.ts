@@ -1,8 +1,6 @@
 import esri = __esri;
 import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariateColorSize");
-import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
-import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
-import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
+import lang = require("esri/core/lang");
 
 import { updateColorSizeSlider } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
@@ -34,7 +32,9 @@ export function updateRendererFromColorSizeSlider(renderer: esri.RendererWithVis
 export async function createColorSizeRenderer(params: SizeParams): Promise<esri.univariateColorSizeContinuousRendererResult> {
   const { layer, view, field, normalizationField, valueExpression } = params;
 
-  const theme = params.theme || "high-to-low";
+  const invalidColorThemes: SizeParams["theme"][] = [ "90-10", "above-average", "below-average", "centered-on", "extremes" ];
+  const theme = lang.clone(params.theme) || "high-to-low";
+  params.theme = invalidColorThemes.indexOf(theme) > -1 ? "high-to-low" : params.theme;
 
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
 

@@ -2,6 +2,7 @@ import esri = __esri;
 import { createSizeRenderer } from "./sizeRendererUtils";
 import { createColorSizeRenderer } from "./colorSizeRendererUtils";
 import { SliderVars } from "./sliderUtils";
+import { createOpacitySizeRenderer } from "./opacitySizeRendererUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
   theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on",
@@ -21,6 +22,11 @@ export async function updateRenderer(params: SizeParams){
         SliderVars.colorSizeSlider.container = null;
         SliderVars.colorSizeSlider = null;
       }
+      if(SliderVars.opacitySlider){
+        SliderVars.opacitySlider.destroy();
+        SliderVars.opacitySlider.container = null;
+        SliderVars.opacitySlider = null;
+      }
       result = await createSizeRenderer(params);
       break;
     case "color-and-size":
@@ -29,9 +35,20 @@ export async function updateRenderer(params: SizeParams){
         SliderVars.slider.container = null;
         SliderVars.slider = null;
       }
+      if(SliderVars.opacitySlider){
+        SliderVars.opacitySlider.destroy();
+        SliderVars.opacitySlider.container = null;
+        SliderVars.opacitySlider = null;
+      }
       result = await createColorSizeRenderer(params);
       break;
     case "opacity-and-size":
+      if(SliderVars.colorSizeSlider){
+        SliderVars.colorSizeSlider.destroy();
+        SliderVars.colorSizeSlider.container = null;
+        SliderVars.colorSizeSlider = null;
+      }
+      result = await createOpacitySizeRenderer(params);
       break;
     default:
       // return variables without modifications

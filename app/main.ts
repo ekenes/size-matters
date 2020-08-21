@@ -76,6 +76,10 @@ import { SliderVars } from './sliderUtils';
     });
   }
 
+  layer.opacity = 1;
+  layer.minScale = 0;
+  layer.maxScale = 0;
+
   const webmap = new WebMap({
     basemap: {
       portalItem: {

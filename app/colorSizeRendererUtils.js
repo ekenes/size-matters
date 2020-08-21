@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, colorSizeRendererCreator, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/core/lang", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, colorSizeRendererCreator, lang, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function updateRendererFromColorSizeSlider(renderer, slider) {
@@ -55,12 +55,14 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     //////////////////////////////////////
     function createColorSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, visualVariables, sizeVariables, colorVariables;
+            var layer, view, field, normalizationField, valueExpression, invalidColorThemes, theme, result, percentileStats, visualVariables, sizeVariables, colorVariables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression;
-                        theme = params.theme || "high-to-low";
+                        invalidColorThemes = ["90-10", "above-average", "below-average", "centered-on", "extremes"];
+                        theme = lang.clone(params.theme) || "high-to-low";
+                        params.theme = invalidColorThemes.indexOf(theme) > -1 ? "high-to-low" : params.theme;
                         return [4 /*yield*/, colorSizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();

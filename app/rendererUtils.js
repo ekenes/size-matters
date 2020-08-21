@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils", "./sliderUtils"], function (require, exports, sizeRendererUtils_1, colorSizeRendererUtils_1, sliderUtils_1) {
+define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils", "./sliderUtils", "./opacitySizeRendererUtils"], function (require, exports, sizeRendererUtils_1, colorSizeRendererUtils_1, sliderUtils_1, opacitySizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function updateRenderer(params) {
@@ -52,32 +52,51 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
                             case "color-and-size": return [3 /*break*/, 3];
                             case "opacity-and-size": return [3 /*break*/, 5];
                         }
-                        return [3 /*break*/, 6];
+                        return [3 /*break*/, 7];
                     case 1:
                         if (sliderUtils_1.SliderVars.colorSizeSlider) {
                             sliderUtils_1.SliderVars.colorSizeSlider.destroy();
                             sliderUtils_1.SliderVars.colorSizeSlider.container = null;
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
                         }
+                        if (sliderUtils_1.SliderVars.opacitySlider) {
+                            sliderUtils_1.SliderVars.opacitySlider.destroy();
+                            sliderUtils_1.SliderVars.opacitySlider.container = null;
+                            sliderUtils_1.SliderVars.opacitySlider = null;
+                        }
                         return [4 /*yield*/, sizeRendererUtils_1.createSizeRenderer(params)];
                     case 2:
                         result = _b.sent();
-                        return [3 /*break*/, 7];
+                        return [3 /*break*/, 8];
                     case 3:
                         if (sliderUtils_1.SliderVars.slider) {
                             sliderUtils_1.SliderVars.slider.destroy();
                             sliderUtils_1.SliderVars.slider.container = null;
                             sliderUtils_1.SliderVars.slider = null;
                         }
+                        if (sliderUtils_1.SliderVars.opacitySlider) {
+                            sliderUtils_1.SliderVars.opacitySlider.destroy();
+                            sliderUtils_1.SliderVars.opacitySlider.container = null;
+                            sliderUtils_1.SliderVars.opacitySlider = null;
+                        }
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
                     case 4:
                         result = _b.sent();
-                        return [3 /*break*/, 7];
-                    case 5: return [3 /*break*/, 7];
-                    case 6: 
+                        return [3 /*break*/, 8];
+                    case 5:
+                        if (sliderUtils_1.SliderVars.colorSizeSlider) {
+                            sliderUtils_1.SliderVars.colorSizeSlider.destroy();
+                            sliderUtils_1.SliderVars.colorSizeSlider.container = null;
+                            sliderUtils_1.SliderVars.colorSizeSlider = null;
+                        }
+                        return [4 /*yield*/, opacitySizeRendererUtils_1.createOpacitySizeRenderer(params)];
+                    case 6:
+                        result = _b.sent();
+                        return [3 /*break*/, 8];
+                    case 7: 
                     // return variables without modifications
-                    return [3 /*break*/, 7];
-                    case 7:
+                    return [3 /*break*/, 8];
+                    case 8:
                         layer.renderer = result.renderer.clone();
                         return [2 /*return*/];
                 }
