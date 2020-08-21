@@ -105,7 +105,7 @@ import { SliderVars } from './sliderUtils';
   }), "bottom-left");
   const sliderExpand = new Expand({
     expanded: true,
-    content: document.getElementById("size-slider-container"),
+    content: document.getElementById("sliders-container"),
     group: "left"
   });
   view.ui.add(sliderExpand, "top-left");
@@ -174,8 +174,6 @@ import { SliderVars } from './sliderUtils';
     valueExpressionTextArea.value = null;
     themeSelect.value = "high-to-low";
     styleSelect.value = "size";
-
-    // (SliderVars.slider.container as HTMLElement).style.display = "none";
   }
 
 })();

@@ -79,7 +79,6 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             valueExpressionTextArea.value = null;
             themeSelect.value = "high-to-low";
             styleSelect.value = "size";
-            // (SliderVars.slider.container as HTMLElement).style.display = "none";
         }
         var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, sliderExpand, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
         return __generator(this, function (_b) {
@@ -142,7 +141,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     }), "bottom-left");
                     sliderExpand = new Expand({
                         expanded: true,
-                        content: document.getElementById("size-slider-container"),
+                        content: document.getElementById("sliders-container"),
                         group: "left"
                     });
                     view.ui.add(sliderExpand, "top-left");

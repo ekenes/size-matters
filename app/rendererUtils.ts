@@ -18,6 +18,7 @@ export async function updateRenderer(params: SizeParams){
     case "size":
       if(SliderVars.colorSizeSlider){
         SliderVars.colorSizeSlider.destroy();
+        SliderVars.colorSizeSlider.container = null;
         SliderVars.colorSizeSlider = null;
       }
       result = await createSizeRenderer(params);
@@ -25,6 +26,7 @@ export async function updateRenderer(params: SizeParams){
     case "color-and-size":
       if(SliderVars.slider){
         SliderVars.slider.destroy();
+        SliderVars.slider.container = null;
         SliderVars.slider = null;
       }
       result = await createColorSizeRenderer(params);

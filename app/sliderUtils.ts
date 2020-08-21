@@ -17,6 +17,8 @@ interface CreateSizeSliderParams {
   rendererResult: esri.sizeContinuousRendererResult
 }
 
+const slidersContainer = document.getElementById("sliders-container");
+
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
   const { layer, view, rendererResult } = params;
 
@@ -30,7 +32,8 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
 
   if(!SliderVars.slider){
     SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
-    SliderVars.slider.container = "size-slider-container";
+    SliderVars.slider.container = document.createElement("div");
+    slidersContainer.appendChild(SliderVars.slider.container);
     SliderVars.slider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
 
     SliderVars.slider.on([
@@ -68,7 +71,8 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
 
   if(!SliderVars.colorSizeSlider){
     SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
-    SliderVars.colorSizeSlider.container = "size-slider-container";
+    SliderVars.colorSizeSlider.container = document.createElement("div");
+    slidersContainer.appendChild(SliderVars.colorSizeSlider.container);
     SliderVars.colorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
 
     SliderVars.colorSizeSlider.on([

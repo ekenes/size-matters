@@ -56,6 +56,7 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
                     case 1:
                         if (sliderUtils_1.SliderVars.colorSizeSlider) {
                             sliderUtils_1.SliderVars.colorSizeSlider.destroy();
+                            sliderUtils_1.SliderVars.colorSizeSlider.container = null;
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
                         }
                         return [4 /*yield*/, sizeRendererUtils_1.createSizeRenderer(params)];
@@ -65,6 +66,7 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
                     case 3:
                         if (sliderUtils_1.SliderVars.slider) {
                             sliderUtils_1.SliderVars.slider.destroy();
+                            sliderUtils_1.SliderVars.slider.container = null;
                             sliderUtils_1.SliderVars.slider = null;
                         }
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
