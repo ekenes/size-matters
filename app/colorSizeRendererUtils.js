@@ -34,9 +34,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/renderers/visualVariables/support/SizeStop", "esri/renderers/support/ClassBreakInfo", "esri/symbols/support/cimSymbolUtils", "./sliderUtils", "./statUtils", "./symbolUtils", "./rendererUtils"], function (require, exports, colorSizeRendererCreator, SizeStop, ClassBreakInfo, cimSymbolUtils, sliderUtils_1, statUtils_1, symbolUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, colorSizeRendererCreator, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    function updateRendererFromColorSizeSlider(renderer, slider) {
+        var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
+        var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
+        renderer.visualVariables.splice(sizeVariableIndex, 1);
+        var colorVariable = rendererUtils_1.getVisualVariableByType(renderer, "color");
+        var colorVariableIndex = renderer.visualVariables.indexOf(colorVariable);
+        renderer.visualVariables.splice(colorVariableIndex, 1);
+        renderer.visualVariables = slider.updateVisualVariables([sizeVariable, colorVariable]);
+        return renderer.clone();
+    }
+    exports.updateRendererFromColorSizeSlider = updateRendererFromColorSizeSlider;
     /////////////////////////////////////
     ///
     /// Color and Size Renderer
@@ -44,7 +55,7 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     //////////////////////////////////////
     function createColorSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, visualVariables, sizeVariables, colorVariables, sizeVariable, stops, originalSymbol, symbolSize, outline;
+            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, visualVariables, sizeVariables, colorVariables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -66,25 +77,6 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         colorVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "color");
                         result.size.visualVariables = sizeVariables;
                         result.color.visualVariable = colorVariables[0];
-                        if (theme === "above-and-below") {
-                            sizeVariable = rendererUtils_1.getVisualVariableByType(result.renderer, "size");
-                            stops = sizeVariable.stops;
-                            originalSymbol = result.renderer.classBreakInfos[0].symbol.clone();
-                            cimSymbolUtils.applyCIMSymbolColor(symbolUtils_1.donutSymbol, originalSymbol.color);
-                            symbolSize = originalSymbol.size;
-                            outline = originalSymbol.outline;
-                            cimSymbolUtils.scaleCIMSymbolTo(symbolUtils_1.donutSymbol, symbolSize);
-                            symbolUtils_1.updateSymbolStroke(symbolUtils_1.donutSymbol, outline.width, outline.color);
-                            result.renderer.field = field;
-                            result.renderer.normalizationField = normalizationField;
-                            result.renderer.valueExpression = valueExpression;
-                            result.renderer.classBreakInfos = [
-                                new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: symbolUtils_1.donutSymbol }),
-                                new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
-                            ];
-                            // avoid size slider
-                            return [2 /*return*/, result];
-                        }
                         return [4 /*yield*/, sliderUtils_1.updateColorSizeSlider({
                                 layer: layer,
                                 view: view,
@@ -104,74 +96,75 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
         var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
         var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
         renderer.visualVariables.splice(sizeVariableIndex, 1);
+        var colorVariable = rendererUtils_1.getVisualVariableByType(renderer, "color");
+        var colorVariableIndex = renderer.visualVariables.indexOf(colorVariable);
+        renderer.visualVariables.splice(colorVariableIndex, 1);
         switch (theme) {
             case "above-average":
-                updateVariableToAboveAverageTheme(sizeVariable, stats);
+                sizeRendererUtils_1.updateVariableToAboveAverageTheme(sizeVariable, stats);
                 break;
             case "below-average":
-                updateVariableToBelowAverageTheme(sizeVariable, stats);
+                sizeRendererUtils_1.updateVariableToBelowAverageTheme(sizeVariable, stats);
                 break;
             case "90-10":
-                updateVariableTo9010Theme(sizeVariable, percentileStats);
+                sizeRendererUtils_1.updateVariableTo9010Theme(sizeVariable, percentileStats);
                 break;
             case "above-and-below":
-                updateVariableToAboveAndBelowTheme(sizeVariable, stats);
+                sizeRendererUtils_1.updateVariableToAboveAndBelowTheme(sizeVariable, stats);
             default:
                 // return variables without modifications
                 break;
         }
-        renderer.visualVariables.push(sizeVariable);
-        return renderer.visualVariables;
-    }
-    function updateVariableToAboveAverageTheme(sizeVariable, stats) {
-        sizeVariable.minDataValue = stats.avg;
-    }
-    function updateVariableToBelowAverageTheme(sizeVariable, stats) {
-        sizeVariable.flipSizes();
-        sizeVariable.maxDataValue = stats.avg;
-    }
-    function updateVariableTo9010Theme(sizeVariable, stats) {
-        sizeVariable.minDataValue = stats["10"];
-        sizeVariable.maxDataValue = stats["90"];
-    }
-    function updateVariableToAboveAndBelowTheme(sizeVariable, stats) {
-        var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
-        var oldSizeVariable = sizeVariable.clone();
-        var midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
-        var minSize, maxSize = null;
-        if (typeof oldSizeVariable.minSize === "object") {
-            var stops_1 = oldSizeVariable.minSize.stops;
-            var numStops = stops_1.length;
-            var midIndex = Math.floor(numStops / 2);
-            minSize = stops_1[midIndex].size;
-        }
-        else {
-            minSize = oldSizeVariable.minSize;
-        }
-        if (typeof oldSizeVariable.maxSize === "object") {
-            var stops_2 = oldSizeVariable.maxSize.stops;
-            var numStops = stops_2.length;
-            var midIndex = Math.floor(numStops / 2);
-            maxSize = stops_2[midIndex].size;
-        }
-        else {
-            maxSize = oldSizeVariable.maxSize;
-        }
-        var midSize = Math.round((maxSize - minSize) / 2);
-        var minMidDataValue = (midDataValue - oldSizeVariable.minDataValue) / 2;
-        var maxMidDataValue = (oldSizeVariable.maxDataValue - midDataValue) / 2;
-        var stops = [
-            new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
-            new SizeStop({ value: minMidDataValue, size: midSize }),
-            new SizeStop({ value: midDataValue, size: minSize }),
-            new SizeStop({ value: maxMidDataValue, size: midSize }),
-            new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
-        ];
-        sizeVariable.minDataValue = null;
-        sizeVariable.maxDataValue = null;
-        sizeVariable.minSize = null;
-        sizeVariable.maxSize = null;
-        sizeVariable.stops = stops;
+        renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, colorVariable]);
+        return renderer.visualVariables; //[sizeVariable, colorVariable];
     }
 });
+// function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+//   colorVariable.minDataValue = stats.avg;
+// }
+// function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+//   colorVariable.flipSizes();
+//   colorVariable.maxDataValue = stats.avg;
+// }
+// function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
+//   colorVariable.minDataValue = stats["10"];
+//   colorVariable.maxDataValue = stats["90"];
+// }
+// function updateColorVariableToAboveAndBelowTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+//   const { min, max, avg, stddev } = stats;
+//   const oldSizeVariable = colorVariable.clone();
+//   const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+//   let minSize: number, maxSize: number = null;
+//   if( typeof oldSizeVariable.minSize === "object"){
+//     const stops = oldSizeVariable.minSize.stops;
+//     const numStops = stops.length;
+//     const midIndex = Math.floor(numStops/2);
+//     minSize = stops[midIndex].size;
+//   } else {
+//     minSize = oldSizeVariable.minSize;
+//   }
+//   if( typeof oldSizeVariable.maxSize === "object"){
+//     const stops = oldSizeVariable.maxSize.stops;
+//     const numStops = stops.length;
+//     const midIndex = Math.floor(numStops/2);
+//     maxSize = stops[midIndex].size;
+//   } else {
+//     maxSize = oldSizeVariable.maxSize;
+//   }
+//   const midSize = Math.round(( maxSize - minSize) / 2);
+//   const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
+//   const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
+//   const stops = [
+//     new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
+//     new SizeStop({ value: minMidDataValue, size: midSize }),
+//     new SizeStop({ value: midDataValue, size: minSize }),
+//     new SizeStop({ value: maxMidDataValue, size: midSize }),
+//     new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
+//   ];
+//   sizeVariable.minDataValue = null;
+//   sizeVariable.maxDataValue = null;
+//   sizeVariable.minSize = null;
+//   sizeVariable.maxSize = null;
+//   sizeVariable.stops = stops;
+// }
 //# sourceMappingURL=colorSizeRendererUtils.js.map

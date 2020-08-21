@@ -112,26 +112,26 @@ function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizePa
   return renderer.visualVariables;
 }
 
-function updateVariableToAboveAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
+export function updateVariableToAboveAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
   sizeVariable.minDataValue = stats.avg;
 }
 
-function updateVariableToBelowAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
+export function updateVariableToBelowAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
   sizeVariable.flipSizes();
   sizeVariable.maxDataValue = stats.avg;
 }
 
-function updateVariableTo9010Theme( sizeVariable: esri.SizeVariable, stats: PercentileStats ){
+export function updateVariableTo9010Theme( sizeVariable: esri.SizeVariable, stats: PercentileStats ){
   sizeVariable.minDataValue = stats["10"];
   sizeVariable.maxDataValue = stats["90"];
 }
 
-function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
+export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
   const { min, max, avg, stddev } = stats;
   const oldSizeVariable = sizeVariable.clone();
 
 
-  const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+  const midDataValue = avg; //(avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
 
   let minSize: number, maxSize: number = null;
 
@@ -154,15 +154,15 @@ function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVariable, st
   }
 
   const midSize = Math.round(( maxSize - minSize) / 2);
-  const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
-  const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
+  const minMidDataValue = midDataValue - (( midDataValue - min ) / 2);
+  const maxMidDataValue = (( max - midDataValue ) / 2) + midDataValue;
 
   const stops = [
-    new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
+    new SizeStop({ value: min, size: maxSize }),
     new SizeStop({ value: minMidDataValue, size: midSize }),
     new SizeStop({ value: midDataValue, size: minSize }),
     new SizeStop({ value: maxMidDataValue, size: midSize }),
-    new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
+    new SizeStop({ value: max, size: maxSize })
   ];
 
   sizeVariable.minDataValue = null;

@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./sliderUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, Legend, layerUtils_1, rendererUtils_1, sliderUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, Legend, layerUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -67,7 +67,8 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                 field: field,
                 normalizationField: normalizationField,
                 valueExpression: valueExpression,
-                theme: theme
+                theme: theme,
+                style: style
             };
             rendererUtils_1.updateRenderer(params);
         }
@@ -78,7 +79,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             valueExpressionTextArea.value = null;
             themeSelect.value = "high-to-low";
             styleSelect.value = "size";
-            sliderUtils_1.SliderVars.slider.container.style.display = "none";
+            // (SliderVars.slider.container as HTMLElement).style.display = "none";
         }
         var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, sliderExpand, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
         return __generator(this, function (_b) {

@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
@@ -47,18 +47,18 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     exports.SliderVars = SliderVars;
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, rendererResult, sizeVariable, _a, field, normalizationField, valueExpression, histogramResult;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, histogramResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, rendererResult = params.rendererResult;
                         sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
-                        _a = sizeVariable, field = _a.field, normalizationField = _a.normalizationField, valueExpression = _a.valueExpression;
+                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
                         return [4 /*yield*/, statUtils_1.calculateHistogram({
                                 layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
                             })];
                     case 1:
-                        histogramResult = _b.sent();
+                        histogramResult = _a.sent();
                         if (!SliderVars.slider) {
                             SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
                             SliderVars.slider.container = "size-slider-container";
@@ -85,19 +85,19 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     exports.updateSizeSlider = updateSizeSlider;
     function updateColorSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, rendererResult, sizeVariable, _a, field, normalizationField, valueExpression, histogramResult;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, histogramResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, rendererResult = params.rendererResult;
                         sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
-                        _a = sizeVariable, field = _a.field, normalizationField = _a.normalizationField, valueExpression = _a.valueExpression;
+                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
                         return [4 /*yield*/, statUtils_1.calculateHistogram({
                                 layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
                             })];
                     case 1:
-                        histogramResult = _b.sent();
-                        if (!SliderVars.slider) {
+                        histogramResult = _a.sent();
+                        if (!SliderVars.colorSizeSlider) {
                             SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
                             SliderVars.colorSizeSlider.container = "size-slider-container";
                             SliderVars.colorSizeSlider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
@@ -107,7 +107,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(layer.renderer, SliderVars.slider);
+                                var newRenderer = colorSizeRendererUtils_1.updateRendererFromColorSizeSlider(layer.renderer, SliderVars.colorSizeSlider);
                                 layer.renderer = newRenderer;
                             });
                         }

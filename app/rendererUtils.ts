@@ -1,6 +1,7 @@
 import esri = __esri;
 import { createSizeRenderer } from "./sizeRendererUtils";
 import { createColorSizeRenderer } from "./colorSizeRendererUtils";
+import { SliderVars } from "./sliderUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
   theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on",
@@ -15,9 +16,17 @@ export async function updateRenderer(params: SizeParams){
 
   switch( style ){
     case "size":
+      if(SliderVars.colorSizeSlider){
+        SliderVars.colorSizeSlider.destroy();
+        SliderVars.colorSizeSlider = null;
+      }
       result = await createSizeRenderer(params);
       break;
     case "color-and-size":
+      if(SliderVars.slider){
+        SliderVars.slider.destroy();
+        SliderVars.slider = null;
+      }
       result = await createColorSizeRenderer(params);
       break;
     case "opacity-and-size":

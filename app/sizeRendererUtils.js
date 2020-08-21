@@ -132,18 +132,21 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     function updateVariableToAboveAverageTheme(sizeVariable, stats) {
         sizeVariable.minDataValue = stats.avg;
     }
+    exports.updateVariableToAboveAverageTheme = updateVariableToAboveAverageTheme;
     function updateVariableToBelowAverageTheme(sizeVariable, stats) {
         sizeVariable.flipSizes();
         sizeVariable.maxDataValue = stats.avg;
     }
+    exports.updateVariableToBelowAverageTheme = updateVariableToBelowAverageTheme;
     function updateVariableTo9010Theme(sizeVariable, stats) {
         sizeVariable.minDataValue = stats["10"];
         sizeVariable.maxDataValue = stats["90"];
     }
+    exports.updateVariableTo9010Theme = updateVariableTo9010Theme;
     function updateVariableToAboveAndBelowTheme(sizeVariable, stats) {
         var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
         var oldSizeVariable = sizeVariable.clone();
-        var midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+        var midDataValue = avg; //(avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
         var minSize, maxSize = null;
         if (typeof oldSizeVariable.minSize === "object") {
             var stops_1 = oldSizeVariable.minSize.stops;
@@ -164,14 +167,14 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
             maxSize = oldSizeVariable.maxSize;
         }
         var midSize = Math.round((maxSize - minSize) / 2);
-        var minMidDataValue = (midDataValue - oldSizeVariable.minDataValue) / 2;
-        var maxMidDataValue = (oldSizeVariable.maxDataValue - midDataValue) / 2;
+        var minMidDataValue = midDataValue - ((midDataValue - min) / 2);
+        var maxMidDataValue = ((max - midDataValue) / 2) + midDataValue;
         var stops = [
-            new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
+            new SizeStop({ value: min, size: maxSize }),
             new SizeStop({ value: minMidDataValue, size: midSize }),
             new SizeStop({ value: midDataValue, size: minSize }),
             new SizeStop({ value: maxMidDataValue, size: midSize }),
-            new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
+            new SizeStop({ value: max, size: maxSize })
         ];
         sizeVariable.minDataValue = null;
         sizeVariable.maxDataValue = null;
@@ -179,5 +182,6 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         sizeVariable.maxSize = null;
         sizeVariable.stops = stops;
     }
+    exports.updateVariableToAboveAndBelowTheme = updateVariableToAboveAndBelowTheme;
 });
 //# sourceMappingURL=sizeRendererUtils.js.map

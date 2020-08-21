@@ -153,14 +153,15 @@ import { SliderVars } from './sliderUtils';
     }
 
     const theme = themeSelect.value as SizeParams["theme"];
-    const style = styleSelect.value;
+    const style = styleSelect.value as SizeParams["style"];
     const params = {
       layer,
       view,
       field,
       normalizationField,
       valueExpression,
-      theme
+      theme,
+      style
     };
 
     updateRenderer(params);
@@ -174,7 +175,7 @@ import { SliderVars } from './sliderUtils';
     themeSelect.value = "high-to-low";
     styleSelect.value = "size";
 
-    (SliderVars.slider.container as HTMLElement).style.display = "none";
+    // (SliderVars.slider.container as HTMLElement).style.display = "none";
   }
 
 })();

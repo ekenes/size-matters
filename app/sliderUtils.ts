@@ -4,6 +4,7 @@ import ColorSizeSlider = require("esri/widgets/smartMapping/ColorSizeSlider");
 import { calculateHistogram } from "./statUtils";
 import { getVisualVariableByType } from "./rendererUtils";
 import { updateRendererFromSizeSlider } from "./sizeRendererUtils";
+import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
 
 export class SliderVars {
   public static slider: SizeSlider = null;
@@ -19,9 +20,9 @@ interface CreateSizeSliderParams {
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
   const { layer, view, rendererResult } = params;
 
-  let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size");
+  let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size") as esri.SizeVariable;
 
-  const { field, normalizationField, valueExpression } = sizeVariable as esri.SizeVariable;
+  const { field, normalizationField, valueExpression } = sizeVariable;
 
   const histogramResult = await calculateHistogram({
     layer, view, field, normalizationField, valueExpression
@@ -57,15 +58,15 @@ interface CreateColorSizeSliderParams {
 export async function updateColorSizeSlider(params: CreateColorSizeSliderParams) {
   const { layer, view, rendererResult } = params;
 
-  let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size");
+  let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size") as esri.SizeVariable;
 
-  const { field, normalizationField, valueExpression } = sizeVariable as esri.SizeVariable;
+  const { field, normalizationField, valueExpression } = sizeVariable;
 
   const histogramResult = await calculateHistogram({
     layer, view, field, normalizationField, valueExpression
   });
 
-  if(!SliderVars.slider){
+  if(!SliderVars.colorSizeSlider){
     SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
     SliderVars.colorSizeSlider.container = "size-slider-container";
     SliderVars.colorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
@@ -76,7 +77,7 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromSizeSlider(layer.renderer as esri.RendererWithVisualVariables, SliderVars.slider);
+      const newRenderer = updateRendererFromColorSizeSlider(layer.renderer as esri.RendererWithVisualVariables, SliderVars.colorSizeSlider);
       layer.renderer = newRenderer;
     });
   } else {
