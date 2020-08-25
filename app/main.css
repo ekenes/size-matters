@@ -25,7 +25,24 @@ body,
 
 #sliders-container{
   display: flex;
+  width: 300px;
 }
+
+#size-options{
+  display: flex;
+  flex-direction: column;
+  /* flex-wrap: wrap; */
+  width: 300px;
+}
+
+#symbol-sizes-container{
+  width: 300px;
+}
+
+#symbol-sizes{
+  width: 300px;
+}
+
 
 #save-map{
   height: 32px;

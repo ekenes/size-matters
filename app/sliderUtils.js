@@ -34,13 +34,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/smartMapping/OpacitySlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, OpacitySlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, Slider, OpacitySlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
         function SliderVars() {
         }
         SliderVars.slider = null;
+        SliderVars.symbolSizesSlider = null;
         SliderVars.colorSizeSlider = null;
         SliderVars.opacitySlider = null;
         return SliderVars;
@@ -49,15 +50,25 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     // const slidersContainer = document.getElementById("sliders-container");
     var sizeSlidersContainer = document.getElementById("size-slider-container");
     var opacitySlidersContainer = document.getElementById("opacity-slider-container");
+    var symbolSizesContainer = document.getElementById("symbol-sizes");
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, histogramResult;
+            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, lastStop, firstStop, histogramResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, rendererResult = params.rendererResult;
                         sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
-                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
+                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize, stops = sizeVariable.stops;
+                        symbolSizeSliderValues = [];
+                        if (stops && stops.length > 0) {
+                            lastStop = stops[stops.length - 1];
+                            firstStop = stops[0];
+                            symbolSizeSliderValues = [firstStop.size, lastStop.size];
+                        }
+                        if (minSize && maxSize) {
+                            symbolSizeSliderValues = [minSize, maxSize];
+                        }
                         return [4 /*yield*/, statUtils_1.calculateHistogram({
                                 layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
                             })];
@@ -82,6 +93,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.slider.container.style.display = "block";
                             SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
                         }
+                        updateSymbolSizesSlider({ layer: layer, values: symbolSizeSliderValues });
                         return [2 /*return*/];
                 }
             });
@@ -127,6 +139,45 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         });
     }
     exports.updateColorSizeSlider = updateColorSizeSlider;
+    function updateSymbolSizesSlider(params) {
+        var layer = params.layer, values = params.values;
+        if (!SliderVars.symbolSizesSlider) {
+            SliderVars.symbolSizesSlider = new Slider({
+                values: values,
+                container: symbolSizesContainer,
+                min: 1,
+                max: 120,
+                steps: 0.5,
+                labelInputsEnabled: true,
+                rangeLabelInputsEnabled: true,
+                visibleElements: {
+                    rangeLabels: true,
+                    labels: true
+                }
+            });
+            SliderVars.symbolSizesSlider.watch("values", function (values) {
+                var renderer = layer.renderer.clone();
+                var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
+                var stops = sizeVariable.stops, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize;
+                if (stops && stops.length > 0) {
+                    var midSize = sizeRendererUtils_1.calcuateMidSize(minSize, maxSize);
+                    stops[0].size = maxSize;
+                    stops[1].size = midSize;
+                    stops[2].size = minSize;
+                    stops[3].size = midSize;
+                    stops[4].size = maxSize;
+                }
+                else {
+                    sizeVariable.minSize = values[0];
+                    sizeVariable.maxSize = values[1];
+                }
+                layer.renderer = renderer;
+            });
+        }
+        else {
+            SliderVars.symbolSizesSlider.values = values;
+        }
+    }
     function updateOpacitySlider(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, view, visualVariableResult, opacityVariable, field, normalizationField, valueExpression, histogramResult;

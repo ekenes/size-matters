@@ -1,14 +1,16 @@
 import esri = __esri;
 import SizeSlider = require("esri/widgets/smartMapping/SizeSlider");
 import ColorSizeSlider = require("esri/widgets/smartMapping/ColorSizeSlider");
+import Slider = require("esri/widgets/Slider");
 import OpacitySlider = require("esri/widgets/smartMapping/OpacitySlider");
 import { calculateHistogram } from "./statUtils";
 import { getVisualVariableByType } from "./rendererUtils";
-import { updateRendererFromSizeSlider } from "./sizeRendererUtils";
+import { updateRendererFromSizeSlider, calcuateMidSize } from "./sizeRendererUtils";
 import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
 
 export class SliderVars {
   public static slider: SizeSlider = null;
+  public static symbolSizesSlider: Slider = null;
   public static colorSizeSlider: ColorSizeSlider = null;
   public static opacitySlider: OpacitySlider = null;
 }
@@ -22,13 +24,25 @@ interface CreateSizeSliderParams {
 // const slidersContainer = document.getElementById("sliders-container");
 const sizeSlidersContainer = document.getElementById("size-slider-container");
 const opacitySlidersContainer = document.getElementById("opacity-slider-container");
+const symbolSizesContainer = document.getElementById("symbol-sizes");
 
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
   const { layer, view, rendererResult } = params;
 
   let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size") as esri.SizeVariable;
 
-  const { field, normalizationField, valueExpression } = sizeVariable;
+  const { field, normalizationField, valueExpression, minSize, maxSize, stops } = sizeVariable;
+  let symbolSizeSliderValues: number[] = [];
+
+  if(stops && stops.length > 0){
+    const lastStop = stops[stops.length-1];
+    const firstStop = stops[0];
+
+    symbolSizeSliderValues = [ firstStop.size, lastStop.size ];
+  }
+  if(minSize && maxSize){
+    symbolSizeSliderValues = [ minSize as number, maxSize as number ];
+  }
 
   const histogramResult = await calculateHistogram({
     layer, view, field, normalizationField, valueExpression
@@ -53,6 +67,9 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
     (SliderVars.slider.container as HTMLElement).style.display = "block";
     SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
   }
+
+
+  updateSymbolSizesSlider({ layer, values: symbolSizeSliderValues });
 
 }
 
@@ -93,6 +110,51 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
     SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
   }
 
+}
+
+interface UpdateSymbolSizesSlider {
+  values: number[],
+  layer: esri.FeatureLayer
+}
+
+function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
+  const { layer, values } = params;
+  if(!SliderVars.symbolSizesSlider){
+    SliderVars.symbolSizesSlider = new Slider({
+      values,
+      container: symbolSizesContainer,
+      min: 1,
+      max: 120,
+      steps: 0.5,
+      labelInputsEnabled: true,
+      rangeLabelInputsEnabled: true,
+      visibleElements: {
+        rangeLabels: true,
+        labels: true
+      }
+    });
+    SliderVars.symbolSizesSlider.watch("values", function(values){
+      const renderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
+      const sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
+      const { stops, minSize, maxSize } = sizeVariable;
+
+      if(stops && stops.length > 0){
+        const midSize = calcuateMidSize(minSize as number, maxSize as number);
+        stops[0].size = maxSize as number;
+        stops[1].size = midSize;
+        stops[2].size = minSize as number;
+        stops[3].size = midSize;
+        stops[4].size = maxSize as number;
+      } else {
+        sizeVariable.minSize = values[0];
+        sizeVariable.maxSize = values[1];
+      }
+
+      layer.renderer = renderer;
+    });
+  } else {
+    SliderVars.symbolSizesSlider.values = values;
+  }
 }
 
 interface CreateOpacitySliderParams {

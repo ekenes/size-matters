@@ -153,7 +153,7 @@ export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVaria
     maxSize = oldSizeVariable.maxSize;
   }
 
-  const midSize = Math.round(( maxSize - minSize) / 2);
+  const midSize = calcuateMidSize(minSize, maxSize);
   const minMidDataValue = midDataValue - (( midDataValue - min ) / 2);
   const maxMidDataValue = (( max - midDataValue ) / 2) + midDataValue;
 
@@ -171,4 +171,8 @@ export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVaria
   sizeVariable.maxSize = null;
 
   sizeVariable.stops = stops;
+}
+
+export function calcuateMidSize( minSize: number, maxSize: number): number {
+  return Math.round(( maxSize - minSize) / 2);
 }

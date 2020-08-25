@@ -166,7 +166,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         else {
             maxSize = oldSizeVariable.maxSize;
         }
-        var midSize = Math.round((maxSize - minSize) / 2);
+        var midSize = calcuateMidSize(minSize, maxSize);
         var minMidDataValue = midDataValue - ((midDataValue - min) / 2);
         var maxMidDataValue = ((max - midDataValue) / 2) + midDataValue;
         var stops = [
@@ -183,5 +183,9 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         sizeVariable.stops = stops;
     }
     exports.updateVariableToAboveAndBelowTheme = updateVariableToAboveAndBelowTheme;
+    function calcuateMidSize(minSize, maxSize) {
+        return Math.round((maxSize - minSize) / 2);
+    }
+    exports.calcuateMidSize = calcuateMidSize;
 });
 //# sourceMappingURL=sizeRendererUtils.js.map
