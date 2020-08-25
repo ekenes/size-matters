@@ -7,6 +7,7 @@ import { calculateHistogram } from "./statUtils";
 import { getVisualVariableByType } from "./rendererUtils";
 import { updateRendererFromSizeSlider, calcuateMidSize } from "./sizeRendererUtils";
 import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
+import { LayerVars } from "./layerUtils";
 
 export class SliderVars {
   public static slider: SizeSlider = null;
@@ -60,17 +61,15 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromSizeSlider(layer.renderer as esri.RendererWithVisualVariables, SliderVars.slider);
-      layer.renderer = newRenderer;
+      const newRenderer = updateRendererFromSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.slider);
+      LayerVars.layer.renderer = newRenderer;
     });
   } else {
     (SliderVars.slider.container as HTMLElement).style.display = "block";
     SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
   }
 
-
   updateSymbolSizesSlider({ layer, values: symbolSizeSliderValues });
-
 }
 
 interface CreateColorSizeSliderParams {
@@ -102,8 +101,8 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromColorSizeSlider(layer.renderer as esri.RendererWithVisualVariables, SliderVars.colorSizeSlider);
-      layer.renderer = newRenderer;
+      const newRenderer = updateRendererFromColorSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.colorSizeSlider);
+      LayerVars.layer.renderer = newRenderer;
     });
   } else {
     (SliderVars.colorSizeSlider.container as HTMLElement).style.display = "block";
@@ -134,7 +133,7 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
       }
     });
     SliderVars.symbolSizesSlider.watch("values", function(values){
-      const renderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
+      const renderer = (LayerVars.layer.renderer as esri.RendererWithVisualVariables).clone();
       const sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
       const { stops, minSize, maxSize } = sizeVariable;
 
@@ -150,7 +149,7 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
         sizeVariable.maxSize = values[1];
       }
 
-      layer.renderer = renderer;
+      LayerVars.layer.renderer = renderer;
     });
   } else {
     SliderVars.symbolSizesSlider.values = values;
@@ -186,10 +185,10 @@ export async function updateOpacitySlider(params: CreateOpacitySliderParams) {
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
+      const newRenderer = (LayerVars.layer.renderer as esri.RendererWithVisualVariables).clone();
       const opacityVariable = getVisualVariableByType(newRenderer, "opacity") as esri.OpacityVariable;
       opacityVariable.stops = SliderVars.opacitySlider.stops;
-      layer.renderer = newRenderer;
+      LayerVars.layer.renderer = newRenderer;
     });
   } else {
     (SliderVars.opacitySlider.container as HTMLElement).style.display = "block";

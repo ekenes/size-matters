@@ -34,23 +34,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/layers/FeatureLayer", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, FeatureLayer, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
-        function getUrlParams() {
-            var queryParams = document.location.search.substr(1);
-            var result = {};
-            queryParams.split("&").forEach(function (part) {
-                var item = part.split("=");
-                result[item[0]] = decodeURIComponent(item[1]);
-            });
-            return result;
-        }
-        // function to set an id as a url param
-        function setUrlParams() {
-            window.history.pushState("", "", window.location.pathname + "?id=" + id + "&layerId=" + layerId + "&portal=" + portal);
-        }
         function inputChange() {
             var field = fieldsSelect.value;
             var normalizationField = normalizationFieldSelect.value;
@@ -80,44 +67,11 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             themeSelect.value = "high-to-low";
             styleSelect.value = "size";
         }
-        var _a, id, portal, layerId, url, layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
-                    _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId, url = _a.url;
-                    layer = null;
-                    if (!url) {
-                        if (!id) {
-                            id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
-                        }
-                        if (!layerId) {
-                            layerId = 0;
-                        }
-                        if (!portal) {
-                            portal = "https://www.arcgis.com/";
-                        }
-                        setUrlParams();
-                        layer = new FeatureLayer({
-                            portalItem: {
-                                id: id,
-                                portal: {
-                                    url: portal
-                                }
-                            },
-                            layerId: layerId
-                        });
-                    }
-                    else {
-                        portal = null;
-                        id = null;
-                        layerId = null;
-                        layer = new FeatureLayer({
-                            url: url
-                        });
-                    }
-                    layer.opacity = 1;
-                    layer.minScale = 0;
-                    layer.maxScale = 0;
+                    layer = layerUtils_1.createLayer();
                     webmap = new WebMap({
                         basemap: {
                             portalItem: {
@@ -151,21 +105,21 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     view.ui.add("save-map", "top-left");
                     return [4 /*yield*/, view.when()];
                 case 1:
-                    _b.sent();
+                    _a.sent();
                     return [4 /*yield*/, layer.when()];
                 case 2:
-                    _b.sent();
+                    _a.sent();
                     saveBtn = document.getElementById("save-map");
                     originalRenderer = layer.renderer.clone();
                     return [4 /*yield*/, layer.queryExtent()];
                 case 3:
-                    extent = (_b.sent()).extent;
+                    extent = (_a.sent()).extent;
                     view.extent = extent;
                     fieldContainer = document.getElementById("field-container");
                     normalizationFieldContainer = document.getElementById("normalization-field-container");
                     return [4 /*yield*/, layerUtils_1.getNumberFields(layer)];
                 case 4:
-                    numberFields = _b.sent();
+                    numberFields = _a.sent();
                     fieldsSelect = layerUtils_1.createFieldSelect(numberFields);
                     fieldContainer.appendChild(fieldsSelect);
                     normalizationFieldSelect = layerUtils_1.createFieldSelect(numberFields);

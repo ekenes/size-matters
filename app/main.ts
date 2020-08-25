@@ -8,77 +8,12 @@ import BasemapGallery = require("esri/widgets/BasemapGallery");
 import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
-import { getNumberFields, createFieldSelect } from './layerUtils';
+import { getNumberFields, createFieldSelect, createLayer } from './layerUtils';
 import { updateRenderer ,SizeParams } from './rendererUtils';
-import { SliderVars } from './sliderUtils';
 
 ( async () => {
 
-  // function to retrieve query parameters (in this case only id)
-  interface UrlParams {
-    id?: string,
-    portal?: string,
-    layerId?: string | number,
-    url?: string
-  }
-
-  function getUrlParams() {
-    const queryParams = document.location.search.substr(1);
-    let result: UrlParams = {};
-
-    queryParams.split("&").forEach(function(part) {
-      var item = part.split("=");
-      result[item[0]] = decodeURIComponent(item[1]);
-    });
-
-    return result;
-  }
-
-  let { id, portal, layerId, url } = getUrlParams();
-  let layer: FeatureLayer = null;
-
-  // function to set an id as a url param
-  function setUrlParams() {
-    window.history.pushState("", "", `${window.location.pathname}?id=${id}&layerId=${layerId}&portal=${portal}`);
-  }
-
-  if(!url){
-    if(!id){
-      id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
-    }
-
-    if(!layerId){
-      layerId = 0;
-    }
-
-    if(!portal){
-      portal = "https://www.arcgis.com/";
-    }
-
-    setUrlParams();
-
-    layer = new FeatureLayer({
-      portalItem: {
-        id,
-        portal: {
-          url: portal
-        }
-      },
-      layerId: layerId as number
-    });
-  } else {
-    portal = null;
-    id = null;
-    layerId = null;
-
-    layer = new FeatureLayer({
-      url
-    });
-  }
-
-  layer.opacity = 1;
-  layer.minScale = 0;
-  layer.maxScale = 0;
+  const layer = createLayer();
 
   const webmap = new WebMap({
     basemap: {

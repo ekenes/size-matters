@@ -34,9 +34,68 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", "esri/layers/FeatureLayer"], function (require, exports, FeatureLayer) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var LayerVars = /** @class */ (function () {
+        function LayerVars() {
+        }
+        LayerVars.layer = null;
+        return LayerVars;
+    }());
+    exports.LayerVars = LayerVars;
+    function getUrlParams() {
+        var queryParams = document.location.search.substr(1);
+        var result = {};
+        queryParams.split("&").forEach(function (part) {
+            var item = part.split("=");
+            result[item[0]] = decodeURIComponent(item[1]);
+        });
+        return result;
+    }
+    var layer = null;
+    // function to set an id as a url param
+    function setUrlParams(id, layerId, portal) {
+        window.history.pushState("", "", window.location.pathname + "?id=" + id + "&layerId=" + layerId + "&portal=" + portal);
+    }
+    function createLayer() {
+        var _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId, url = _a.url;
+        if (!url) {
+            if (!id) {
+                id = "cb1886ff0a9d4156ba4d2fadd7e8a139";
+            }
+            if (!layerId) {
+                layerId = 0;
+            }
+            if (!portal) {
+                portal = "https://www.arcgis.com/";
+            }
+            setUrlParams(id, layerId, portal);
+            layer = new FeatureLayer({
+                portalItem: {
+                    id: id,
+                    portal: {
+                        url: portal
+                    }
+                },
+                layerId: layerId
+            });
+        }
+        else {
+            portal = null;
+            id = null;
+            layerId = null;
+            layer = new FeatureLayer({
+                url: url
+            });
+        }
+        layer.opacity = 1;
+        layer.minScale = 0;
+        layer.maxScale = 0;
+        LayerVars.layer = layer;
+        return layer;
+    }
+    exports.createLayer = createLayer;
     function getNumberFields(layer) {
         return __awaiter(this, void 0, void 0, function () {
             var validTypes;

@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils"], function (require, exports, SizeSlider, ColorSizeSlider, Slider, OpacitySlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, Slider, OpacitySlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
@@ -85,8 +85,8 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(layer.renderer, SliderVars.slider);
-                                layer.renderer = newRenderer;
+                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(layerUtils_1.LayerVars.layer.renderer, SliderVars.slider);
+                                layerUtils_1.LayerVars.layer.renderer = newRenderer;
                             });
                         }
                         else {
@@ -125,8 +125,8 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = colorSizeRendererUtils_1.updateRendererFromColorSizeSlider(layer.renderer, SliderVars.colorSizeSlider);
-                                layer.renderer = newRenderer;
+                                var newRenderer = colorSizeRendererUtils_1.updateRendererFromColorSizeSlider(layerUtils_1.LayerVars.layer.renderer, SliderVars.colorSizeSlider);
+                                layerUtils_1.LayerVars.layer.renderer = newRenderer;
                             });
                         }
                         else {
@@ -156,7 +156,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                 }
             });
             SliderVars.symbolSizesSlider.watch("values", function (values) {
-                var renderer = layer.renderer.clone();
+                var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
                 var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
                 var stops = sizeVariable.stops, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize;
                 if (stops && stops.length > 0) {
@@ -171,7 +171,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                     sizeVariable.minSize = values[0];
                     sizeVariable.maxSize = values[1];
                 }
-                layer.renderer = renderer;
+                layerUtils_1.LayerVars.layer.renderer = renderer;
             });
         }
         else {
@@ -203,10 +203,10 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = layer.renderer.clone();
+                                var newRenderer = layerUtils_1.LayerVars.layer.renderer.clone();
                                 var opacityVariable = rendererUtils_1.getVisualVariableByType(newRenderer, "opacity");
                                 opacityVariable.stops = SliderVars.opacitySlider.stops;
-                                layer.renderer = newRenderer;
+                                layerUtils_1.LayerVars.layer.renderer = newRenderer;
                             });
                         }
                         else {
