@@ -2,7 +2,6 @@ import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
 import OpacityStop = require("esri/renderers/visualVariables/support/OpacityStop");
 import OpacityVariable = require("esri/renderers/visualVariables/OpacityVariable");
-import lang = require("esri/core/lang");
 
 import { updateSizeSlider, updateOpacitySlider, updateOpacityValuesSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";

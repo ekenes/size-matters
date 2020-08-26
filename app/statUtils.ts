@@ -1,7 +1,6 @@
 import esri = __esri;
 import histogram = require("esri/smartMapping/statistics/histogram");
 import classBreaks = require("esri/smartMapping/statistics/classBreaks");
-import { symmetricDifference } from "esri/geometry/geometryEngine";
 
 interface StatParams {
   layer: esri.FeatureLayer,

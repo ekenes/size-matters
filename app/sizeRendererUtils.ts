@@ -1,13 +1,9 @@
 import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
 import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
-import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
-import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
 import { updateSizeSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { SimpleMarkerSymbol } from "esri/symbols";
-import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
 import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 

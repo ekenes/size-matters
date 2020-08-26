@@ -3,7 +3,6 @@ import SizeSlider = require("esri/widgets/smartMapping/SizeSlider");
 import ColorSizeSlider = require("esri/widgets/smartMapping/ColorSizeSlider");
 import Slider = require("esri/widgets/Slider");
 import OpacitySlider = require("esri/widgets/smartMapping/OpacitySlider");
-import OpacityStop = require("esri/renderers/visualVariables/support/OpacityStop");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 import Color = require("esri/Color");
 
@@ -12,9 +11,8 @@ import { getVisualVariableByType, SizeParams, getSizeRendererColor } from "./ren
 import { updateRendererFromSizeSlider, calcuateMidSize } from "./sizeRendererUtils";
 import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
 import { LayerVars } from "./layerUtils";
-import { RendererWithVisualVariables } from "esri/renderers";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { CIMSymbol, MarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol } from "esri/symbols";
+import { CIMSymbol, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol } from "esri/symbols";
 
 export class SliderVars {
   public static slider: SizeSlider = null;

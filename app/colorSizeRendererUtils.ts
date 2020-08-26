@@ -1,7 +1,5 @@
 import esri = __esri;
 import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariateColorSize");
-import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
-import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 import colorRamps = require("esri/smartMapping/symbology/support/colorRamps");
 import Color = require("esri/Color");
 import symbolUtils = require("esri/symbols/support/symbolUtils");
@@ -12,8 +10,6 @@ import { calculate9010Percentile, PercentileStats } from "./statUtils";
 import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { SimpleMarkerSymbol } from "esri/symbols";
-import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
 import { LayerVars } from "./layerUtils";
 
 export const useDonutsElement = document.getElementById("use-donuts") as HTMLInputElement;

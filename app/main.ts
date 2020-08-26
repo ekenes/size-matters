@@ -3,15 +3,12 @@ import WebMap = require("esri/WebMap");
 import MapView = require("esri/views/MapView");
 
 import Expand = require("esri/widgets/Expand");
-import FeatureLayer = require("esri/layers/FeatureLayer");
 import BasemapGallery = require("esri/widgets/BasemapGallery");
 import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
-import { getNumberFields, createFieldSelect, createLayer, LayerVars } from './layerUtils';
-import { updateRenderer ,SizeParams, getSizeRendererColor } from './rendererUtils';
-import { colorPicker } from "./sliderUtils";
-import { ClassBreaksRenderer } from "esri/rasterRenderers";
+import { getNumberFields, createFieldSelect, createLayer } from './layerUtils';
+import { updateRenderer ,SizeParams } from './rendererUtils';
 
 ( async () => {
 
