@@ -162,6 +162,54 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         });
     }
     exports.updateColorSizeSlider = updateColorSizeSlider;
+    function updateColorSizeSliderColors(colorVariable) {
+        SliderVars.colorSizeSlider.stops.forEach(function (stop, i) {
+            stop.color = colorVariable.stops[i].color;
+        });
+    }
+    exports.updateColorSizeSliderColors = updateColorSizeSliderColors;
+    function updateColorSizeSliderSizes(sizeVariable) {
+        var minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize, stops = sizeVariable.stops;
+        if (stops && stops.length > 0) {
+            SliderVars.colorSizeSlider.stops.forEach(function (stop, i) {
+                stop.size = sizeVariable.stops[i].size;
+            });
+        }
+        else {
+            var lastIndex_1 = SliderVars.colorSizeSlider.stops.length - 1;
+            SliderVars.colorSizeSlider.stops.forEach(function (stop, i) {
+                if (i === 0) {
+                    stop.size = minSize;
+                }
+                else if (i === lastIndex_1) {
+                    stop.size = maxSize;
+                }
+                else {
+                    stop.size = null;
+                }
+            });
+        }
+    }
+    exports.updateColorSizeSliderSizes = updateColorSizeSliderSizes;
+    function updateSizeSliderSizes(sizeVariable) {
+        var minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize, stops = sizeVariable.stops;
+        if (stops && stops.length > 0) {
+            SliderVars.slider.stops.forEach(function (stop, i) {
+                stop.size = sizeVariable.stops[i].size;
+            });
+        }
+        else {
+            SliderVars.slider.stops[0].size = minSize;
+            SliderVars.slider.stops[1].size = maxSize;
+        }
+    }
+    exports.updateSizeSliderSizes = updateSizeSliderSizes;
+    function updateOpacitySliderValues(opacityVariable) {
+        SliderVars.opacitySlider.stops.forEach(function (stop, i) {
+            stop.opacity = opacityVariable.stops[i].opacity;
+        });
+    }
+    exports.updateOpacitySliderValues = updateOpacitySliderValues;
     function updateSymbolSizesSlider(params) {
         var values = params.values;
         if (!SliderVars.symbolSizesSlider) {
@@ -197,6 +245,12 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                     sizeVariable.maxSize = values[1];
                 }
                 layerUtils_1.LayerVars.layer.renderer = renderer;
+                if (layerUtils_1.LayerVars.layer.renderer.authoringInfo.type === "univariate-color-size") {
+                    updateColorSizeSliderSizes(sizeVariable);
+                }
+                else {
+                    updateSizeSliderSizes(sizeVariable);
+                }
             });
         }
         else {
@@ -269,6 +323,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                 stops[0].opacity = minOpacity;
                 stops[1].opacity = maxOpacity;
                 layerUtils_1.LayerVars.layer.renderer = renderer;
+                updateOpacitySliderValues(opacityVariable);
             });
         }
         else {

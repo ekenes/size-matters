@@ -147,6 +147,50 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
   updateSymbolSizesSlider({ values: symbolSizeSliderValues });
 }
 
+export function updateColorSizeSliderColors(colorVariable: esri.ColorVariable){
+  SliderVars.colorSizeSlider.stops.forEach( (stop, i) => {
+    stop.color = colorVariable.stops[i].color
+  });
+}
+
+export function updateColorSizeSliderSizes(sizeVariable: esri.SizeVariable){
+  const { minSize, maxSize, stops } = sizeVariable;
+  if(stops && stops.length > 0){
+    SliderVars.colorSizeSlider.stops.forEach( (stop, i) => {
+      stop.size = sizeVariable.stops[i].size
+    });
+  } else {
+    const lastIndex = SliderVars.colorSizeSlider.stops.length - 1;
+    SliderVars.colorSizeSlider.stops.forEach( (stop, i) => {
+      if(i === 0){
+        stop.size = minSize as number;
+      } else if(i === lastIndex){
+        stop.size = maxSize as number;
+      } else {
+        stop.size = null;
+      }
+    });
+  }
+}
+
+export function updateSizeSliderSizes(sizeVariable: esri.SizeVariable){
+  const { minSize, maxSize, stops } = sizeVariable;
+  if(stops && stops.length > 0){
+    SliderVars.slider.stops.forEach( (stop, i) => {
+      stop.size = sizeVariable.stops[i].size
+    });
+  } else {
+    SliderVars.slider.stops[0].size = minSize as number;
+    SliderVars.slider.stops[1].size = maxSize as number;
+  }
+}
+
+export function updateOpacitySliderValues(opacityVariable: esri.OpacityVariable){
+  SliderVars.opacitySlider.stops.forEach( (stop, i) => {
+    stop.opacity = opacityVariable.stops[i].opacity
+  });
+}
+
 interface UpdateSymbolSizesSlider {
   values: number[]
 }
@@ -187,6 +231,12 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
       }
 
       LayerVars.layer.renderer = renderer;
+
+      if (LayerVars.layer.renderer.authoringInfo.type === "univariate-color-size"){
+        updateColorSizeSliderSizes(sizeVariable);
+      } else {
+        updateSizeSliderSizes(sizeVariable);
+      }
     });
   } else {
     SliderVars.symbolSizesSlider.values = values;
@@ -261,6 +311,7 @@ export function updateOpacityValuesSlider(params: UpdateSymbolSizesSlider){
       stops[1].opacity = maxOpacity;
 
       LayerVars.layer.renderer = renderer;
+      updateOpacitySliderValues(opacityVariable);
     });
   } else {
     SliderVars.opacityValuesSlider.values = values;

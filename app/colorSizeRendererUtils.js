@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/core/lang", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, colorSizeRendererCreator, lang, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/smartMapping/symbology/support/colorRamps", "esri/symbols/support/symbolUtils", "esri/core/lang", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./layerUtils"], function (require, exports, colorSizeRendererCreator, colorRamps, symbolUtils, lang, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.useDonutsElement = document.getElementById("use-donuts");
@@ -67,6 +67,7 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         return [4 /*yield*/, colorSizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
+                        result.renderer.authoringInfo.type = "univariate-color-size";
                         rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
                         sliderUtils_1.colorPicker.value = rendererColor.toHex();
                         return [4 /*yield*/, statUtils_1.calculate9010Percentile({
@@ -94,6 +95,7 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                             })];
                     case 3:
                         _a.sent();
+                        createColorRamps(theme);
                         return [2 /*return*/, result];
                 }
             });
@@ -128,53 +130,90 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
         renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, colorVariable]);
         return renderer.visualVariables; //[sizeVariable, colorVariable];
     }
+    // function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+    //   colorVariable.minDataValue = stats.avg;
+    // }
+    // function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+    //   colorVariable.flipSizes();
+    //   colorVariable.maxDataValue = stats.avg;
+    // }
+    // function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
+    //   colorVariable.minDataValue = stats["10"];
+    //   colorVariable.maxDataValue = stats["90"];
+    // }
+    // function updateColorVariableToAboveAndBelowTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+    //   const { min, max, avg, stddev } = stats;
+    //   const oldSizeVariable = colorVariable.clone();
+    //   const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+    //   let minSize: number, maxSize: number = null;
+    //   if( typeof oldSizeVariable.minSize === "object"){
+    //     const stops = oldSizeVariable.minSize.stops;
+    //     const numStops = stops.length;
+    //     const midIndex = Math.floor(numStops/2);
+    //     minSize = stops[midIndex].size;
+    //   } else {
+    //     minSize = oldSizeVariable.minSize;
+    //   }
+    //   if( typeof oldSizeVariable.maxSize === "object"){
+    //     const stops = oldSizeVariable.maxSize.stops;
+    //     const numStops = stops.length;
+    //     const midIndex = Math.floor(numStops/2);
+    //     maxSize = stops[midIndex].size;
+    //   } else {
+    //     maxSize = oldSizeVariable.maxSize;
+    //   }
+    //   const midSize = Math.round(( maxSize - minSize) / 2);
+    //   const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
+    //   const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
+    //   const stops = [
+    //     new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
+    //     new SizeStop({ value: minMidDataValue, size: midSize }),
+    //     new SizeStop({ value: midDataValue, size: minSize }),
+    //     new SizeStop({ value: maxMidDataValue, size: midSize }),
+    //     new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
+    //   ];
+    //   sizeVariable.minDataValue = null;
+    //   sizeVariable.maxDataValue = null;
+    //   sizeVariable.minSize = null;
+    //   sizeVariable.maxSize = null;
+    //   sizeVariable.stops = stops;
+    // }
+    var colorRampsElement = document.getElementById("color-ramps");
+    function createColorRamps(theme) {
+        colorRampsElement.innerHTML = null;
+        var excludedTags = ["extremes", "heatmap", "point-cloud", "categorical", "centered-on"];
+        var ramps = colorRamps.byTag({
+            includedTags: theme === "above-and-below" ? ["diverging"] : ["sequential"],
+            excludedTags: theme === "above-and-below" ? excludedTags : excludedTags.concat(["diverging"])
+        });
+        ramps.sort(function (a, b) {
+            return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+        });
+        ramps.forEach(function (ramp) {
+            var rampElement = symbolUtils.renderColorRampPreviewHTML(ramp.colors, {
+                align: "vertical",
+                gradient: true,
+                width: 10,
+                height: 30
+            });
+            var rampContainer = document.createElement("div");
+            rampContainer.classList.add("ramps");
+            rampContainer.title = ramp.name;
+            rampContainer.appendChild(rampElement);
+            rampContainer.addEventListener("click", function (event) {
+                updateColorVariableRamp(ramp.colors);
+            });
+            colorRampsElement.appendChild(rampContainer);
+        });
+    }
+    function updateColorVariableRamp(colors) {
+        var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
+        var colorVariable = rendererUtils_1.getVisualVariableByType(renderer, "color");
+        colorVariable.stops.forEach(function (stop, i) {
+            stop.color = colors[i];
+        });
+        layerUtils_1.LayerVars.layer.renderer = renderer;
+        sliderUtils_1.updateColorSizeSliderColors(colorVariable);
+    }
 });
-// function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-//   colorVariable.minDataValue = stats.avg;
-// }
-// function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-//   colorVariable.flipSizes();
-//   colorVariable.maxDataValue = stats.avg;
-// }
-// function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
-//   colorVariable.minDataValue = stats["10"];
-//   colorVariable.maxDataValue = stats["90"];
-// }
-// function updateColorVariableToAboveAndBelowTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-//   const { min, max, avg, stddev } = stats;
-//   const oldSizeVariable = colorVariable.clone();
-//   const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
-//   let minSize: number, maxSize: number = null;
-//   if( typeof oldSizeVariable.minSize === "object"){
-//     const stops = oldSizeVariable.minSize.stops;
-//     const numStops = stops.length;
-//     const midIndex = Math.floor(numStops/2);
-//     minSize = stops[midIndex].size;
-//   } else {
-//     minSize = oldSizeVariable.minSize;
-//   }
-//   if( typeof oldSizeVariable.maxSize === "object"){
-//     const stops = oldSizeVariable.maxSize.stops;
-//     const numStops = stops.length;
-//     const midIndex = Math.floor(numStops/2);
-//     maxSize = stops[midIndex].size;
-//   } else {
-//     maxSize = oldSizeVariable.maxSize;
-//   }
-//   const midSize = Math.round(( maxSize - minSize) / 2);
-//   const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
-//   const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
-//   const stops = [
-//     new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
-//     new SizeStop({ value: minMidDataValue, size: midSize }),
-//     new SizeStop({ value: midDataValue, size: minSize }),
-//     new SizeStop({ value: maxMidDataValue, size: midSize }),
-//     new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
-//   ];
-//   sizeVariable.minDataValue = null;
-//   sizeVariable.maxDataValue = null;
-//   sizeVariable.minSize = null;
-//   sizeVariable.maxSize = null;
-//   sizeVariable.stops = stops;
-// }
 //# sourceMappingURL=colorSizeRendererUtils.js.map

@@ -41,6 +41,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     var symbolColorContainer = document.getElementById("symbol-color-container");
     var sizeOptionsElement = document.getElementById("size-options");
     var opacityOptionsElement = document.getElementById("opacity-options");
+    var colorRampsElement = document.getElementById("color-ramps");
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, theme, style, result, _a;
@@ -74,6 +75,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         useDonutsParentElement.style.display = "none";
                         symbolColorContainer.style.display = "block";
                         opacityOptionsElement.style.display = "none";
+                        colorRampsElement.style.display = "none";
                         return [3 /*break*/, 8];
                     case 3:
                         if (sliderUtils_1.SliderVars.slider) {
@@ -91,6 +93,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         }
                         symbolColorContainer.style.display = "none";
                         opacityOptionsElement.style.display = "none";
+                        colorRampsElement.style.display = "flex";
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
                     case 4:
                         result = _b.sent();
@@ -104,6 +107,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         symbolColorContainer.style.display = "block";
                         useDonutsParentElement.style.display = "none";
                         opacityOptionsElement.style.display = "flex";
+                        colorRampsElement.style.display = "none";
                         return [4 /*yield*/, opacitySizeRendererUtils_1.createOpacitySizeRenderer(params)];
                     case 6:
                         result = _b.sent();

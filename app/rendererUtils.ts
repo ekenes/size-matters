@@ -21,6 +21,7 @@ const useDonutsParentElement = document.getElementById("use-donuts-parent") as H
 const symbolColorContainer = document.getElementById("symbol-color-container") as HTMLDivElement;
 const sizeOptionsElement = document.getElementById("size-options") as HTMLDivElement;
 const opacityOptionsElement = document.getElementById("opacity-options") as HTMLDivElement;
+const colorRampsElement = document.getElementById("color-ramps") as HTMLDivElement;
 
 export async function updateRenderer(params: SizeParams){
   const { layer, theme } = params;
@@ -44,6 +45,7 @@ export async function updateRenderer(params: SizeParams){
       useDonutsParentElement.style.display = "none";
       symbolColorContainer.style.display = "block";
       opacityOptionsElement.style.display = "none";
+      colorRampsElement.style.display = "none";
       break;
     case "color-and-size":
       if(SliderVars.slider){
@@ -61,6 +63,7 @@ export async function updateRenderer(params: SizeParams){
       }
       symbolColorContainer.style.display = "none";
       opacityOptionsElement.style.display = "none";
+      colorRampsElement.style.display = "flex";
       result = await createColorSizeRenderer(params);
       break;
     case "opacity-and-size":
@@ -72,7 +75,7 @@ export async function updateRenderer(params: SizeParams){
       symbolColorContainer.style.display = "block";
       useDonutsParentElement.style.display = "none";
       opacityOptionsElement.style.display = "flex";
-
+      colorRampsElement.style.display = "none";
       result = await createOpacitySizeRenderer(params);
       break;
     default:

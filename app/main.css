@@ -69,6 +69,21 @@ body,
   display: none;
 }
 
+.ramps{
+  padding: 4px;
+  float: left;
+  cursor: pointer;
+}
+
+#color-ramps{
+  height: 150px;
+  width: 300px;
+  flex-wrap: wrap;
+  overflow: auto;
+  background-color: white;
+  padding: 5px;
+}
+
 /* #symbol-color-container {
   display: none;
 }

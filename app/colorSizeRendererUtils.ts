@@ -2,15 +2,19 @@ import esri = __esri;
 import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariateColorSize");
 import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
+import colorRamps = require("esri/smartMapping/symbology/support/colorRamps");
+import Color = require("esri/Color");
+import symbolUtils = require("esri/symbols/support/symbolUtils");
 import lang = require("esri/core/lang");
 
-import { updateColorSizeSlider, colorPicker } from "./sliderUtils";
+import { updateColorSizeSlider, colorPicker, SliderVars, updateColorSizeSliderColors } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
 import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { SimpleMarkerSymbol } from "esri/symbols";
 import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
+import { LayerVars } from "./layerUtils";
 
 export const useDonutsElement = document.getElementById("use-donuts") as HTMLInputElement;
 
@@ -43,6 +47,7 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
   params.theme = invalidColorThemes.indexOf(theme) > -1 ? "high-to-low" : params.theme;
 
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
+  result.renderer.authoringInfo.type = "univariate-color-size";
 
   const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);
   colorPicker.value = rendererColor.toHex();
@@ -73,6 +78,8 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
     view: view as esri.MapView,
     rendererResult: result
   });
+
+  createColorRamps(theme);
 
   return result;
 }
@@ -173,3 +180,51 @@ function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizePa
 
 //   sizeVariable.stops = stops;
 // }
+
+
+const colorRampsElement = document.getElementById("color-ramps") as HTMLDivElement;
+
+function createColorRamps(theme: SizeParams["theme"]){
+  colorRampsElement.innerHTML = null;
+  const excludedTags = [ "extremes", "heatmap", "point-cloud", "categorical", "centered-on" ];
+
+  const ramps = colorRamps.byTag({
+    includedTags: theme === "above-and-below" ? [ "diverging" ] : ["sequential"],
+    excludedTags: theme === "above-and-below" ? excludedTags : excludedTags.concat(["diverging"])
+  });
+
+  ramps.sort(function(a, b) {
+    return a.name.localeCompare(b.name, undefined, {numeric: true, sensitivity: 'base'});
+  });
+
+  ramps.forEach((ramp) => {
+
+    const rampElement = symbolUtils.renderColorRampPreviewHTML(ramp.colors, {
+      align: "vertical",
+      gradient: true,
+      width: 10,
+      height: 30
+    });
+
+    const rampContainer = document.createElement("div");
+    rampContainer.classList.add("ramps");
+    rampContainer.title = ramp.name;
+    rampContainer.appendChild(rampElement);
+    rampContainer.addEventListener("click", (event) => {
+      updateColorVariableRamp(ramp.colors);
+    });
+    colorRampsElement.appendChild(rampContainer);
+  });
+}
+
+function updateColorVariableRamp(colors: Color[]) {
+  const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
+
+  const colorVariable = getVisualVariableByType(renderer, "color") as esri.ColorVariable;
+  colorVariable.stops.forEach( (stop, i) => {
+    stop.color = colors[i];
+  });
+
+  LayerVars.layer.renderer = renderer;
+  updateColorSizeSliderColors(colorVariable);
+}
