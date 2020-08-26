@@ -31,23 +31,30 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
     container: "viewDiv"
   });
 
-  view.ui.add("ui-controls", "top-right");
+  view.ui.add(new Expand({
+    view,
+    expanded: true,
+    content: document.getElementById("ui-controls")
+  }), "top-right");
 
   const basemapGallery = new BasemapGallery({ view });
   view.ui.add( new Expand({
     content: basemapGallery,
     expanded: false,
-    group: "top-left"
+    group: "top-left",
+    view
   }), "top-left");
   view.ui.add( new Expand({
     content: new Legend({ view }),
     expanded: false,
-    group: "top-left"
+    group: "top-left",
+    view
   }), "bottom-left");
   const sliderExpand = new Expand({
     expanded: true,
     content: document.getElementById("sliders-container"),
-    group: "top-left"
+    group: "top-left",
+    view
   });
   view.ui.add(sliderExpand, "top-left");
   view.ui.add("save-map", "top-left");

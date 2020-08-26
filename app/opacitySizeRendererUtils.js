@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderers/visualVariables/support/OpacityStop", "esri/renderers/visualVariables/OpacityVariable", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, sizeRendererCreator, OpacityStop, OpacityVariable, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.opacityValuesContainer = document.getElementById("opacity-values-container");
     function updateRendererFromOpacitySlider(renderer, slider) {
         var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
         var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
@@ -55,7 +56,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     //////////////////////////////////////
     function createOpacitySizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, opacityVariable;
+            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, opacityVariable, opacityValues;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -78,8 +79,20 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         sizeVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "size");
                         opacityVariable = rendererUtils_1.getVisualVariableByType(result.renderer, "opacity");
                         result.visualVariables = sizeVariables;
+                        return [4 /*yield*/, sliderUtils_1.updateOpacitySlider({
+                                layer: layer,
+                                view: view,
+                                visualVariableResult: {
+                                    statistics: result.statistics,
+                                    visualVariable: opacityVariable,
+                                    defaultValuesUsed: false,
+                                    authoringInfo: result.renderer.authoringInfo
+                                }
+                            })];
+                    case 3:
+                        _a.sent();
                         if (theme === "above-and-below") {
-                            return [2 /*return*/];
+                            return [2 /*return*/, result];
                         }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
@@ -87,18 +100,10 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                                 rendererResult: result,
                                 theme: theme
                             })];
-                    case 3:
+                    case 4:
                         _a.sent();
-                        // await updateOpacitySlider({
-                        //   layer: layer as esri.FeatureLayer,
-                        //   view: view as esri.MapView,
-                        //   visualVariableResult: {
-                        //     statistics: result.statistics,
-                        //     visualVariable: opacityVariable,
-                        //     defaultValuesUsed: false,
-                        //     authoringInfo: result.renderer.authoringInfo
-                        //   }
-                        // });
+                        opacityValues = opacityVariable.stops.map(function (stop) { return stop.opacity; });
+                        sliderUtils_1.updateOpacityValuesSlider({ values: opacityValues });
                         return [2 /*return*/, result];
                 }
             });
@@ -152,16 +157,16 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
             stops: stops
         });
     }
-    var minOpacity = 0.2;
-    var maxOpacity = 1.0;
+    exports.minOpacity = 0.2;
+    exports.maxOpacity = 1.0;
     function createOpacityStopsWithHighToLowTheme(stats) {
         var max = stats.max, min = stats.min;
         return [
             new OpacityStop({
-                value: min, opacity: minOpacity
+                value: min, opacity: exports.minOpacity
             }),
             new OpacityStop({
-                value: max, opacity: maxOpacity
+                value: max, opacity: exports.maxOpacity
             })
         ];
     }
@@ -169,10 +174,10 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         var max = stats.max, avg = stats.avg;
         return [
             new OpacityStop({
-                value: avg, opacity: minOpacity
+                value: avg, opacity: exports.minOpacity
             }),
             new OpacityStop({
-                value: max, opacity: maxOpacity
+                value: max, opacity: exports.maxOpacity
             })
         ];
     }
@@ -180,31 +185,31 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         var min = stats.min, avg = stats.avg;
         return [
             new OpacityStop({
-                value: min, opacity: maxOpacity
+                value: min, opacity: exports.maxOpacity
             }),
             new OpacityStop({
-                value: avg, opacity: minOpacity
+                value: avg, opacity: exports.minOpacity
             })
         ];
     }
     function createOpacityStopsWith9010Theme(stats) {
         return [
             new OpacityStop({
-                value: stats["10"], opacity: minOpacity
+                value: stats["10"], opacity: exports.minOpacity
             }),
             new OpacityStop({
-                value: stats["90"], opacity: maxOpacity
+                value: stats["90"], opacity: exports.maxOpacity
             })
         ];
     }
     function createOpacityStopsWithAboveAndBelowTheme(stats) {
-        var max = stats.max, avg = stats.avg;
+        var max = stats.max, avg = stats.avg, stddev = stats.stddev;
         return [
             new OpacityStop({
-                value: avg, opacity: minOpacity
+                value: avg, opacity: exports.minOpacity
             }),
             new OpacityStop({
-                value: max, opacity: maxOpacity
+                value: avg + stddev, opacity: exports.maxOpacity
             })
         ];
     }
@@ -212,13 +217,13 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
         return [
             new OpacityStop({
-                value: min, opacity: maxOpacity
+                value: min, opacity: exports.maxOpacity
             }),
             new OpacityStop({
-                value: avg, opacity: minOpacity
+                value: avg, opacity: exports.minOpacity
             }),
             new OpacityStop({
-                value: max, opacity: maxOpacity
+                value: max, opacity: exports.maxOpacity
             })
         ];
     }
@@ -226,13 +231,13 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
         return [
             new OpacityStop({
-                value: min, opacity: minOpacity
+                value: min, opacity: exports.minOpacity
             }),
             new OpacityStop({
-                value: avg, opacity: maxOpacity
+                value: avg, opacity: exports.maxOpacity
             }),
             new OpacityStop({
-                value: max, opacity: minOpacity
+                value: max, opacity: exports.minOpacity
             })
         ];
     }

@@ -4,12 +4,13 @@ import OpacityStop = require("esri/renderers/visualVariables/support/OpacityStop
 import OpacityVariable = require("esri/renderers/visualVariables/OpacityVariable");
 import lang = require("esri/core/lang");
 
-import { updateSizeSlider, updateOpacitySlider, colorPicker } from "./sliderUtils";
+import { updateSizeSlider, updateOpacitySlider, updateOpacityValuesSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
 import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
+export const opacityValuesContainer = document.getElementById("opacity-values-container") as HTMLDivElement;
 
 export function updateRendererFromOpacitySlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
 
@@ -54,8 +55,19 @@ export async function createOpacitySizeRenderer(params: SizeParams): Promise<esr
   const opacityVariable = getVisualVariableByType(result.renderer, "opacity") as OpacityVariable;
   result.visualVariables = sizeVariables;
 
+  await updateOpacitySlider({
+    layer: layer as esri.FeatureLayer,
+    view: view as esri.MapView,
+    visualVariableResult: {
+      statistics: result.statistics,
+      visualVariable: opacityVariable,
+      defaultValuesUsed: false,
+      authoringInfo: result.renderer.authoringInfo
+    }
+  });
+
   if(theme === "above-and-below"){
-    return;
+    return result;
   }
 
   await updateSizeSlider({
@@ -65,16 +77,8 @@ export async function createOpacitySizeRenderer(params: SizeParams): Promise<esr
     theme
   });
 
-  // await updateOpacitySlider({
-  //   layer: layer as esri.FeatureLayer,
-  //   view: view as esri.MapView,
-  //   visualVariableResult: {
-  //     statistics: result.statistics,
-  //     visualVariable: opacityVariable,
-  //     defaultValuesUsed: false,
-  //     authoringInfo: result.renderer.authoringInfo
-  //   }
-  // });
+  const opacityValues = opacityVariable.stops.map( stop => stop.opacity );
+  updateOpacityValuesSlider({ values: opacityValues });
 
   return result;
 }
@@ -136,8 +140,8 @@ function createOpacityVariable(sizeVariable: esri.SizeVariable, stops: OpacitySt
   });
 }
 
-const minOpacity = 0.2;
-const maxOpacity = 1.0;
+export const minOpacity = 0.2;
+export const maxOpacity = 1.0;
 
 function createOpacityStopsWithHighToLowTheme( stats: esri.sizeContinuousRendererResult["statistics"] ): OpacityStop[] {
   const { max, min } = stats;
@@ -190,14 +194,14 @@ function createOpacityStopsWith9010Theme( stats: PercentileStats ): OpacityStop[
 }
 
 function createOpacityStopsWithAboveAndBelowTheme( stats: esri.sizeContinuousRendererResult["statistics"] ): OpacityStop[] {
-  const { max, avg } = stats;
+  const { max, avg, stddev } = stats;
 
   return [
     new OpacityStop({
       value: avg, opacity: minOpacity
     }),
     new OpacityStop({
-      value: max, opacity: maxOpacity
+      value: avg + stddev, opacity: maxOpacity
     })
   ];
 }

@@ -6,7 +6,7 @@ import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
 import { createSizeRenderer } from "./sizeRendererUtils";
 import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUtils";
 import { SliderVars } from "./sliderUtils";
-import { createOpacitySizeRenderer } from "./opacitySizeRendererUtils";
+import { createOpacitySizeRenderer, opacityValuesContainer } from "./opacitySizeRendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { SimpleMarkerSymbol } from "esri/symbols";
 import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
@@ -18,6 +18,9 @@ export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
 }
 
 const useDonutsParentElement = document.getElementById("use-donuts-parent") as HTMLDivElement;
+const symbolColorContainer = document.getElementById("symbol-color-container") as HTMLDivElement;
+const sizeOptionsElement = document.getElementById("size-options") as HTMLDivElement;
+const opacityOptionsElement = document.getElementById("opacity-options") as HTMLDivElement;
 
 export async function updateRenderer(params: SizeParams){
   const { layer, theme } = params;
@@ -39,6 +42,8 @@ export async function updateRenderer(params: SizeParams){
       }
       result = await createSizeRenderer(params);
       useDonutsParentElement.style.display = "none";
+      symbolColorContainer.style.display = "block";
+      opacityOptionsElement.style.display = "none";
       break;
     case "color-and-size":
       if(SliderVars.slider){
@@ -54,6 +59,8 @@ export async function updateRenderer(params: SizeParams){
       if(theme === "above-and-below"){
         useDonutsParentElement.style.display = "block";
       }
+      symbolColorContainer.style.display = "none";
+      opacityOptionsElement.style.display = "none";
       result = await createColorSizeRenderer(params);
       break;
     case "opacity-and-size":
@@ -62,13 +69,19 @@ export async function updateRenderer(params: SizeParams){
         SliderVars.colorSizeSlider.container = null;
         SliderVars.colorSizeSlider = null;
       }
+      symbolColorContainer.style.display = "block";
       useDonutsParentElement.style.display = "none";
+      opacityOptionsElement.style.display = "flex";
+
       result = await createOpacitySizeRenderer(params);
       break;
     default:
       // return variables without modifications
       break;
   }
+
+
+  sizeOptionsElement.style.display = "flex";
 
   layer.renderer = result.renderer.clone();
 }

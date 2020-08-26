@@ -3,6 +3,7 @@ import SizeSlider = require("esri/widgets/smartMapping/SizeSlider");
 import ColorSizeSlider = require("esri/widgets/smartMapping/ColorSizeSlider");
 import Slider = require("esri/widgets/Slider");
 import OpacitySlider = require("esri/widgets/smartMapping/OpacitySlider");
+import OpacityStop = require("esri/renderers/visualVariables/support/OpacityStop");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 import Color = require("esri/Color");
 
@@ -20,24 +21,26 @@ export class SliderVars {
   public static symbolSizesSlider: Slider = null;
   public static colorSizeSlider: ColorSizeSlider = null;
   public static opacitySlider: OpacitySlider = null;
+  public static opacityValuesSlider: Slider = null;
 }
 
 interface CreateSizeSliderParams {
   layer: esri.FeatureLayer,
   view: esri.MapView,
   rendererResult: esri.sizeContinuousRendererResult,
-  theme: SizeParams["theme"]
+  theme: SizeParams["theme"],
+  updateOpacity?: boolean
 }
 
 // const slidersContainer = document.getElementById("sliders-container");
 const sizeSlidersContainer = document.getElementById("size-slider-container");
 const opacitySlidersContainer = document.getElementById("opacity-slider-container");
 const symbolSizesContainer = document.getElementById("symbol-sizes");
-const sizeOptionsElement = document.getElementById("size-options") as HTMLDivElement;
+const opacityValuesContainer = document.getElementById("opacity-values");
 export const colorPicker = document.getElementById("color-picker") as HTMLInputElement;
 
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
-  const { layer, view, rendererResult } = params;
+  const { layer, view, rendererResult, updateOpacity, theme } = params;
 
   let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size") as esri.SizeVariable;
 
@@ -45,10 +48,10 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
   let symbolSizeSliderValues: number[] = [];
 
   if(stops && stops.length > 0){
-    const lastStop = stops[stops.length-1];
-    const firstStop = stops[0];
+    const maxStop = stops[stops.length-1];
+    const minStop = theme === "above-and-below" ? stops[2] : stops[0];
 
-    symbolSizeSliderValues = [ firstStop.size, lastStop.size ];
+    symbolSizeSliderValues = [ minStop.size, maxStop.size ];
   }
   if(minSize && maxSize){
     symbolSizeSliderValues = [ minSize as number, maxSize as number ];
@@ -71,6 +74,18 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
       "max-change"
     ] as any, () => {
       const newRenderer = updateRendererFromSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.slider);
+      // const sizeStops = SliderVars.slider.stops;
+
+      // if(updateOpacity){
+      //   const opacityVariable = getVisualVariableByType(newRenderer, "opacity") as esri.OpacityVariable;
+      //   opacityVariable.stops = sizeStops.map(
+      //     function(sizeStop){
+      //       return new OpacityStop({
+      //         value: sizeStop.value, opacity:
+      //       });
+      //     });
+
+      // }
       LayerVars.layer.renderer = newRenderer;
     });
   } else {
@@ -79,7 +94,6 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues });
-  sizeOptionsElement.style.display = "flex";
 }
 
 interface CreateColorSizeSliderParams {
@@ -218,6 +232,39 @@ export async function updateOpacitySlider(params: CreateOpacitySliderParams) {
     SliderVars.opacitySlider.updateFromVisualVariableResult(visualVariableResult, histogramResult);
   }
 
+}
+
+export function updateOpacityValuesSlider(params: UpdateSymbolSizesSlider){
+  const { values } = params;
+  if(!SliderVars.opacityValuesSlider){
+    SliderVars.opacityValuesSlider = new Slider({
+      values,
+      container: opacityValuesContainer,
+      min: 0,
+      max: 1,
+      steps: 0.05,
+      labelInputsEnabled: true,
+      rangeLabelInputsEnabled: true,
+      visibleElements: {
+        rangeLabels: true,
+        labels: true
+      }
+    });
+    SliderVars.opacityValuesSlider.watch("values", function(values: number[]){
+      const renderer = (LayerVars.layer.renderer as esri.RendererWithVisualVariables).clone();
+      const opacityVariable = getVisualVariableByType(renderer, "opacity") as esri.OpacityVariable;
+      let { stops } = opacityVariable;
+      const minOpacity = values[0];
+      const maxOpacity = values[1];
+
+      stops[0].opacity = minOpacity;
+      stops[1].opacity = maxOpacity;
+
+      LayerVars.layer.renderer = renderer;
+    });
+  } else {
+    SliderVars.opacityValuesSlider.values = values;
+  }
 }
 
 type SymbolWithColor = SimpleMarkerSymbol | SimpleLineSymbol | SimpleFillSymbol

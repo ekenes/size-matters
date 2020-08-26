@@ -38,6 +38,9 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var useDonutsParentElement = document.getElementById("use-donuts-parent");
+    var symbolColorContainer = document.getElementById("symbol-color-container");
+    var sizeOptionsElement = document.getElementById("size-options");
+    var opacityOptionsElement = document.getElementById("opacity-options");
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, theme, style, result, _a;
@@ -69,6 +72,8 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                     case 2:
                         result = _b.sent();
                         useDonutsParentElement.style.display = "none";
+                        symbolColorContainer.style.display = "block";
+                        opacityOptionsElement.style.display = "none";
                         return [3 /*break*/, 8];
                     case 3:
                         if (sliderUtils_1.SliderVars.slider) {
@@ -84,6 +89,8 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         if (theme === "above-and-below") {
                             useDonutsParentElement.style.display = "block";
                         }
+                        symbolColorContainer.style.display = "none";
+                        opacityOptionsElement.style.display = "none";
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
                     case 4:
                         result = _b.sent();
@@ -94,7 +101,9 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                             sliderUtils_1.SliderVars.colorSizeSlider.container = null;
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
                         }
+                        symbolColorContainer.style.display = "block";
                         useDonutsParentElement.style.display = "none";
+                        opacityOptionsElement.style.display = "flex";
                         return [4 /*yield*/, opacitySizeRendererUtils_1.createOpacitySizeRenderer(params)];
                     case 6:
                         result = _b.sent();
@@ -103,6 +112,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                     // return variables without modifications
                     return [3 /*break*/, 8];
                     case 8:
+                        sizeOptionsElement.style.display = "flex";
                         layer.renderer = result.renderer.clone();
                         return [2 /*return*/];
                 }
