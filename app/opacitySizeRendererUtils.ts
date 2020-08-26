@@ -4,10 +4,11 @@ import OpacityStop = require("esri/renderers/visualVariables/support/OpacityStop
 import OpacityVariable = require("esri/renderers/visualVariables/OpacityVariable");
 import lang = require("esri/core/lang");
 
-import { updateSizeSlider, updateOpacitySlider } from "./sliderUtils";
+import { updateSizeSlider, updateOpacitySlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { SizeParams, getVisualVariablesByType, getVisualVariableByType } from "./rendererUtils";
+import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
+import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 
 export function updateRendererFromOpacitySlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
@@ -38,6 +39,9 @@ export async function createOpacitySizeRenderer(params: SizeParams): Promise<esr
 
   let result = await sizeRendererCreator.createContinuousRenderer(params);
 
+  const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);
+  colorPicker.value = rendererColor.toHex();
+
   const percentileStats = await calculate9010Percentile({
     layer: layer as esri.FeatureLayer,
     view: view as esri.MapView,
@@ -57,19 +61,20 @@ export async function createOpacitySizeRenderer(params: SizeParams): Promise<esr
   await updateSizeSlider({
     layer: layer as esri.FeatureLayer,
     view: view as esri.MapView,
-    rendererResult: result
+    rendererResult: result,
+    theme
   });
 
-  await updateOpacitySlider({
-    layer: layer as esri.FeatureLayer,
-    view: view as esri.MapView,
-    visualVariableResult: {
-      statistics: result.statistics,
-      visualVariable: opacityVariable,
-      defaultValuesUsed: false,
-      authoringInfo: result.renderer.authoringInfo
-    }
-  });
+  // await updateOpacitySlider({
+  //   layer: layer as esri.FeatureLayer,
+  //   view: view as esri.MapView,
+  //   visualVariableResult: {
+  //     statistics: result.statistics,
+  //     visualVariable: opacityVariable,
+  //     defaultValuesUsed: false,
+  //     authoringInfo: result.renderer.authoringInfo
+  //   }
+  // });
 
   return result;
 }

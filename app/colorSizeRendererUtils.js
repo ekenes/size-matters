@@ -55,7 +55,7 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     //////////////////////////////////////
     function createColorSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, invalidColorThemes, theme, result, percentileStats, visualVariables, sizeVariables, colorVariables;
+            var layer, view, field, normalizationField, valueExpression, invalidColorThemes, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, colorVariables;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -66,6 +66,8 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         return [4 /*yield*/, colorSizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
+                        rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
+                        sliderUtils_1.colorPicker.value = rendererColor.toHex();
                         return [4 /*yield*/, statUtils_1.calculate9010Percentile({
                                 layer: layer,
                                 view: view,

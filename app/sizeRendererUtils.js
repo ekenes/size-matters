@@ -52,7 +52,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     //////////////////////////////////////
     function createSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, visualVariables, sizeVariables, sizeVariable, stops, originalSymbol, symbolSize, outline;
+            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, sizeVariable, stops, originalSymbol, symbolSize, outline;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -61,6 +61,8 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         return [4 /*yield*/, sizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
+                        rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
+                        sliderUtils_1.colorPicker.value = rendererColor.toHex();
                         return [4 /*yield*/, statUtils_1.calculate9010Percentile({
                                 layer: layer,
                                 view: view,
@@ -94,7 +96,8 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
                                 view: view,
-                                rendererResult: result
+                                rendererResult: result,
+                                theme: theme
                             })];
                     case 3:
                         _a.sent();
@@ -184,7 +187,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     }
     exports.updateVariableToAboveAndBelowTheme = updateVariableToAboveAndBelowTheme;
     function calcuateMidSize(minSize, maxSize) {
-        return Math.round((maxSize - minSize) / 2);
+        return Math.round((maxSize - minSize) / 2) + minSize;
     }
     exports.calcuateMidSize = calcuateMidSize;
 });

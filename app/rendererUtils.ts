@@ -1,8 +1,10 @@
 import esri = __esri;
+import Color = require("esri/Color");
 import { createSizeRenderer } from "./sizeRendererUtils";
 import { createColorSizeRenderer } from "./colorSizeRendererUtils";
 import { SliderVars } from "./sliderUtils";
 import { createOpacitySizeRenderer } from "./opacitySizeRendererUtils";
+import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
   theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on",
@@ -79,4 +81,10 @@ export function getVisualVariablesByType(renderer: esri.RendererWithVisualVariab
       return vv.type === type;
     })
   );
+}
+
+export function getSizeRendererColor(renderer: ClassBreaksRenderer): Color {
+  const classBreakInfos = renderer.classBreakInfos;
+  const solidSymbol = classBreakInfos[classBreakInfos.length-1].symbol;
+  return solidSymbol.color;
 }

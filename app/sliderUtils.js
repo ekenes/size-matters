@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, Slider, OpacitySlider, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1, layerUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "esri/symbols/support/cimSymbolUtils", "esri/Color", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, Slider, OpacitySlider, cimSymbolUtils, Color, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
@@ -51,6 +51,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     var sizeSlidersContainer = document.getElementById("size-slider-container");
     var opacitySlidersContainer = document.getElementById("opacity-slider-container");
     var symbolSizesContainer = document.getElementById("symbol-sizes");
+    exports.colorPicker = document.getElementById("color-picker");
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, lastStop, firstStop, histogramResult;
@@ -93,7 +94,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.slider.container.style.display = "block";
                             SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
                         }
-                        updateSymbolSizesSlider({ layer: layer, values: symbolSizeSliderValues });
+                        updateSymbolSizesSlider({ values: symbolSizeSliderValues });
                         return [2 /*return*/];
                 }
             });
@@ -102,13 +103,22 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     exports.updateSizeSlider = updateSizeSlider;
     function updateColorSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, histogramResult;
+            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, lastStop, firstStop, histogramResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, rendererResult = params.rendererResult;
                         sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
-                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
+                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize, stops = sizeVariable.stops;
+                        symbolSizeSliderValues = [];
+                        if (stops && stops.length > 0) {
+                            lastStop = stops[stops.length - 1];
+                            firstStop = stops[0];
+                            symbolSizeSliderValues = [firstStop.size, lastStop.size];
+                        }
+                        if (minSize && maxSize) {
+                            symbolSizeSliderValues = [minSize, maxSize];
+                        }
                         return [4 /*yield*/, statUtils_1.calculateHistogram({
                                 layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
                             })];
@@ -133,6 +143,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.colorSizeSlider.container.style.display = "block";
                             SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
                         }
+                        updateSymbolSizesSlider({ values: symbolSizeSliderValues });
                         return [2 /*return*/];
                 }
             });
@@ -140,7 +151,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     }
     exports.updateColorSizeSlider = updateColorSizeSlider;
     function updateSymbolSizesSlider(params) {
-        var layer = params.layer, values = params.values;
+        var values = params.values;
         if (!SliderVars.symbolSizesSlider) {
             SliderVars.symbolSizesSlider = new Slider({
                 values: values,
@@ -160,16 +171,18 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                 var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
                 var stops = sizeVariable.stops, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize;
                 if (stops && stops.length > 0) {
-                    var midSize = sizeRendererUtils_1.calcuateMidSize(minSize, maxSize);
-                    stops[0].size = maxSize;
+                    var minSize_1 = values[0];
+                    var maxSize_1 = values[1];
+                    var midSize = sizeRendererUtils_1.calcuateMidSize(minSize_1, maxSize_1);
+                    stops[0].size = maxSize_1;
                     stops[1].size = midSize;
-                    stops[2].size = minSize;
+                    stops[2].size = minSize_1;
                     stops[3].size = midSize;
-                    stops[4].size = maxSize;
+                    stops[4].size = maxSize_1;
                 }
                 else {
-                    sizeVariable.minSize = values[0];
-                    sizeVariable.maxSize = values[1];
+                    minSize = values[0];
+                    maxSize = values[1];
                 }
                 layerUtils_1.LayerVars.layer.renderer = renderer;
             });
@@ -219,5 +232,26 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         });
     }
     exports.updateOpacitySlider = updateOpacitySlider;
+    exports.colorPicker.addEventListener("input", function (event) {
+        var newColor = new Color(exports.colorPicker.value);
+        var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
+        var classBreakInfos = renderer.classBreakInfos;
+        classBreakInfos.forEach(function (info) {
+            var symbol = info.symbol;
+            if (symbol.type === "cim") {
+                cimSymbolUtils.applyCIMSymbolColor(symbol, newColor);
+            }
+            else {
+                symbol.color = newColor;
+            }
+        });
+        layerUtils_1.LayerVars.layer.renderer = renderer;
+    });
+    function destroySizeSlider() {
+        SliderVars.slider.destroy();
+        SliderVars.slider.container = null;
+        SliderVars.slider = null;
+    }
+    exports.destroySizeSlider = destroySizeSlider;
 });
 //# sourceMappingURL=sliderUtils.js.map

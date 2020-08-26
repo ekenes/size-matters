@@ -8,8 +8,10 @@ import BasemapGallery = require("esri/widgets/BasemapGallery");
 import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
-import { getNumberFields, createFieldSelect, createLayer } from './layerUtils';
-import { updateRenderer ,SizeParams } from './rendererUtils';
+import { getNumberFields, createFieldSelect, createLayer, LayerVars } from './layerUtils';
+import { updateRenderer ,SizeParams, getSizeRendererColor } from './rendererUtils';
+import { colorPicker } from "./sliderUtils";
+import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 ( async () => {
 
@@ -39,7 +41,7 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   }), "top-left");
   view.ui.add( new Expand({
     content: new Legend({ view }),
-    expanded: true,
+    expanded: false,
     group: "left"
   }), "bottom-left");
   const sliderExpand = new Expand({

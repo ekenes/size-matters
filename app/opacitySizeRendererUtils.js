@@ -55,7 +55,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     //////////////////////////////////////
     function createOpacitySizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, percentileStats, visualVariables, sizeVariables, opacityVariable;
+            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, opacityVariable;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -64,6 +64,8 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         return [4 /*yield*/, sizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
+                        rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
+                        sliderUtils_1.colorPicker.value = rendererColor.toHex();
                         return [4 /*yield*/, statUtils_1.calculate9010Percentile({
                                 layer: layer,
                                 view: view,
@@ -82,22 +84,21 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
                                 view: view,
-                                rendererResult: result
+                                rendererResult: result,
+                                theme: theme
                             })];
                     case 3:
                         _a.sent();
-                        return [4 /*yield*/, sliderUtils_1.updateOpacitySlider({
-                                layer: layer,
-                                view: view,
-                                visualVariableResult: {
-                                    statistics: result.statistics,
-                                    visualVariable: opacityVariable,
-                                    defaultValuesUsed: false,
-                                    authoringInfo: result.renderer.authoringInfo
-                                }
-                            })];
-                    case 4:
-                        _a.sent();
+                        // await updateOpacitySlider({
+                        //   layer: layer as esri.FeatureLayer,
+                        //   view: view as esri.MapView,
+                        //   visualVariableResult: {
+                        //     statistics: result.statistics,
+                        //     visualVariable: opacityVariable,
+                        //     defaultValuesUsed: false,
+                        //     authoringInfo: result.renderer.authoringInfo
+                        //   }
+                        // });
                         return [2 /*return*/, result];
                 }
             });

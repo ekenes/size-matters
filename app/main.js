@@ -93,7 +93,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     }), "top-left");
                     view.ui.add(new Expand({
                         content: new Legend({ view: view }),
-                        expanded: true,
+                        expanded: false,
                         group: "left"
                     }), "bottom-left");
                     sliderExpand = new Expand({

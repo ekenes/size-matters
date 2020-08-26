@@ -123,5 +123,11 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
             }));
     }
     exports.getVisualVariablesByType = getVisualVariablesByType;
+    function getSizeRendererColor(renderer) {
+        var classBreakInfos = renderer.classBreakInfos;
+        var solidSymbol = classBreakInfos[classBreakInfos.length - 1].symbol;
+        return solidSymbol.color;
+    }
+    exports.getSizeRendererColor = getSizeRendererColor;
 });
 //# sourceMappingURL=rendererUtils.js.map

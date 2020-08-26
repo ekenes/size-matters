@@ -2,10 +2,11 @@ import esri = __esri;
 import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariateColorSize");
 import lang = require("esri/core/lang");
 
-import { updateColorSizeSlider } from "./sliderUtils";
+import { updateColorSizeSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { SizeParams, getVisualVariablesByType, getVisualVariableByType } from "./rendererUtils";
+import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
+import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 
 export function updateRendererFromColorSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.ColorSizeSlider){
@@ -37,6 +38,9 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
   params.theme = invalidColorThemes.indexOf(theme) > -1 ? "high-to-low" : params.theme;
 
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
+
+  const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);
+  colorPicker.value = rendererColor.toHex();
 
   const percentileStats = await calculate9010Percentile({
     layer: layer as esri.FeatureLayer,

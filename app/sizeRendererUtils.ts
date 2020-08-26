@@ -4,11 +4,12 @@ import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
 import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
-import { updateSizeSlider } from "./sliderUtils";
+import { updateSizeSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
 import { SimpleMarkerSymbol } from "esri/symbols";
 import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
-import { getVisualVariableByType, SizeParams, getVisualVariablesByType } from "./rendererUtils";
+import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor } from "./rendererUtils";
+import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
 
@@ -33,6 +34,9 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   const theme = params.theme || "high-to-low";
 
   let result = await sizeRendererCreator.createContinuousRenderer(params);
+
+  const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);
+  colorPicker.value = rendererColor.toHex();
 
   const percentileStats = await calculate9010Percentile({
     layer: layer as esri.FeatureLayer,
@@ -74,7 +78,8 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   await updateSizeSlider({
     layer: layer as esri.FeatureLayer,
     view: view as esri.MapView,
-    rendererResult: result
+    rendererResult: result,
+    theme
   });
 
   return result;
@@ -174,5 +179,5 @@ export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVaria
 }
 
 export function calcuateMidSize( minSize: number, maxSize: number): number {
-  return Math.round(( maxSize - minSize) / 2);
+  return Math.round(( maxSize - minSize) / 2) + minSize;
 }
