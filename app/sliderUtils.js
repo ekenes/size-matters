@@ -51,6 +51,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     var sizeSlidersContainer = document.getElementById("size-slider-container");
     var opacitySlidersContainer = document.getElementById("opacity-slider-container");
     var symbolSizesContainer = document.getElementById("symbol-sizes");
+    var sizeOptionsElement = document.getElementById("size-options");
     exports.colorPicker = document.getElementById("color-picker");
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
@@ -95,6 +96,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
                         }
                         updateSymbolSizesSlider({ values: symbolSizeSliderValues });
+                        sizeOptionsElement.style.display = "flex";
                         return [2 /*return*/];
                 }
             });
@@ -157,7 +159,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                 values: values,
                 container: symbolSizesContainer,
                 min: 1,
-                max: 120,
+                max: 40,
                 steps: 0.5,
                 labelInputsEnabled: true,
                 rangeLabelInputsEnabled: true,
@@ -181,8 +183,8 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                     stops[4].size = maxSize_1;
                 }
                 else {
-                    minSize = values[0];
-                    maxSize = values[1];
+                    sizeVariable.minSize = values[0];
+                    sizeVariable.maxSize = values[1];
                 }
                 layerUtils_1.LayerVars.layer.renderer = renderer;
             });

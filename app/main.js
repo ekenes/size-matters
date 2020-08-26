@@ -89,17 +89,17 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     view.ui.add(new Expand({
                         content: basemapGallery,
                         expanded: false,
-                        group: "left"
+                        group: "top-left"
                     }), "top-left");
                     view.ui.add(new Expand({
                         content: new Legend({ view: view }),
                         expanded: false,
-                        group: "left"
+                        group: "top-left"
                     }), "bottom-left");
                     sliderExpand = new Expand({
                         expanded: true,
                         content: document.getElementById("sliders-container"),
-                        group: "left"
+                        group: "top-left"
                     });
                     view.ui.add(sliderExpand, "top-left");
                     view.ui.add("save-map", "top-left");

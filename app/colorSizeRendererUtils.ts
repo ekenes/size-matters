@@ -1,13 +1,18 @@
 import esri = __esri;
 import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariateColorSize");
+import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
+import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 import lang = require("esri/core/lang");
 
 import { updateColorSizeSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
+import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
+import { SimpleMarkerSymbol } from "esri/symbols";
+import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
 
+export const useDonutsElement = document.getElementById("use-donuts") as HTMLInputElement;
 
 export function updateRendererFromColorSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.ColorSizeSlider){
 
@@ -56,6 +61,12 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
 
   result.size.visualVariables = sizeVariables;
   result.color.visualVariable = colorVariables[0];
+
+  if(theme === "above-and-below" && useDonutsElement.checked){
+    result.renderer = createRendererWithDonutSymbol(result.renderer);
+    // avoid size slider
+    return result;
+  }
 
   await updateColorSizeSlider({
     layer: layer as esri.FeatureLayer,

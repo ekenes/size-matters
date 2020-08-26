@@ -61,14 +61,14 @@
             <option value="above-average">Above average</option>
             <option value="below-average">Below average</option>
             <option value="above-and-below">Above and below</option>
-            <option value="extremes">Extremes</option>
-            <option value="centered-on">Centered on</option>
+            <!-- <option value="extremes">Extremes</option>
+            <option value="centered-on">Centered on</option> -->
           </select>
         </div>
       </div>
-      <div style="margin-top: 10px;">
+      <div id="use-donuts-parent" style="margin-top: 10px;">
         <label class="toggle-switch modifier-class">
-          <input type="checkbox" class="toggle-switch-input" id="difference">
+          <input type="checkbox" class="toggle-switch-input" id="use-donuts">
           <span class="toggle-switch-track margin-right-1"></span>
           <span class="toggle-switch-label font-size--1">Use donuts</span>
         </label>
@@ -78,9 +78,10 @@
       <div id="size-options">
         <div id="size-slider-container"></div>
         <div id="symbol-sizes-container">
-          Adjust symbol size <div id="symbol-sizes"></div>
-          Adjust symbol color
-          <div id="symbol-color">
+          <div class="size-options-labels">Adjust symbol size</div>
+          <div id="symbol-sizes"></div>
+          <div class="size-options-labels">Adjust symbol color</div>
+          <div id="symbol-color" class="size-options-labels">
             <input type="color" id="color-picker">
           </div>
         </div>

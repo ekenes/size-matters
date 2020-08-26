@@ -8,7 +8,7 @@ import { updateSizeSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
 import { SimpleMarkerSymbol } from "esri/symbols";
 import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
-import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor } from "./rendererUtils";
+import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
@@ -50,26 +50,7 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   result.visualVariables = sizeVariables;
 
   if(theme === "above-and-below"){
-    const sizeVariable = getVisualVariableByType(result.renderer, "size") as esri.SizeVariable;
-    const stops = sizeVariable.stops;
-
-    const originalSymbol = (result.renderer.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
-    cimSymbolUtils.applyCIMSymbolColor(donutSymbol, originalSymbol.color);
-
-    const symbolSize = originalSymbol.size;
-    const outline = originalSymbol.outline;
-
-    cimSymbolUtils.scaleCIMSymbolTo(donutSymbol, symbolSize);
-
-    updateSymbolStroke(donutSymbol, outline.width, outline.color);
-
-    result.renderer.field = field;
-    result.renderer.normalizationField = normalizationField;
-    result.renderer.valueExpression = valueExpression;
-    result.renderer.classBreakInfos = [
-      new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: donutSymbol }),
-      new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
-    ];
+    result.renderer = createRendererWithDonutSymbol(result.renderer);
 
     // avoid size slider
     return result;

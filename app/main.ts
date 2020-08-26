@@ -37,17 +37,17 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   view.ui.add( new Expand({
     content: basemapGallery,
     expanded: false,
-    group: "left"
+    group: "top-left"
   }), "top-left");
   view.ui.add( new Expand({
     content: new Legend({ view }),
     expanded: false,
-    group: "left"
+    group: "top-left"
   }), "bottom-left");
   const sliderExpand = new Expand({
     expanded: true,
     content: document.getElementById("sliders-container"),
-    group: "left"
+    group: "top-left"
   });
   view.ui.add(sliderExpand, "top-left");
   view.ui.add("save-map", "top-left");
@@ -98,6 +98,7 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
     const theme = themeSelect.value as SizeParams["theme"];
     const style = styleSelect.value as SizeParams["style"];
+
     const params = {
       layer,
       view,

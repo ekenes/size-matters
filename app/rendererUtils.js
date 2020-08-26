@@ -34,16 +34,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils", "./sliderUtils", "./opacitySizeRendererUtils"], function (require, exports, sizeRendererUtils_1, colorSizeRendererUtils_1, sliderUtils_1, opacitySizeRendererUtils_1) {
+define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/renderers/support/ClassBreakInfo", "./sizeRendererUtils", "./colorSizeRendererUtils", "./sliderUtils", "./opacitySizeRendererUtils", "./symbolUtils", "./layerUtils"], function (require, exports, cimSymbolUtils, ClassBreakInfo, sizeRendererUtils_1, colorSizeRendererUtils_1, sliderUtils_1, opacitySizeRendererUtils_1, symbolUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var useDonutsParentElement = document.getElementById("use-donuts-parent");
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, style, result, _a;
+            var layer, theme, style, result, _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        layer = params.layer;
+                        layer = params.layer, theme = params.theme;
                         style = params.style || "size";
                         result = null;
                         _a = style;
@@ -67,6 +68,7 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
                         return [4 /*yield*/, sizeRendererUtils_1.createSizeRenderer(params)];
                     case 2:
                         result = _b.sent();
+                        useDonutsParentElement.style.display = "none";
                         return [3 /*break*/, 8];
                     case 3:
                         if (sliderUtils_1.SliderVars.slider) {
@@ -79,6 +81,9 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
                             sliderUtils_1.SliderVars.opacitySlider.container = null;
                             sliderUtils_1.SliderVars.opacitySlider = null;
                         }
+                        if (theme === "above-and-below") {
+                            useDonutsParentElement.style.display = "block";
+                        }
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
                     case 4:
                         result = _b.sent();
@@ -89,6 +94,7 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
                             sliderUtils_1.SliderVars.colorSizeSlider.container = null;
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
                         }
+                        useDonutsParentElement.style.display = "none";
                         return [4 /*yield*/, opacitySizeRendererUtils_1.createOpacitySizeRenderer(params)];
                     case 6:
                         result = _b.sent();
@@ -129,5 +135,45 @@ define(["require", "exports", "./sizeRendererUtils", "./colorSizeRendererUtils",
         return solidSymbol.color;
     }
     exports.getSizeRendererColor = getSizeRendererColor;
+    function createRendererWithDonutSymbol(renderer) {
+        var rendererWithDonuts = renderer.clone();
+        var sizeVariable = getVisualVariableByType(rendererWithDonuts, "size");
+        var stops = sizeVariable.stops, field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
+        if (!stops || stops.length < 4) {
+            console.error("The provided renderer does not use the above and below theme");
+            return renderer;
+        }
+        var originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
+        cimSymbolUtils.applyCIMSymbolColor(symbolUtils_1.donutSymbol, originalSymbol.color);
+        var symbolSize = originalSymbol.size;
+        var outline = originalSymbol.outline;
+        cimSymbolUtils.scaleCIMSymbolTo(symbolUtils_1.donutSymbol, symbolSize);
+        symbolUtils_1.updateSymbolStroke(symbolUtils_1.donutSymbol, outline.width, outline.color);
+        rendererWithDonuts.field = field;
+        rendererWithDonuts.normalizationField = normalizationField;
+        rendererWithDonuts.valueExpression = valueExpression;
+        rendererWithDonuts.classBreakInfos = [
+            new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: symbolUtils_1.donutSymbol }),
+            new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
+        ];
+        return rendererWithDonuts;
+    }
+    exports.createRendererWithDonutSymbol = createRendererWithDonutSymbol;
+    function removeDonutFromRenderer(renderer) {
+        var rendererWithoutDonuts = renderer.clone();
+        var classBreakInfos = rendererWithoutDonuts.classBreakInfos;
+        if (classBreakInfos.length !== 2) {
+            console.error("The provided renderer doesn't have the correct number of class breaks");
+            return renderer;
+        }
+        classBreakInfos.shift();
+        classBreakInfos[0].minValue = -9007199254740991;
+        classBreakInfos[0].maxValue = 9007199254740991;
+        return rendererWithoutDonuts;
+    }
+    colorSizeRendererUtils_1.useDonutsElement.addEventListener("change", function () {
+        var renderer = layerUtils_1.LayerVars.layer.renderer;
+        layerUtils_1.LayerVars.layer.renderer = colorSizeRendererUtils_1.useDonutsElement.checked ? createRendererWithDonutSymbol(renderer) : removeDonutFromRenderer(renderer);
+    });
 });
 //# sourceMappingURL=rendererUtils.js.map

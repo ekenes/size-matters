@@ -29,10 +29,11 @@ body,
 }
 
 #size-options{
-  display: flex;
+  display: none;
   flex-direction: column;
   /* flex-wrap: wrap; */
   width: 300px;
+
 }
 
 #symbol-sizes-container{
@@ -47,5 +48,14 @@ body,
 #save-map{
   height: 32px;
   width: 32px;
+  display: none;
+}
+
+.size-options-labels {
+  background-color: white;
+  padding: 5px;
+}
+
+#use-donuts-parent{
   display: none;
 }

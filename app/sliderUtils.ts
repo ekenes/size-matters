@@ -33,6 +33,7 @@ interface CreateSizeSliderParams {
 const sizeSlidersContainer = document.getElementById("size-slider-container");
 const opacitySlidersContainer = document.getElementById("opacity-slider-container");
 const symbolSizesContainer = document.getElementById("symbol-sizes");
+const sizeOptionsElement = document.getElementById("size-options") as HTMLDivElement;
 export const colorPicker = document.getElementById("color-picker") as HTMLInputElement;
 
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
@@ -78,6 +79,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues });
+  sizeOptionsElement.style.display = "flex";
 }
 
 interface CreateColorSizeSliderParams {
@@ -142,7 +144,7 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
       values,
       container: symbolSizesContainer,
       min: 1,
-      max: 120,
+      max: 40,
       steps: 0.5,
       labelInputsEnabled: true,
       rangeLabelInputsEnabled: true,
@@ -166,8 +168,8 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
         stops[3].size = midSize;
         stops[4].size = maxSize;
       } else {
-        minSize = values[0];
-        maxSize = values[1];
+        sizeVariable.minSize = values[0];
+        sizeVariable.maxSize = values[1];
       }
 
       LayerVars.layer.renderer = renderer;

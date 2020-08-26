@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/core/lang", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, colorSizeRendererCreator, lang, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.useDonutsElement = document.getElementById("use-donuts");
     function updateRendererFromColorSizeSlider(renderer, slider) {
         var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
         var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
@@ -81,6 +82,11 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         colorVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "color");
                         result.size.visualVariables = sizeVariables;
                         result.color.visualVariable = colorVariables[0];
+                        if (theme === "above-and-below" && exports.useDonutsElement.checked) {
+                            result.renderer = rendererUtils_1.createRendererWithDonutSymbol(result.renderer);
+                            // avoid size slider
+                            return [2 /*return*/, result];
+                        }
                         return [4 /*yield*/, sliderUtils_1.updateColorSizeSlider({
                                 layer: layer,
                                 view: view,
