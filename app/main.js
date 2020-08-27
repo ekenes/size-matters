@@ -72,7 +72,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             document.getElementById("info").innerHTML = info;
             overlay.style.visibility = "visible";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect, overlay, ok;
+        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -136,7 +136,14 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     fieldContainer.appendChild(fieldsSelect);
                     normalizationFieldSelect = layerUtils_1.createFieldSelect(numberFields);
                     normalizationFieldContainer.appendChild(normalizationFieldSelect);
+                    arcadeFieldsContainer = document.getElementById("arcade-fields-container");
+                    arcadeFieldsSelect = layerUtils_1.createFieldSelect(numberFields);
+                    arcadeFieldsContainer.appendChild(arcadeFieldsSelect);
                     valueExpressionTextArea = document.getElementById("value-expression");
+                    arcadeFieldsSelect.options[0].text = "Add Field to expression";
+                    arcadeFieldsSelect.addEventListener("change", function () {
+                        valueExpressionTextArea.value += "$feature[\"" + arcadeFieldsSelect.value + "\"]";
+                    });
                     themeSelect = document.getElementById("theme-select");
                     styleSelect = document.getElementById("style-select");
                     fieldsSelect.addEventListener("change", inputChange);

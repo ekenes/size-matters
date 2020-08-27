@@ -106,3 +106,13 @@ export function createFieldSelect(fields: esri.Field[]){
 
   return select;
 }
+
+export function addArcadeFieldInfos(fields: esri.Field[]){
+  const valueExpressionInput = document.getElementById("value-expression") as HTMLTextAreaElement;
+
+  const fieldInfosComment = fields.map( field => {
+    return `// $feature.${field.name}\n`;
+  }).reduce( (prev, curr ) =>  prev + curr );
+
+  valueExpressionInput.value = fieldInfosComment;
+}

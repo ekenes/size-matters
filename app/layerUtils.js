@@ -128,5 +128,13 @@ define(["require", "exports", "esri/layers/FeatureLayer"], function (require, ex
         return select;
     }
     exports.createFieldSelect = createFieldSelect;
+    function addArcadeFieldInfos(fields) {
+        var valueExpressionInput = document.getElementById("value-expression");
+        var fieldInfosComment = fields.map(function (field) {
+            return "// $feature." + field.name + "\n";
+        }).reduce(function (prev, curr) { return prev + curr; });
+        valueExpressionInput.value = fieldInfosComment;
+    }
+    exports.addArcadeFieldInfos = addArcadeFieldInfos;
 });
 //# sourceMappingURL=layerUtils.js.map

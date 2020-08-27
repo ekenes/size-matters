@@ -7,7 +7,7 @@ import BasemapGallery = require("esri/widgets/BasemapGallery");
 import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
-import { getNumberFields, createFieldSelect, createLayer } from './layerUtils';
+import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
 import { updateRenderer ,SizeParams } from './rendererUtils';
 
 ( async () => {
@@ -76,7 +76,17 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   const normalizationFieldSelect = createFieldSelect(numberFields);
   normalizationFieldContainer.appendChild(normalizationFieldSelect);
 
+  const arcadeFieldsContainer = document.getElementById("arcade-fields-container") as HTMLDivElement;
+  const arcadeFieldsSelect = createFieldSelect(numberFields);
+  arcadeFieldsContainer.appendChild(arcadeFieldsSelect);
+
   const valueExpressionTextArea = document.getElementById("value-expression") as HTMLTextAreaElement;
+
+  arcadeFieldsSelect.options[0].text = "Add Field to expression";
+  arcadeFieldsSelect.addEventListener("change", () => {
+    valueExpressionTextArea.value += `$feature["${arcadeFieldsSelect.value}"]`;
+  });
+
   const themeSelect = document.getElementById("theme-select") as HTMLSelectElement;
   const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
 
