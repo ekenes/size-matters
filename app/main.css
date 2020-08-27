@@ -57,7 +57,7 @@ body,
 #save-map{
   height: 32px;
   width: 32px;
-  display: none;
+  /* display: none; */
 }
 
 .size-options-labels {
@@ -91,3 +91,19 @@ body,
 #opacity-values-container {
   display: none;
 } */
+
+#overlayDiv {
+  z-index: 1;
+  position: absolute;
+  margin: auto auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 280px;
+  height: 180px;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid grey;
+  visibility: hidden;
+}

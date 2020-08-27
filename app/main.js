@@ -67,7 +67,12 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             themeSelect.value = "high-to-low";
             styleSelect.value = "size";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect;
+        function statusMessage(head, info) {
+            document.getElementById("head").innerHTML = head;
+            document.getElementById("info").innerHTML = info;
+            overlay.style.visibility = "visible";
+        }
+        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, valueExpressionTextArea, themeSelect, styleSelect, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -144,21 +149,41 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     themeSelect.addEventListener("change", inputChange);
                     styleSelect.addEventListener("change", inputChange);
                     saveBtn.addEventListener("click", function () { return __awaiter(void 0, void 0, void 0, function () {
+                        var item, itemPageUrl, link, error_1;
                         return __generator(this, function (_a) {
                             switch (_a.label) {
-                                case 0: return [4 /*yield*/, webmap.saveAs(new PortalItem({
-                                        title: styleSelect.innerText + " - " + themeSelect.innerText + " - " + layer.title,
-                                        tags: ["test", "size"],
-                                        description: "Webmap testing various size styles and themes."
-                                    }), {
-                                        ignoreUnsupported: true
-                                    })];
+                                case 0: return [4 /*yield*/, webmap.updateFrom(view)];
                                 case 1:
                                     _a.sent();
-                                    return [2 /*return*/];
+                                    _a.label = 2;
+                                case 2:
+                                    _a.trys.push([2, 4, , 5]);
+                                    return [4 /*yield*/, webmap.saveAs(new PortalItem({
+                                            title: "[" + styleSelect.value + " - " + themeSelect.value + "] " + layer.title,
+                                            tags: ["test", "size"],
+                                            description: "Webmap testing various size styles and themes."
+                                        }), {
+                                            ignoreUnsupported: false
+                                        })];
+                                case 3:
+                                    item = _a.sent();
+                                    itemPageUrl = item.portal.url + "/home/item.html?id=" + item.id;
+                                    link = "<a target=\"_blank\" href=\"" + itemPageUrl + "\">" + item.title + "</a>";
+                                    statusMessage("Save WebMap", "<br> Successfully saved as <i>" + link + "</i>");
+                                    return [3 /*break*/, 5];
+                                case 4:
+                                    error_1 = _a.sent();
+                                    statusMessage("Save WebMap", "<br> Error " + error_1);
+                                    return [3 /*break*/, 5];
+                                case 5: return [2 /*return*/];
                             }
                         });
                     }); });
+                    overlay = document.getElementById("overlayDiv");
+                    ok = overlay.getElementsByTagName("input")[0];
+                    ok.addEventListener("click", function () {
+                        overlay.style.visibility = "hidden";
+                    });
                     return [2 /*return*/];
             }
         });

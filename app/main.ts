@@ -126,13 +126,44 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   }
 
   saveBtn.addEventListener("click", async () => {
-    await webmap.saveAs(new PortalItem({
-      title: `${styleSelect.innerText} - ${themeSelect.innerText} - ${layer.title}`,
-      tags: [ "test", "size" ],
-      description: `Webmap testing various size styles and themes.`
-    }), {
-      ignoreUnsupported: true
-    });
+
+    await webmap.updateFrom(view);
+
+    try{
+      const item = await webmap.saveAs(new PortalItem({
+        title: `[${styleSelect.value} - ${themeSelect.value}] ${layer.title}`,
+        tags: [ "test", "size" ],
+        description: `Webmap testing various size styles and themes.`
+      }), {
+        ignoreUnsupported: false
+      });
+
+      const itemPageUrl = `${item.portal.url}/home/item.html?id=${item.id}`;
+      const link = `<a target="_blank" href="${itemPageUrl}">${item.title}</a>`;
+
+      statusMessage(
+        "Save WebMap",
+        "<br> Successfully saved as <i>" + link + "</i>"
+      );
+
+    } catch (error){
+      statusMessage("Save WebMap", "<br> Error " + error);
+    }
+
   });
+
+  const overlay = document.getElementById("overlayDiv");
+  const ok = overlay.getElementsByTagName("input")[0];
+
+  function statusMessage(head: string, info:string) {
+    document.getElementById("head").innerHTML = head;
+    document.getElementById("info").innerHTML = info;
+    overlay.style.visibility = "visible";
+  }
+
+  ok.addEventListener("click", function () {
+    overlay.style.visibility = "hidden";
+  });
+
 
 })();
