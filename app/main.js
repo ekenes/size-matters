@@ -64,8 +64,6 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             fieldsSelect.value = null;
             normalizationFieldSelect.value = null;
             valueExpressionTextArea.value = null;
-            themeSelect.value = "high-to-low";
-            styleSelect.value = "size";
         }
         function statusMessage(head, info) {
             document.getElementById("head").innerHTML = head;

@@ -146,6 +146,8 @@ export function createRendererWithDonutSymbol(renderer: ClassBreaksRenderer): Cl
     new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
   ];
 
+  rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below"
+
   return rendererWithDonuts;
 }
 

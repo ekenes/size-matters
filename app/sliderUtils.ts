@@ -71,7 +71,8 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.slider);
+      const oldRenderer = LayerVars.layer.renderer as esri.ClassBreaksRenderer;
+      const newRenderer = updateRendererFromSizeSlider(oldRenderer, SliderVars.slider) as esri.ClassBreaksRenderer;
       // const sizeStops = SliderVars.slider.stops;
 
       // if(updateOpacity){
@@ -84,11 +85,26 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
       //     });
 
       // }
+
+      // const authoringInfoSizeVV = newRenderer.authoringInfo.visualVariables.filter( vv => vv.type === "size")[0];
+
+      if (newRenderer.classBreakInfos.length > 1){
+        const midIndex = SliderVars.slider.stops.length === 5 ? 2 : 1;
+        const midValue = SliderVars.slider.stops[midIndex].value;
+        newRenderer.classBreakInfos[0].maxValue = midValue;
+        newRenderer.classBreakInfos[1].minValue = midValue;
+      }
       LayerVars.layer.renderer = newRenderer;
     });
   } else {
     (SliderVars.slider.container as HTMLElement).style.display = "block";
     SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
+  }
+
+  if(theme === "above-and-below"){
+    SliderVars.slider.stops = stops;
+    SliderVars.slider.primaryHandleEnabled = true;
+    SliderVars.slider.handlesSyncedToPrimary = false;
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues });

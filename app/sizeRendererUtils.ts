@@ -47,9 +47,6 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
 
   if(theme === "above-and-below"){
     result.renderer = createRendererWithDonutSymbol(result.renderer);
-
-    // avoid size slider
-    return result;
   }
 
   await updateSizeSlider({

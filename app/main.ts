@@ -131,8 +131,6 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
     fieldsSelect.value = null;
     normalizationFieldSelect.value = null;
     valueExpressionTextArea.value = null;
-    themeSelect.value = "high-to-low";
-    styleSelect.value = "size";
   }
 
   saveBtn.addEventListener("click", async () => {

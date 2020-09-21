@@ -170,6 +170,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
             new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: symbolUtils_1.donutSymbol }),
             new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
         ];
+        rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below";
         return rendererWithDonuts;
     }
     exports.createRendererWithDonutSymbol = createRendererWithDonutSymbol;

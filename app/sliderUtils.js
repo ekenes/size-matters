@@ -88,7 +88,8 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(layerUtils_1.LayerVars.layer.renderer, SliderVars.slider);
+                                var oldRenderer = layerUtils_1.LayerVars.layer.renderer;
+                                var newRenderer = sizeRendererUtils_1.updateRendererFromSizeSlider(oldRenderer, SliderVars.slider);
                                 // const sizeStops = SliderVars.slider.stops;
                                 // if(updateOpacity){
                                 //   const opacityVariable = getVisualVariableByType(newRenderer, "opacity") as esri.OpacityVariable;
@@ -99,12 +100,24 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 //       });
                                 //     });
                                 // }
+                                // const authoringInfoSizeVV = newRenderer.authoringInfo.visualVariables.filter( vv => vv.type === "size")[0];
+                                if (newRenderer.classBreakInfos.length > 1) {
+                                    var midIndex = SliderVars.slider.stops.length === 5 ? 2 : 1;
+                                    var midValue = SliderVars.slider.stops[midIndex].value;
+                                    newRenderer.classBreakInfos[0].maxValue = midValue;
+                                    newRenderer.classBreakInfos[1].minValue = midValue;
+                                }
                                 layerUtils_1.LayerVars.layer.renderer = newRenderer;
                             });
                         }
                         else {
                             SliderVars.slider.container.style.display = "block";
                             SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
+                        }
+                        if (theme === "above-and-below") {
+                            SliderVars.slider.stops = stops;
+                            SliderVars.slider.primaryHandleEnabled = true;
+                            SliderVars.slider.handlesSyncedToPrimary = false;
                         }
                         updateSymbolSizesSlider({ values: symbolSizeSliderValues });
                         return [2 /*return*/];

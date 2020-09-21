@@ -76,8 +76,6 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         result.visualVariables = sizeVariables;
                         if (theme === "above-and-below") {
                             result.renderer = rendererUtils_1.createRendererWithDonutSymbol(result.renderer);
-                            // avoid size slider
-                            return [2 /*return*/, result];
                         }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
