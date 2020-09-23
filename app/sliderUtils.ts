@@ -47,9 +47,14 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
 
   if(stops && stops.length > 0){
     const maxStop = stops[stops.length-1];
-    const minStop = theme === "above-and-below" ? stops[2] : stops[0];
+    const minStop = stops[0];
 
-    symbolSizeSliderValues = [ minStop.size, maxStop.size ];
+    if(theme === "above-and-below"){
+      const midStop = stops[Math.floor(stops.length / 2)];
+      symbolSizeSliderValues = [ midStop.size, maxStop.size ];
+    } else {
+      symbolSizeSliderValues = [ minStop.size, maxStop.size ];
+    }
   }
   if(minSize && maxSize){
     symbolSizeSliderValues = [ minSize as number, maxSize as number ];
@@ -105,6 +110,9 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
     SliderVars.slider.stops = stops;
     SliderVars.slider.primaryHandleEnabled = true;
     SliderVars.slider.handlesSyncedToPrimary = false;
+  } else {
+    SliderVars.slider.primaryHandleEnabled = false;
+    SliderVars.slider.handlesSyncedToPrimary = false;
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues });
@@ -113,22 +121,30 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
 interface CreateColorSizeSliderParams {
   layer: esri.FeatureLayer,
   view: esri.MapView,
-  rendererResult: esri.univariateColorSizeContinuousRendererResult
+  rendererResult: esri.univariateColorSizeContinuousRendererResult,
+  theme: SizeParams["theme"]
 }
 
 export async function updateColorSizeSlider(params: CreateColorSizeSliderParams) {
-  const { layer, view, rendererResult } = params;
+  const { layer, view, rendererResult, theme } = params;
 
   let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size") as esri.SizeVariable;
+  let colorVariable = getVisualVariableByType(rendererResult.renderer, "color") as esri.ColorVariable;
+  const colorStops = colorVariable.stops;
 
   const { field, normalizationField, valueExpression, minSize, maxSize, stops } = sizeVariable;
   let symbolSizeSliderValues: number[] = [];
 
   if(stops && stops.length > 0){
-    const lastStop = stops[stops.length-1];
-    const firstStop = stops[0];
+    const maxStop = stops[stops.length-1];
+    const minStop = stops[0];
 
-    symbolSizeSliderValues = [ firstStop.size, lastStop.size ];
+    if(theme === "above-and-below"){
+      const midStop = stops[Math.floor(stops.length / 2)];
+      symbolSizeSliderValues = [ midStop.size, maxStop.size ];
+    } else {
+      symbolSizeSliderValues = [ minStop.size, maxStop.size ];
+    }
   }
   if(minSize && maxSize){
     symbolSizeSliderValues = [ minSize as number, maxSize as number ];
@@ -156,6 +172,21 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
   } else {
     (SliderVars.colorSizeSlider.container as HTMLElement).style.display = "block";
     SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
+  }
+
+  if(theme === "above-and-below"){
+    SliderVars.colorSizeSlider.stops = [
+      { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
+      { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
+      { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
+      { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
+      { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
+    ];
+    SliderVars.colorSizeSlider.primaryHandleEnabled = true;
+    SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
+  } else {
+    SliderVars.colorSizeSlider.primaryHandleEnabled = false;
+    SliderVars.colorSizeSlider.handlesSyncedToPrimary = false;
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues });

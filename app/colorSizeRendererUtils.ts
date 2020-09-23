@@ -65,14 +65,13 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
 
   if(theme === "above-and-below" && useDonutsElement.checked){
     result.renderer = createRendererWithDonutSymbol(result.renderer);
-    // avoid size slider
-    return result;
   }
 
   await updateColorSizeSlider({
     layer: layer as esri.FeatureLayer,
     view: view as esri.MapView,
-    rendererResult: result
+    rendererResult: result,
+    theme
   });
 
   createColorRamps(theme);

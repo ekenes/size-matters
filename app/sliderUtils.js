@@ -56,7 +56,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     exports.colorPicker = document.getElementById("color-picker");
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, rendererResult, updateOpacity, theme, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, maxStop, minStop, histogramResult;
+            var layer, view, rendererResult, updateOpacity, theme, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, maxStop, minStop, midStop, histogramResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -66,8 +66,14 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                         symbolSizeSliderValues = [];
                         if (stops && stops.length > 0) {
                             maxStop = stops[stops.length - 1];
-                            minStop = theme === "above-and-below" ? stops[2] : stops[0];
-                            symbolSizeSliderValues = [minStop.size, maxStop.size];
+                            minStop = stops[0];
+                            if (theme === "above-and-below") {
+                                midStop = stops[Math.floor(stops.length / 2)];
+                                symbolSizeSliderValues = [midStop.size, maxStop.size];
+                            }
+                            else {
+                                symbolSizeSliderValues = [minStop.size, maxStop.size];
+                            }
                         }
                         if (minSize && maxSize) {
                             symbolSizeSliderValues = [minSize, maxSize];
@@ -119,6 +125,10 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.slider.primaryHandleEnabled = true;
                             SliderVars.slider.handlesSyncedToPrimary = false;
                         }
+                        else {
+                            SliderVars.slider.primaryHandleEnabled = false;
+                            SliderVars.slider.handlesSyncedToPrimary = false;
+                        }
                         updateSymbolSizesSlider({ values: symbolSizeSliderValues });
                         return [2 /*return*/];
                 }
@@ -128,18 +138,26 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     exports.updateSizeSlider = updateSizeSlider;
     function updateColorSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, rendererResult, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, lastStop, firstStop, histogramResult;
+            var layer, view, rendererResult, theme, sizeVariable, colorVariable, colorStops, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, maxStop, minStop, midStop, histogramResult;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        layer = params.layer, view = params.view, rendererResult = params.rendererResult;
+                        layer = params.layer, view = params.view, rendererResult = params.rendererResult, theme = params.theme;
                         sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
+                        colorVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "color");
+                        colorStops = colorVariable.stops;
                         field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize, stops = sizeVariable.stops;
                         symbolSizeSliderValues = [];
                         if (stops && stops.length > 0) {
-                            lastStop = stops[stops.length - 1];
-                            firstStop = stops[0];
-                            symbolSizeSliderValues = [firstStop.size, lastStop.size];
+                            maxStop = stops[stops.length - 1];
+                            minStop = stops[0];
+                            if (theme === "above-and-below") {
+                                midStop = stops[Math.floor(stops.length / 2)];
+                                symbolSizeSliderValues = [midStop.size, maxStop.size];
+                            }
+                            else {
+                                symbolSizeSliderValues = [minStop.size, maxStop.size];
+                            }
                         }
                         if (minSize && maxSize) {
                             symbolSizeSliderValues = [minSize, maxSize];
@@ -167,6 +185,21 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                         else {
                             SliderVars.colorSizeSlider.container.style.display = "block";
                             SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
+                        }
+                        if (theme === "above-and-below") {
+                            SliderVars.colorSizeSlider.stops = [
+                                { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
+                                { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
+                                { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
+                                { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
+                                { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
+                            ];
+                            SliderVars.colorSizeSlider.primaryHandleEnabled = true;
+                            SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
+                        }
+                        else {
+                            SliderVars.colorSizeSlider.primaryHandleEnabled = false;
+                            SliderVars.colorSizeSlider.handlesSyncedToPrimary = false;
                         }
                         updateSymbolSizesSlider({ values: symbolSizeSliderValues });
                         return [2 /*return*/];
