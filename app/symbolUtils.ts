@@ -1,5 +1,9 @@
 import CIMSymbol = require("esri/symbols/CIMSymbol");
 import Color = require("esri/Color");
+import WebStyleSymbol = require("esri/symbols/WebStyleSymbol");
+import promiseUtils = require("esri/core/promiseUtils");
+import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
+import { SimpleMarkerSymbol } from "esri/symbols";
 
 export const donutSymbol = new CIMSymbol({
   "data": {
@@ -354,4 +358,139 @@ export function updateSymbolStroke(symbol: CIMSymbol, width: number, color: Colo
   symbol.data.symbol.symbolLayers[0].markerGraphics[0].symbol.symbolLayers[0].color = restColor;
   symbol.data.symbol.symbolLayers[0].markerGraphics[0].symbol.symbolLayers[0].width = width;
 
+}
+
+const basicCircle = new SimpleMarkerSymbol({
+  style: "circle"
+});
+
+const styleUrl = "https://www.arcgis.com/sharing/rest/content/items/a19aa7c44b824838a8bb1ba3492f7780/data";
+
+const upCaret = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol"
+});
+
+const downCaret = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_1"
+});
+
+const upArrow = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_2"
+});
+
+const downArrow = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_3"
+});
+
+const plus = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_4"
+});
+
+const minus = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_5"
+});
+
+const empty = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_6"
+});
+
+const filled = new WebStyleSymbol({
+  styleUrl,
+  name: "Point symbol_7"
+});
+
+const triangleUp = new SimpleMarkerSymbol({
+  style: "triangle",
+  angle: 0,
+  outline: {
+    width: 0.5,
+    color: "rgba(255,255,255,0.3)"
+  }
+});
+
+const triangleDown = new SimpleMarkerSymbol({
+  style: "triangle",
+  angle: 180,
+  outline: {
+    width: 0.5,
+    color: "rgba(255,255,255,0.3)"
+  }
+});
+
+export type SymbolNames = "donuts" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles";
+
+export const symbolOptions = {
+  donuts: {
+    name: "donuts",
+    above: basicCircle,
+    below: donutSymbol
+  },
+  carets: {
+    name: "carets",
+    above: upCaret,
+    below: downCaret
+  },
+  arrows: {
+    name: "arrows",
+    above: upArrow,
+    below: downArrow
+  },
+  plusMinus: {
+    name: "plusMinus",
+    above: plus,
+    below: minus
+  },
+  radio: {
+    name: "radio",
+    above: filled,
+    below: empty
+  },
+  triangles: {
+    name: "triangles",
+    above: triangleUp,
+    below: triangleDown
+  }
+}
+
+interface SymbolOption {
+  name: string,
+  above: CIMSymbol | WebStyleSymbol | SimpleMarkerSymbol,
+  below: CIMSymbol | WebStyleSymbol | SimpleMarkerSymbol
+}
+
+export let selectedSymbols: SymbolOption = symbolOptions.donuts;
+
+export function updateSelectedSymbols (name: SymbolNames | string){
+  selectedSymbols = symbolOptions[name];
+}
+
+export async function fetchCIMdata(){
+  const response = await promiseUtils.eachAlways([
+    upCaret.fetchCIMSymbol(),
+    downCaret.fetchCIMSymbol(),
+    upArrow.fetchCIMSymbol(),
+    downArrow.fetchCIMSymbol(),
+    plus.fetchCIMSymbol(),
+    minus.fetchCIMSymbol(),
+    filled.fetchCIMSymbol(),
+    empty.fetchCIMSymbol()
+  ]);
+
+  console.log(response);
+
+  symbolOptions.carets.above = response[0].value;
+  symbolOptions.carets.below = response[1].value;
+  symbolOptions.arrows.above = response[2].value;
+  symbolOptions.arrows.below = response[3].value;
+  symbolOptions.plusMinus.above = response[4].value;
+  symbolOptions.plusMinus.below = response[5].value;
+  symbolOptions.radio.above = response[6].value;
+  symbolOptions.radio.below = response[7].value;
 }

@@ -8,7 +8,9 @@ import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
-import { updateRenderer ,SizeParams } from './rendererUtils';
+import { updateRenderer ,SizeParams, updateAboveAndBelowRendererSymbols } from './rendererUtils';
+import { fetchCIMdata, selectedSymbols, SymbolNames, updateSelectedSymbols } from "./symbolUtils";
+import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 ( async () => {
 
@@ -58,6 +60,7 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
 
   await view.when();
   await layer.when();
+  await fetchCIMdata();
 
   const saveBtn = document.getElementById("save-map");
 
@@ -89,6 +92,15 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
 
   const themeSelect = document.getElementById("theme-select") as HTMLSelectElement;
   const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
+  const symbolsContainer = document.getElementById("symbols-container") as HTMLSelectElement;
+  const symbolsSelect = document.getElementById("symbols-select") as HTMLSelectElement;
+
+  symbolsSelect.addEventListener("change", symbolChange);
+
+  function symbolChange (){
+    updateSelectedSymbols(symbolsSelect.value);
+    layer.renderer = updateAboveAndBelowRendererSymbols(layer.renderer as ClassBreaksRenderer, symbolsSelect.value as SymbolNames);
+  }
 
   fieldsSelect.addEventListener("change", inputChange);
   normalizationFieldSelect.addEventListener("change", () => {
@@ -98,6 +110,9 @@ import { updateRenderer ,SizeParams } from './rendererUtils';
   });
   valueExpressionTextArea.addEventListener("blur", inputChange);
   themeSelect.addEventListener("change", inputChange);
+  themeSelect.addEventListener("change", () => {
+    symbolsContainer.style.display = themeSelect.value === "above-and-below" ? "block" : "none";
+  });
   styleSelect.addEventListener("change", inputChange);
 
   function inputChange (){

@@ -34,10 +34,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils"], function (require, exports, WebMap, MapView, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebMap, MapView, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
+        function symbolChange() {
+            symbolUtils_1.updateSelectedSymbols(symbolsSelect.value);
+            layer.renderer = rendererUtils_1.updateAboveAndBelowRendererSymbols(layer.renderer, symbolsSelect.value);
+        }
         function inputChange() {
             var field = fieldsSelect.value;
             var normalizationField = normalizationFieldSelect.value;
@@ -70,7 +74,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             document.getElementById("info").innerHTML = info;
             overlay.style.visibility = "visible";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, overlay, ok;
+        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -119,16 +123,19 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     return [4 /*yield*/, layer.when()];
                 case 2:
                     _a.sent();
+                    return [4 /*yield*/, symbolUtils_1.fetchCIMdata()];
+                case 3:
+                    _a.sent();
                     saveBtn = document.getElementById("save-map");
                     originalRenderer = layer.renderer.clone();
                     return [4 /*yield*/, layer.queryExtent()];
-                case 3:
+                case 4:
                     extent = (_a.sent()).extent;
                     view.extent = extent;
                     fieldContainer = document.getElementById("field-container");
                     normalizationFieldContainer = document.getElementById("normalization-field-container");
                     return [4 /*yield*/, layerUtils_1.getNumberFields(layer)];
-                case 4:
+                case 5:
                     numberFields = _a.sent();
                     fieldsSelect = layerUtils_1.createFieldSelect(numberFields);
                     fieldContainer.appendChild(fieldsSelect);
@@ -144,6 +151,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     });
                     themeSelect = document.getElementById("theme-select");
                     styleSelect = document.getElementById("style-select");
+                    symbolsContainer = document.getElementById("symbols-container");
+                    symbolsSelect = document.getElementById("symbols-select");
+                    symbolsSelect.addEventListener("change", symbolChange);
                     fieldsSelect.addEventListener("change", inputChange);
                     normalizationFieldSelect.addEventListener("change", function () {
                         if (fieldsSelect.value) {
@@ -152,6 +162,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     });
                     valueExpressionTextArea.addEventListener("blur", inputChange);
                     themeSelect.addEventListener("change", inputChange);
+                    themeSelect.addEventListener("change", function () {
+                        symbolsContainer.style.display = themeSelect.value === "above-and-below" ? "block" : "none";
+                    });
                     styleSelect.addEventListener("change", inputChange);
                     saveBtn.addEventListener("click", function () { return __awaiter(void 0, void 0, void 0, function () {
                         var item, itemPageUrl, link, error_1;

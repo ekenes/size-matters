@@ -157,23 +157,55 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
             console.error("The provided renderer does not use the above and below theme");
             return renderer;
         }
-        var originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
-        cimSymbolUtils.applyCIMSymbolColor(symbolUtils_1.donutSymbol, originalSymbol.color);
-        var symbolSize = originalSymbol.size;
-        var outline = originalSymbol.outline;
-        cimSymbolUtils.scaleCIMSymbolTo(symbolUtils_1.donutSymbol, symbolSize);
-        symbolUtils_1.updateSymbolStroke(symbolUtils_1.donutSymbol, outline.width, outline.color);
+        var aboveSymbol, belowSymbol;
+        if (symbolUtils_1.selectedSymbols.name === "donuts") {
+            aboveSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
+            belowSymbol = symbolUtils_1.donutSymbol;
+            cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
+            var symbolSize = aboveSymbol.size;
+            var outline = aboveSymbol.outline;
+            cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
+            symbolUtils_1.updateSymbolStroke(belowSymbol, outline.width, outline.color);
+        }
+        else {
+            aboveSymbol = symbolUtils_1.selectedSymbols.above;
+            belowSymbol = symbolUtils_1.selectedSymbols.below;
+        }
         rendererWithDonuts.field = field;
         rendererWithDonuts.normalizationField = normalizationField;
         rendererWithDonuts.valueExpression = valueExpression;
         rendererWithDonuts.classBreakInfos = [
-            new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: symbolUtils_1.donutSymbol }),
-            new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
+            new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: belowSymbol }),
+            new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: aboveSymbol }),
         ];
         rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below";
         return rendererWithDonuts;
     }
     exports.createRendererWithDonutSymbol = createRendererWithDonutSymbol;
+    function updateAboveAndBelowRendererSymbols(renderer, symbolName) {
+        var rendererWithDonuts = renderer.clone();
+        var originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
+        var color = originalSymbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(originalSymbol) : originalSymbol.color;
+        var symbols = symbolUtils_1.selectedSymbols;
+        var aboveSymbol = symbols.above;
+        var belowSymbol = symbols.below;
+        if (aboveSymbol.type === "cim") {
+            cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, color);
+        }
+        else {
+            aboveSymbol.color = color;
+        }
+        if (belowSymbol.type === "cim") {
+            cimSymbolUtils.applyCIMSymbolColor(belowSymbol, color);
+        }
+        else {
+            belowSymbol.color = color;
+        }
+        rendererWithDonuts.classBreakInfos[0].symbol = aboveSymbol;
+        rendererWithDonuts.classBreakInfos[1].symbol = belowSymbol;
+        return rendererWithDonuts;
+    }
+    exports.updateAboveAndBelowRendererSymbols = updateAboveAndBelowRendererSymbols;
     function removeDonutFromRenderer(renderer) {
         var rendererWithoutDonuts = renderer.clone();
         var classBreakInfos = rendererWithoutDonuts.classBreakInfos;

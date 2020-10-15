@@ -57,7 +57,6 @@ body,
 #save-map{
   height: 32px;
   width: 32px;
-  /* display: none; */
 }
 
 .size-options-labels {
@@ -106,4 +105,8 @@ body,
   background-color: white;
   border: 1px solid grey;
   visibility: hidden;
+}
+
+#symbols-container {
+  display: none;
 }

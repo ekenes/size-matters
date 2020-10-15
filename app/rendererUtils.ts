@@ -8,8 +8,8 @@ import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUt
 import { SliderVars } from "./sliderUtils";
 import { createOpacitySizeRenderer, opacityValuesContainer } from "./opacitySizeRendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { SimpleMarkerSymbol } from "esri/symbols";
-import { donutSymbol, updateSymbolStroke } from "./symbolUtils";
+import { CIMSymbol, SimpleMarkerSymbol } from "esri/symbols";
+import { donutSymbol, selectedSymbols, updateSymbolStroke, SymbolNames, symbolOptions } from "./symbolUtils";
 import { LayerVars } from "./layerUtils";
 
 export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
@@ -128,25 +128,61 @@ export function createRendererWithDonutSymbol(renderer: ClassBreaksRenderer): Cl
     return renderer;
   }
 
-  const originalSymbol = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
-  cimSymbolUtils.applyCIMSymbolColor(donutSymbol, originalSymbol.color);
+  let aboveSymbol, belowSymbol;
 
-  const symbolSize = originalSymbol.size;
-  const outline = originalSymbol.outline;
+  if( selectedSymbols.name === "donuts"){
+    aboveSymbol = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
+    belowSymbol = donutSymbol;
+    cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
 
-  cimSymbolUtils.scaleCIMSymbolTo(donutSymbol, symbolSize);
+    const symbolSize = aboveSymbol.size;
+    const outline = aboveSymbol.outline;
 
-  updateSymbolStroke(donutSymbol, outline.width, outline.color);
+    cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
+
+    updateSymbolStroke(belowSymbol, outline.width, outline.color);
+  } else {
+    aboveSymbol = selectedSymbols.above;
+    belowSymbol = selectedSymbols.below;
+  }
 
   rendererWithDonuts.field = field;
   rendererWithDonuts.normalizationField = normalizationField;
   rendererWithDonuts.valueExpression = valueExpression;
   rendererWithDonuts.classBreakInfos = [
-    new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: donutSymbol }),
-    new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: originalSymbol }),
+    new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: belowSymbol }),
+    new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: aboveSymbol }),
   ];
 
-  rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below"
+  rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below";
+
+  return rendererWithDonuts;
+}
+
+export function updateAboveAndBelowRendererSymbols(renderer: ClassBreaksRenderer, symbolName: SymbolNames ): ClassBreaksRenderer {
+  const rendererWithDonuts = renderer.clone();
+  const originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
+  const color = originalSymbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(originalSymbol as CIMSymbol) : originalSymbol.color;
+
+  const symbols = selectedSymbols;
+
+  const aboveSymbol = symbols.above;
+  const belowSymbol = symbols.below;
+
+  if(aboveSymbol.type === "cim"){
+    cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, color);
+  } else {
+    aboveSymbol.color = color;
+  }
+
+  if(belowSymbol.type === "cim"){
+    cimSymbolUtils.applyCIMSymbolColor(belowSymbol, color);
+  } else {
+    belowSymbol.color = color;
+  }
+
+  rendererWithDonuts.classBreakInfos[0].symbol = aboveSymbol;
+  rendererWithDonuts.classBreakInfos[1].symbol = belowSymbol;
 
   return rendererWithDonuts;
 }
