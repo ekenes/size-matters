@@ -1,6 +1,7 @@
 import esri = __esri;
 import WebMap = require("esri/WebMap");
 import MapView = require("esri/views/MapView");
+import esriConfig = require("esri/config");
 
 import Expand = require("esri/widgets/Expand");
 import BasemapGallery = require("esri/widgets/BasemapGallery");
@@ -156,7 +157,8 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
       const item = await webmap.saveAs(new PortalItem({
         title: `[${styleSelect.value} - ${themeSelect.value}] ${layer.title}`,
         tags: [ "test", "size" ],
-        description: `Webmap testing various size styles and themes.`
+        description: `Webmap testing various size styles and themes.`,
+        portal: layer.portalItem.portal
       }), {
         ignoreUnsupported: false
       });

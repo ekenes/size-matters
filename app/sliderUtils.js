@@ -179,6 +179,12 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "max-change"
                             ], function () {
                                 var newRenderer = colorSizeRendererUtils_1.updateRendererFromColorSizeSlider(layerUtils_1.LayerVars.layer.renderer, SliderVars.colorSizeSlider);
+                                if (newRenderer.classBreakInfos.length > 1) {
+                                    var midIndex = SliderVars.colorSizeSlider.stops.length === 5 ? 2 : 1;
+                                    var midValue = SliderVars.colorSizeSlider.stops[midIndex].value;
+                                    newRenderer.classBreakInfos[0].maxValue = midValue;
+                                    newRenderer.classBreakInfos[1].minValue = midValue;
+                                }
                                 layerUtils_1.LayerVars.layer.renderer = newRenderer;
                             });
                         }

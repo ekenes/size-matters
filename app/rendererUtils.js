@@ -91,6 +91,9 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         if (theme === "above-and-below") {
                             useDonutsParentElement.style.display = "block";
                         }
+                        else {
+                            useDonutsParentElement.style.display = "none";
+                        }
                         symbolColorContainer.style.display = "none";
                         opacityOptionsElement.style.display = "none";
                         colorRampsElement.style.display = "flex";

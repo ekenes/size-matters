@@ -60,6 +60,8 @@ export async function updateRenderer(params: SizeParams){
       }
       if(theme === "above-and-below"){
         useDonutsParentElement.style.display = "block";
+      } else {
+        useDonutsParentElement.style.display = "none";
       }
       symbolColorContainer.style.display = "none";
       opacityOptionsElement.style.display = "none";

@@ -166,7 +166,15 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromColorSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.colorSizeSlider);
+      const newRenderer = updateRendererFromColorSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.colorSizeSlider) as ClassBreaksRenderer;
+
+      if (newRenderer.classBreakInfos.length > 1){
+        const midIndex = SliderVars.colorSizeSlider.stops.length === 5 ? 2 : 1;
+        const midValue = SliderVars.colorSizeSlider.stops[midIndex].value;
+        newRenderer.classBreakInfos[0].maxValue = midValue;
+        newRenderer.classBreakInfos[1].minValue = midValue;
+      }
+
       LayerVars.layer.renderer = newRenderer;
     });
   } else {

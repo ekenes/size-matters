@@ -179,7 +179,8 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                                     return [4 /*yield*/, webmap.saveAs(new PortalItem({
                                             title: "[" + styleSelect.value + " - " + themeSelect.value + "] " + layer.title,
                                             tags: ["test", "size"],
-                                            description: "Webmap testing various size styles and themes."
+                                            description: "Webmap testing various size styles and themes.",
+                                            portal: layer.portalItem.portal
                                         }), {
                                             ignoreUnsupported: false
                                         })];
