@@ -350,6 +350,207 @@ export const donutSymbol = new CIMSymbol({
   }
 });
 
+export const ringSymbol = new CIMSymbol({
+  "data": {
+    "type": "CIMSymbolReference",
+    "symbol": {
+      "type": "CIMPointSymbol",
+      "symbolLayers": [
+        {
+          "type": "CIMVectorMarker",
+          "enable": true,
+          "colorLocked": false,
+          "anchorPoint": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "anchorPointUnits": "Relative",
+          "dominantSizeAxis3D": "Y",
+          "size": 20,
+          "billboardMode3D": "FaceNearPlane",
+          "frame": {
+            "xmin": 0,
+            "ymin": 0,
+            "xmax": 17,
+            "ymax": 17
+          },
+          "markerGraphics": [
+            {
+              "type": "CIMMarkerGraphic",
+              "geometry": {
+                "paths": [
+                  [
+                    [
+                      12.75,
+                      8.5
+                    ],
+                    [
+                      12.67,
+                      7.65
+                    ],
+                    [
+                      12.42,
+                      6.85
+                    ],
+                    [
+                      12.04,
+                      6.13
+                    ],
+                    [
+                      11.51,
+                      5.49
+                    ],
+                    [
+                      10.88,
+                      4.97
+                    ],
+                    [
+                      10.15,
+                      4.58
+                    ],
+                    [
+                      9.35,
+                      4.33
+                    ],
+                    [
+                      8.5,
+                      4.25
+                    ],
+                    [
+                      7.65,
+                      4.33
+                    ],
+                    [
+                      6.85,
+                      4.58
+                    ],
+                    [
+                      6.12,
+                      4.97
+                    ],
+                    [
+                      5.49,
+                      5.49
+                    ],
+                    [
+                      4.97,
+                      6.12
+                    ],
+                    [
+                      4.58,
+                      6.85
+                    ],
+                    [
+                      4.33,
+                      7.65
+                    ],
+                    [
+                      4.25,
+                      8.5
+                    ],
+                    [
+                      4.33,
+                      9.35
+                    ],
+                    [
+                      4.58,
+                      10.15
+                    ],
+                    [
+                      4.97,
+                      10.88
+                    ],
+                    [
+                      5.49,
+                      11.51
+                    ],
+                    [
+                      6.12,
+                      12.03
+                    ],
+                    [
+                      6.85,
+                      12.42
+                    ],
+                    [
+                      7.65,
+                      12.67
+                    ],
+                    [
+                      8.5,
+                      12.75
+                    ],
+                    [
+                      9.35,
+                      12.67
+                    ],
+                    [
+                      10.15,
+                      12.42
+                    ],
+                    [
+                      10.88,
+                      12.03
+                    ],
+                    [
+                      11.51,
+                      11.51
+                    ],
+                    [
+                      12.04,
+                      10.87
+                    ],
+                    [
+                      12.42,
+                      10.15
+                    ],
+                    [
+                      12.67,
+                      9.35
+                    ],
+                    [
+                      12.75,
+                      8.5
+                    ]
+                  ]
+                ]
+              },
+              "symbol": {
+                "type": "CIMLineSymbol",
+                "symbolLayers": [
+                  {
+                    "type": "CIMSolidStroke",
+                    "enable": true,
+                    "capStyle": "Round",
+                    "joinStyle": "Round",
+                    "lineStyle3D": "Strip",
+                    "miterLimit": 10,
+                    "width": 2,
+                    "color": [
+                      0,
+                      0,
+                      0,
+                      255
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "scaleSymbolsProportionally": true,
+          "respectFrame": true
+        }
+      ],
+      "haloSize": 1,
+      "scaleX": 1,
+      "angleAlignment": "Display",
+      "version": "2.0.0",
+      "build": "8933"
+    }
+  }
+});
+
 export function updateSymbolStroke(symbol: CIMSymbol, width: number, color: Color){
 
   const restColor = color.toRgba();
@@ -361,7 +562,11 @@ export function updateSymbolStroke(symbol: CIMSymbol, width: number, color: Colo
 }
 
 const basicCircle = new SimpleMarkerSymbol({
-  style: "circle"
+  style: "circle",
+  outline: {
+    width: 0.5,
+    color: "rgba(255,255,255,0.3)"
+  }
 });
 
 const styleUrl = "https://www.arcgis.com/sharing/rest/content/items/a19aa7c44b824838a8bb1ba3492f7780/data";
@@ -424,13 +629,18 @@ const triangleDown = new SimpleMarkerSymbol({
   }
 });
 
-export type SymbolNames = "donuts" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles";
+export type SymbolNames = "donuts" | "rings" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles";
 
 export const symbolOptions = {
   donuts: {
     name: "donuts",
     above: basicCircle,
     below: donutSymbol
+  },
+  rings: {
+    name: "rings",
+    above: basicCircle,
+    below: ringSymbol
   },
   carets: {
     name: "carets",
@@ -482,8 +692,6 @@ export async function fetchCIMdata(){
     filled.fetchCIMSymbol(),
     empty.fetchCIMSymbol()
   ]);
-
-  console.log(response);
 
   symbolOptions.carets.above = response[0].value;
   symbolOptions.carets.below = response[1].value;

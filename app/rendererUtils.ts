@@ -183,8 +183,8 @@ export function updateAboveAndBelowRendererSymbols(renderer: ClassBreaksRenderer
     belowSymbol.color = color;
   }
 
-  rendererWithDonuts.classBreakInfos[0].symbol = aboveSymbol;
-  rendererWithDonuts.classBreakInfos[1].symbol = belowSymbol;
+  rendererWithDonuts.classBreakInfos[0].symbol = belowSymbol;
+  rendererWithDonuts.classBreakInfos[1].symbol = aboveSymbol;
 
   return rendererWithDonuts;
 }

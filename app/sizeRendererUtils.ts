@@ -110,7 +110,12 @@ export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVaria
   const oldSizeVariable = sizeVariable.clone();
 
 
-  const midDataValue = avg; //(avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+  const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+  const aboveAvgSpread = max - midDataValue;
+  const belowAvgSpread = midDataValue - min;
+  const maxSpread = aboveAvgSpread > belowAvgSpread ? aboveAvgSpread : belowAvgSpread;
+  const maxDataValue = midDataValue + maxSpread;
+  const minDataValue = midDataValue - maxSpread;
 
   let minSize: number, maxSize: number = null;
 
@@ -133,15 +138,15 @@ export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVaria
   }
 
   const midSize = calcuateMidSize(minSize, maxSize);
-  const minMidDataValue = midDataValue - (( midDataValue - min ) / 2);
-  const maxMidDataValue = (( max - midDataValue ) / 2) + midDataValue;
+  const minMidDataValue = midDataValue - (( midDataValue - minDataValue ) / 2);
+  const maxMidDataValue = (( maxDataValue - midDataValue ) / 2) + midDataValue;
 
   const stops = [
-    new SizeStop({ value: min, size: maxSize }),
+    new SizeStop({ value: minDataValue, size: maxSize }),
     new SizeStop({ value: minMidDataValue, size: midSize }),
     new SizeStop({ value: midDataValue, size: minSize }),
     new SizeStop({ value: maxMidDataValue, size: midSize }),
-    new SizeStop({ value: max, size: maxSize })
+    new SizeStop({ value: maxDataValue, size: maxSize })
   ];
 
   sizeVariable.minDataValue = null;
