@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebMap, MapView, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
+define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/watchUtils", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebMap, MapView, watchUtils, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -74,7 +74,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
             document.getElementById("info").innerHTML = info;
             overlay.style.visibility = "visible";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, saveBtn, originalRenderer, extent, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, overlay, ok;
+        var layer, webmap, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -126,12 +126,27 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/widgets
                     return [4 /*yield*/, symbolUtils_1.fetchCIMdata()];
                 case 3:
                     _a.sent();
+                    if (layer.geometryType === "polyline") {
+                        symbolUtils_1.updateSelectedSymbols("lines");
+                    }
+                    return [4 /*yield*/, view.whenLayerView(layer)];
+                case 4:
+                    layerView = _a.sent();
+                    watchUtils.whenFalseOnce(layerView, "updating", function () { return __awaiter(void 0, void 0, void 0, function () {
+                        var extent;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, layerView.queryExtent()];
+                                case 1:
+                                    extent = (_a.sent()).extent;
+                                    console.log(extent);
+                                    view.goTo(extent);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
                     saveBtn = document.getElementById("save-map");
                     originalRenderer = layer.renderer.clone();
-                    return [4 /*yield*/, layer.queryExtent()];
-                case 4:
-                    extent = (_a.sent()).extent;
-                    view.extent = extent;
                     fieldContainer = document.getElementById("field-container");
                     normalizationFieldContainer = document.getElementById("normalization-field-container");
                     return [4 /*yield*/, layerUtils_1.getNumberFields(layer)];

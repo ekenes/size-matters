@@ -1,7 +1,7 @@
 import esri = __esri;
 import WebMap = require("esri/WebMap");
 import MapView = require("esri/views/MapView");
-import esriConfig = require("esri/config");
+import watchUtils = require("esri/core/watchUtils");
 
 import Expand = require("esri/widgets/Expand");
 import BasemapGallery = require("esri/widgets/BasemapGallery");
@@ -10,7 +10,7 @@ import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
 import { updateRenderer ,SizeParams, updateAboveAndBelowRendererSymbols } from './rendererUtils';
-import { fetchCIMdata, selectedSymbols, SymbolNames, updateSelectedSymbols } from "./symbolUtils";
+import { fetchCIMdata, SymbolNames, updateSelectedSymbols } from "./symbolUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 ( async () => {
@@ -63,12 +63,24 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   await layer.when();
   await fetchCIMdata();
 
+  if(layer.geometryType === "polyline"){
+    updateSelectedSymbols("lines");
+  }
+
+  const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
+  watchUtils.whenFalseOnce(layerView, "updating", async () => {
+    const { extent } = await layerView.queryExtent();
+    console.log(extent);
+    view.goTo(extent);
+  });
+
+  // const { extent } = await layer.queryExtent();
+  // view.goTo(extent);
+
   const saveBtn = document.getElementById("save-map");
 
   const originalRenderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
 
-  const { extent } = await layer.queryExtent();
-  view.extent = extent;
 
   const fieldContainer = document.getElementById("field-container");
   const normalizationFieldContainer = document.getElementById("normalization-field-container");

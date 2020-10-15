@@ -679,6 +679,17 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             name: "triangles",
             above: triangleUp,
             below: triangleDown
+        },
+        lines: {
+            name: "lines",
+            above: new symbols_1.SimpleLineSymbol({
+                width: 2,
+                style: "solid"
+            }),
+            below: new symbols_1.SimpleLineSymbol({
+                width: 2,
+                style: "short-dot"
+            })
         }
     };
     exports.selectedSymbols = exports.symbolOptions.donuts;

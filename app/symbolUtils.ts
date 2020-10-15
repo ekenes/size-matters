@@ -3,7 +3,7 @@ import Color = require("esri/Color");
 import WebStyleSymbol = require("esri/symbols/WebStyleSymbol");
 import promiseUtils = require("esri/core/promiseUtils");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
-import { SimpleMarkerSymbol } from "esri/symbols";
+import { SimpleLineSymbol, SimpleMarkerSymbol } from "esri/symbols";
 
 export const donutSymbol = new CIMSymbol({
   "data": {
@@ -666,13 +666,24 @@ export const symbolOptions = {
     name: "triangles",
     above: triangleUp,
     below: triangleDown
+  },
+  lines: {
+    name: "lines",
+    above: new SimpleLineSymbol({
+      width: 2,
+      style: "solid"
+    }),
+    below: new SimpleLineSymbol({
+      width: 2,
+      style: "short-dot"
+    })
   }
 }
 
 interface SymbolOption {
   name: string,
-  above: CIMSymbol | WebStyleSymbol | SimpleMarkerSymbol,
-  below: CIMSymbol | WebStyleSymbol | SimpleMarkerSymbol
+  above: CIMSymbol | WebStyleSymbol | SimpleMarkerSymbol | SimpleLineSymbol,
+  below: CIMSymbol | WebStyleSymbol | SimpleMarkerSymbol | SimpleLineSymbol
 }
 
 export let selectedSymbols: SymbolOption = symbolOptions.donuts;
