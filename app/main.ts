@@ -10,7 +10,7 @@ import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
 import { updateRenderer ,SizeParams, updateAboveAndBelowRendererSymbols } from './rendererUtils';
-import { fetchCIMdata, SymbolNames, updateSelectedSymbols } from "./symbolUtils";
+import { fetchCIMdata, selectedSymbols, SymbolNames, updateSelectedSymbols } from "./symbolUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 ( async () => {
@@ -124,7 +124,7 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   valueExpressionTextArea.addEventListener("blur", inputChange);
   themeSelect.addEventListener("change", inputChange);
   themeSelect.addEventListener("change", () => {
-    symbolsContainer.style.display = themeSelect.value === "above-and-below" ? "block" : "none";
+    symbolsContainer.style.display = themeSelect.value === "above-and-below" && selectedSymbols.name !== "lines" ? "block" : "none";
   });
   styleSelect.addEventListener("change", inputChange);
 
@@ -201,6 +201,5 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   ok.addEventListener("click", function () {
     overlay.style.visibility = "hidden";
   });
-
 
 })();

@@ -84,7 +84,7 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         result.size.visualVariables = sizeVariables;
                         result.color.visualVariable = colorVariables[0];
                         if (theme === "above-and-below" && exports.useDonutsElement.checked) {
-                            result.renderer = rendererUtils_1.createRendererWithDonutSymbol(result.renderer);
+                            result.renderer = rendererUtils_1.createAboveAndBelowRenderer(result.renderer);
                         }
                         return [4 /*yield*/, sliderUtils_1.updateColorSizeSlider({
                                 layer: layer,

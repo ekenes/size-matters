@@ -178,7 +178,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                     valueExpressionTextArea.addEventListener("blur", inputChange);
                     themeSelect.addEventListener("change", inputChange);
                     themeSelect.addEventListener("change", function () {
-                        symbolsContainer.style.display = themeSelect.value === "above-and-below" ? "block" : "none";
+                        symbolsContainer.style.display = themeSelect.value === "above-and-below" && symbolUtils_1.selectedSymbols.name !== "lines" ? "block" : "none";
                     });
                     styleSelect.addEventListener("change", inputChange);
                     saveBtn.addEventListener("click", function () { return __awaiter(void 0, void 0, void 0, function () {

@@ -285,9 +285,10 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
 
       LayerVars.layer.renderer = renderer;
 
-      if (LayerVars.layer.renderer.authoringInfo.type === "univariate-color-size"){
+      if (SliderVars.colorSizeSlider){
         updateColorSizeSliderSizes(sizeVariable);
-      } else {
+      }
+      if (SliderVars.slider) {
         updateSizeSliderSizes(sizeVariable);
       }
     });

@@ -4,7 +4,7 @@ import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
 
 import { updateSizeSlider, colorPicker } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
+import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor, createAboveAndBelowRenderer } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
@@ -46,7 +46,7 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
   result.visualVariables = sizeVariables;
 
   if(theme === "above-and-below"){
-    result.renderer = createRendererWithDonutSymbol(result.renderer);
+    result.renderer = createAboveAndBelowRenderer(result.renderer);
   }
 
   await updateSizeSlider({

@@ -7,7 +7,7 @@ import lang = require("esri/core/lang");
 
 import { updateColorSizeSlider, colorPicker, SliderVars, updateColorSizeSliderColors } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor, createRendererWithDonutSymbol } from "./rendererUtils";
+import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor, createAboveAndBelowRenderer } from "./rendererUtils";
 import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { LayerVars } from "./layerUtils";
@@ -64,7 +64,7 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
   result.color.visualVariable = colorVariables[0];
 
   if(theme === "above-and-below" && useDonutsElement.checked){
-    result.renderer = createRendererWithDonutSymbol(result.renderer);
+    result.renderer = createAboveAndBelowRenderer(result.renderer);
   }
 
   await updateColorSizeSlider({

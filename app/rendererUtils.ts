@@ -120,7 +120,7 @@ export function getSizeRendererColor(renderer: ClassBreaksRenderer): Color {
   return solidSymbol.color;
 }
 
-export function createRendererWithDonutSymbol(renderer: ClassBreaksRenderer): ClassBreaksRenderer {
+export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer): ClassBreaksRenderer {
   const rendererWithDonuts = renderer.clone();
   const sizeVariable = getVisualVariableByType(rendererWithDonuts, "size") as esri.SizeVariable;
   const { stops, field, normalizationField, valueExpression } = sizeVariable;
@@ -144,8 +144,11 @@ export function createRendererWithDonutSymbol(renderer: ClassBreaksRenderer): Cl
 
     updateSymbolStroke(belowSymbol, outline.width, outline.color);
   } else {
+    const color = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).color;
     aboveSymbol = selectedSymbols.above;
     belowSymbol = selectedSymbols.below;
+    aboveSymbol.color = color;
+    belowSymbol.color = color;
   }
 
   rendererWithDonuts.field = field;
@@ -207,5 +210,5 @@ function removeDonutFromRenderer(renderer: ClassBreaksRenderer): ClassBreaksRend
 
 useDonutsElement.addEventListener("change", () => {
   const renderer = LayerVars.layer.renderer as ClassBreaksRenderer;
-  LayerVars.layer.renderer = useDonutsElement.checked ? createRendererWithDonutSymbol(renderer) : removeDonutFromRenderer(renderer);
+  LayerVars.layer.renderer = useDonutsElement.checked ? createAboveAndBelowRenderer(renderer) : removeDonutFromRenderer(renderer);
 });

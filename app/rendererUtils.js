@@ -152,7 +152,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
         return solidSymbol.color;
     }
     exports.getSizeRendererColor = getSizeRendererColor;
-    function createRendererWithDonutSymbol(renderer) {
+    function createAboveAndBelowRenderer(renderer) {
         var rendererWithDonuts = renderer.clone();
         var sizeVariable = getVisualVariableByType(rendererWithDonuts, "size");
         var stops = sizeVariable.stops, field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
@@ -171,8 +171,11 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
             symbolUtils_1.updateSymbolStroke(belowSymbol, outline.width, outline.color);
         }
         else {
+            var color = rendererWithDonuts.classBreakInfos[0].symbol.color;
             aboveSymbol = symbolUtils_1.selectedSymbols.above;
             belowSymbol = symbolUtils_1.selectedSymbols.below;
+            aboveSymbol.color = color;
+            belowSymbol.color = color;
         }
         rendererWithDonuts.field = field;
         rendererWithDonuts.normalizationField = normalizationField;
@@ -184,7 +187,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
         rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below";
         return rendererWithDonuts;
     }
-    exports.createRendererWithDonutSymbol = createRendererWithDonutSymbol;
+    exports.createAboveAndBelowRenderer = createAboveAndBelowRenderer;
     function updateAboveAndBelowRendererSymbols(renderer, symbolName) {
         var rendererWithDonuts = renderer.clone();
         var originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
@@ -223,7 +226,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     }
     colorSizeRendererUtils_1.useDonutsElement.addEventListener("change", function () {
         var renderer = layerUtils_1.LayerVars.layer.renderer;
-        layerUtils_1.LayerVars.layer.renderer = colorSizeRendererUtils_1.useDonutsElement.checked ? createRendererWithDonutSymbol(renderer) : removeDonutFromRenderer(renderer);
+        layerUtils_1.LayerVars.layer.renderer = colorSizeRendererUtils_1.useDonutsElement.checked ? createAboveAndBelowRenderer(renderer) : removeDonutFromRenderer(renderer);
     });
 });
 //# sourceMappingURL=rendererUtils.js.map

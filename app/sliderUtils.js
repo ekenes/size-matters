@@ -297,10 +297,10 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                     sizeVariable.maxSize = values[1];
                 }
                 layerUtils_1.LayerVars.layer.renderer = renderer;
-                if (layerUtils_1.LayerVars.layer.renderer.authoringInfo.type === "univariate-color-size") {
+                if (SliderVars.colorSizeSlider) {
                     updateColorSizeSliderSizes(sizeVariable);
                 }
-                else {
+                if (SliderVars.slider) {
                     updateSizeSliderSizes(sizeVariable);
                 }
             });
