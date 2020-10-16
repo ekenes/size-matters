@@ -54,7 +54,7 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
     field, normalizationField, valueExpression
   });
 
-  const visualVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
+  const visualVariables = updateVariablesFromTheme(result, theme, percentileStats);
   result.renderer.visualVariables = visualVariables;
 
   const sizeVariables = getVisualVariablesByType(result.renderer, "size") as esri.SizeVariable[];
@@ -96,12 +96,15 @@ function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizePa
   switch( theme ){
     case "above-average":
       updateVariableToAboveAverageTheme(sizeVariable, stats);
+      updateColorVariableToAboveAverageTheme( colorVariable, stats);
       break;
     case "below-average":
       updateVariableToBelowAverageTheme(sizeVariable, stats);
+      updateColorVariableToBelowAverageTheme( colorVariable, stats);
       break;
     case "90-10":
       updateVariableTo9010Theme(sizeVariable, percentileStats);
+      updateColorVariableTo9010Theme( colorVariable, percentileStats);
       break;
     case "above-and-below":
       updateVariableToAboveAndBelowTheme(sizeVariable, stats);
@@ -112,70 +115,31 @@ function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizePa
 
   renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, colorVariable]);
 
-  return renderer.visualVariables//[sizeVariable, colorVariable];
+  return renderer.visualVariables;
 }
 
-// function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-//   colorVariable.minDataValue = stats.avg;
-// }
+function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+  colorVariable.stops[0].value = stats.avg;
+  colorVariable.stops[1].value = stats.avg;
+  colorVariable.stops[2].value = stats.avg;
+}
 
-// function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-//   colorVariable.flipSizes();
-//   colorVariable.maxDataValue = stats.avg;
-// }
+function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
+  reverseColors(colorVariable);
+  colorVariable.stops[2].value = stats.avg;
+  colorVariable.stops[3].value = stats.avg;
+  colorVariable.stops[4].value = stats.avg;
+}
 
-// function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
-//   colorVariable.minDataValue = stats["10"];
-//   colorVariable.maxDataValue = stats["90"];
-// }
+function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
+  colorVariable.stops[0].value = stats["10"];
+  colorVariable.stops[4].value = stats["90"];
+}
 
-// function updateColorVariableToAboveAndBelowTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-//   const { min, max, avg, stddev } = stats;
-//   const oldSizeVariable = colorVariable.clone();
-
-
-//   const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
-
-//   let minSize: number, maxSize: number = null;
-
-//   if( typeof oldSizeVariable.minSize === "object"){
-//     const stops = oldSizeVariable.minSize.stops;
-//     const numStops = stops.length;
-//     const midIndex = Math.floor(numStops/2);
-//     minSize = stops[midIndex].size;
-//   } else {
-//     minSize = oldSizeVariable.minSize;
-//   }
-
-//   if( typeof oldSizeVariable.maxSize === "object"){
-//     const stops = oldSizeVariable.maxSize.stops;
-//     const numStops = stops.length;
-//     const midIndex = Math.floor(numStops/2);
-//     maxSize = stops[midIndex].size;
-//   } else {
-//     maxSize = oldSizeVariable.maxSize;
-//   }
-
-//   const midSize = Math.round(( maxSize - minSize) / 2);
-//   const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
-//   const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
-
-//   const stops = [
-//     new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
-//     new SizeStop({ value: minMidDataValue, size: midSize }),
-//     new SizeStop({ value: midDataValue, size: minSize }),
-//     new SizeStop({ value: maxMidDataValue, size: midSize }),
-//     new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
-//   ];
-
-//   sizeVariable.minDataValue = null;
-//   sizeVariable.maxDataValue = null;
-//   sizeVariable.minSize = null;
-//   sizeVariable.maxSize = null;
-
-//   sizeVariable.stops = stops;
-// }
-
+function reverseColors( colorVariable: esri.ColorVariable ) {
+  const colors = colorVariable.stops.map( stop => stop.color ).reverse();
+  colorVariable.stops.forEach( (stop, i) => stop.color = colors[i] );
+}
 
 const colorRampsElement = document.getElementById("color-ramps") as HTMLDivElement;
 

@@ -77,7 +77,7 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                             })];
                     case 2:
                         percentileStats = _a.sent();
-                        visualVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
+                        visualVariables = updateVariablesFromTheme(result, theme, percentileStats);
                         result.renderer.visualVariables = visualVariables;
                         sizeVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "size");
                         colorVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "color");
@@ -113,12 +113,15 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
         switch (theme) {
             case "above-average":
                 sizeRendererUtils_1.updateVariableToAboveAverageTheme(sizeVariable, stats);
+                updateColorVariableToAboveAverageTheme(colorVariable, stats);
                 break;
             case "below-average":
                 sizeRendererUtils_1.updateVariableToBelowAverageTheme(sizeVariable, stats);
+                updateColorVariableToBelowAverageTheme(colorVariable, stats);
                 break;
             case "90-10":
                 sizeRendererUtils_1.updateVariableTo9010Theme(sizeVariable, percentileStats);
+                updateColorVariableTo9010Theme(colorVariable, percentileStats);
                 break;
             case "above-and-below":
                 sizeRendererUtils_1.updateVariableToAboveAndBelowTheme(sizeVariable, stats);
@@ -127,56 +130,27 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                 break;
         }
         renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, colorVariable]);
-        return renderer.visualVariables; //[sizeVariable, colorVariable];
+        return renderer.visualVariables;
     }
-    // function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-    //   colorVariable.minDataValue = stats.avg;
-    // }
-    // function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-    //   colorVariable.flipSizes();
-    //   colorVariable.maxDataValue = stats.avg;
-    // }
-    // function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
-    //   colorVariable.minDataValue = stats["10"];
-    //   colorVariable.maxDataValue = stats["90"];
-    // }
-    // function updateColorVariableToAboveAndBelowTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-    //   const { min, max, avg, stddev } = stats;
-    //   const oldSizeVariable = colorVariable.clone();
-    //   const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
-    //   let minSize: number, maxSize: number = null;
-    //   if( typeof oldSizeVariable.minSize === "object"){
-    //     const stops = oldSizeVariable.minSize.stops;
-    //     const numStops = stops.length;
-    //     const midIndex = Math.floor(numStops/2);
-    //     minSize = stops[midIndex].size;
-    //   } else {
-    //     minSize = oldSizeVariable.minSize;
-    //   }
-    //   if( typeof oldSizeVariable.maxSize === "object"){
-    //     const stops = oldSizeVariable.maxSize.stops;
-    //     const numStops = stops.length;
-    //     const midIndex = Math.floor(numStops/2);
-    //     maxSize = stops[midIndex].size;
-    //   } else {
-    //     maxSize = oldSizeVariable.maxSize;
-    //   }
-    //   const midSize = Math.round(( maxSize - minSize) / 2);
-    //   const minMidDataValue = ( midDataValue - oldSizeVariable.minDataValue ) / 2;
-    //   const maxMidDataValue = ( oldSizeVariable.maxDataValue - midDataValue ) / 2;
-    //   const stops = [
-    //     new SizeStop({ value: oldSizeVariable.minDataValue, size: maxSize }),
-    //     new SizeStop({ value: minMidDataValue, size: midSize }),
-    //     new SizeStop({ value: midDataValue, size: minSize }),
-    //     new SizeStop({ value: maxMidDataValue, size: midSize }),
-    //     new SizeStop({ value: oldSizeVariable.maxDataValue, size: maxSize })
-    //   ];
-    //   sizeVariable.minDataValue = null;
-    //   sizeVariable.maxDataValue = null;
-    //   sizeVariable.minSize = null;
-    //   sizeVariable.maxSize = null;
-    //   sizeVariable.stops = stops;
-    // }
+    function updateColorVariableToAboveAverageTheme(colorVariable, stats) {
+        colorVariable.stops[0].value = stats.avg;
+        colorVariable.stops[1].value = stats.avg;
+        colorVariable.stops[2].value = stats.avg;
+    }
+    function updateColorVariableToBelowAverageTheme(colorVariable, stats) {
+        reverseColors(colorVariable);
+        colorVariable.stops[2].value = stats.avg;
+        colorVariable.stops[3].value = stats.avg;
+        colorVariable.stops[4].value = stats.avg;
+    }
+    function updateColorVariableTo9010Theme(colorVariable, stats) {
+        colorVariable.stops[0].value = stats["10"];
+        colorVariable.stops[4].value = stats["90"];
+    }
+    function reverseColors(colorVariable) {
+        var colors = colorVariable.stops.map(function (stop) { return stop.color; }).reverse();
+        colorVariable.stops.forEach(function (stop, i) { return stop.color = colors[i]; });
+    }
     var colorRampsElement = document.getElementById("color-ramps");
     function createColorRamps(theme) {
         colorRampsElement.innerHTML = null;
