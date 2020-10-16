@@ -571,44 +571,64 @@ const basicCircle = new SimpleMarkerSymbol({
 
 const styleUrl = "https://www.arcgis.com/sharing/rest/content/items/a19aa7c44b824838a8bb1ba3492f7780/data";
 
-const upCaret = new WebStyleSymbol({
+const upCaretCircle = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol"
+  name: "arrow circle up"
 });
 
-const downCaret = new WebStyleSymbol({
+const downCaretCircle = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_1"
+  name: "arrow circle down"
 });
 
 const upArrow = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_2"
+  name: "up arrrow circle"
 });
 
 const downArrow = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_3"
+  name: "down arrow circle"
 });
 
 const plus = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_4"
+  name: "plus circle"
 });
 
 const minus = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_5"
+  name: "minus circle"
 });
 
 const empty = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_6"
+  name: "radio unchecked"
 });
 
 const filled = new WebStyleSymbol({
   styleUrl,
-  name: "Point symbol_7"
+  name: "radio checked"
+});
+
+const dottedUp = new WebStyleSymbol({
+  styleUrl,
+  name: "dotted arrow up"
+});
+
+const dottedDown = new WebStyleSymbol({
+  styleUrl,
+  name: "dotted arrow down"
+});
+
+const upCaret = new WebStyleSymbol({
+  styleUrl,
+  name: "arrow up no circle"
+});
+
+const downCaret = new WebStyleSymbol({
+  styleUrl,
+  name: "arrow down no circle"
 });
 
 const triangleUp = new SimpleMarkerSymbol({
@@ -642,6 +662,11 @@ export const symbolOptions = {
     above: basicCircle,
     below: ringSymbol
   },
+  caretsCircle: {
+    name: "caretsCircle",
+    above: upCaretCircle,
+    below: downCaretCircle
+  },
   carets: {
     name: "carets",
     above: upCaret,
@@ -651,6 +676,11 @@ export const symbolOptions = {
     name: "arrows",
     above: upArrow,
     below: downArrow
+  },
+  dottedArrows: {
+    name: "dottedArrows",
+    above: dottedUp,
+    below: dottedDown
   },
   plusMinus: {
     name: "plusMinus",
@@ -694,22 +724,30 @@ export function updateSelectedSymbols (name: SymbolNames | string){
 
 export async function fetchCIMdata(){
   const response = await promiseUtils.eachAlways([
-    upCaret.fetchCIMSymbol(),
-    downCaret.fetchCIMSymbol(),
+    upCaretCircle.fetchCIMSymbol(),
+    downCaretCircle.fetchCIMSymbol(),
     upArrow.fetchCIMSymbol(),
     downArrow.fetchCIMSymbol(),
     plus.fetchCIMSymbol(),
     minus.fetchCIMSymbol(),
     filled.fetchCIMSymbol(),
-    empty.fetchCIMSymbol()
+    empty.fetchCIMSymbol(),
+    upCaret.fetchCIMSymbol(),
+    downCaret.fetchCIMSymbol(),
+    dottedUp.fetchCIMSymbol(),
+    dottedDown.fetchCIMSymbol()
   ]);
 
-  symbolOptions.carets.above = response[0].value;
-  symbolOptions.carets.below = response[1].value;
+  symbolOptions.caretsCircle.above = response[0].value;
+  symbolOptions.caretsCircle.below = response[1].value;
   symbolOptions.arrows.above = response[2].value;
   symbolOptions.arrows.below = response[3].value;
   symbolOptions.plusMinus.above = response[4].value;
   symbolOptions.plusMinus.below = response[5].value;
   symbolOptions.radio.above = response[6].value;
   symbolOptions.radio.below = response[7].value;
+  symbolOptions.carets.above = response[8].value;
+  symbolOptions.carets.below = response[9].value;
+  symbolOptions.dottedArrows.above = response[10].value;
+  symbolOptions.dottedArrows.below = response[11].value;
 }

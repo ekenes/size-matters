@@ -596,37 +596,53 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
         }
     });
     var styleUrl = "https://www.arcgis.com/sharing/rest/content/items/a19aa7c44b824838a8bb1ba3492f7780/data";
-    var upCaret = new WebStyleSymbol({
+    var upCaretCircle = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol"
+        name: "arrow circle up"
     });
-    var downCaret = new WebStyleSymbol({
+    var downCaretCircle = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_1"
+        name: "arrow circle down"
     });
     var upArrow = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_2"
+        name: "up arrrow circle"
     });
     var downArrow = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_3"
+        name: "down arrow circle"
     });
     var plus = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_4"
+        name: "plus circle"
     });
     var minus = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_5"
+        name: "minus circle"
     });
     var empty = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_6"
+        name: "radio unchecked"
     });
     var filled = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "Point symbol_7"
+        name: "radio checked"
+    });
+    var dottedUp = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "dotted arrow up"
+    });
+    var dottedDown = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "dotted arrow down"
+    });
+    var upCaret = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "arrow up no circle"
+    });
+    var downCaret = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "arrow down no circle"
     });
     var triangleUp = new symbols_1.SimpleMarkerSymbol({
         style: "triangle",
@@ -655,6 +671,11 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             above: basicCircle,
             below: exports.ringSymbol
         },
+        caretsCircle: {
+            name: "caretsCircle",
+            above: upCaretCircle,
+            below: downCaretCircle
+        },
         carets: {
             name: "carets",
             above: upCaret,
@@ -664,6 +685,11 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             name: "arrows",
             above: upArrow,
             below: downArrow
+        },
+        dottedArrows: {
+            name: "dottedArrows",
+            above: dottedUp,
+            below: dottedDown
         },
         plusMinus: {
             name: "plusMinus",
@@ -703,25 +729,33 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, promiseUtils.eachAlways([
-                            upCaret.fetchCIMSymbol(),
-                            downCaret.fetchCIMSymbol(),
+                            upCaretCircle.fetchCIMSymbol(),
+                            downCaretCircle.fetchCIMSymbol(),
                             upArrow.fetchCIMSymbol(),
                             downArrow.fetchCIMSymbol(),
                             plus.fetchCIMSymbol(),
                             minus.fetchCIMSymbol(),
                             filled.fetchCIMSymbol(),
-                            empty.fetchCIMSymbol()
+                            empty.fetchCIMSymbol(),
+                            upCaret.fetchCIMSymbol(),
+                            downCaret.fetchCIMSymbol(),
+                            dottedUp.fetchCIMSymbol(),
+                            dottedDown.fetchCIMSymbol()
                         ])];
                     case 1:
                         response = _a.sent();
-                        exports.symbolOptions.carets.above = response[0].value;
-                        exports.symbolOptions.carets.below = response[1].value;
+                        exports.symbolOptions.caretsCircle.above = response[0].value;
+                        exports.symbolOptions.caretsCircle.below = response[1].value;
                         exports.symbolOptions.arrows.above = response[2].value;
                         exports.symbolOptions.arrows.below = response[3].value;
                         exports.symbolOptions.plusMinus.above = response[4].value;
                         exports.symbolOptions.plusMinus.below = response[5].value;
                         exports.symbolOptions.radio.above = response[6].value;
                         exports.symbolOptions.radio.below = response[7].value;
+                        exports.symbolOptions.carets.above = response[8].value;
+                        exports.symbolOptions.carets.below = response[9].value;
+                        exports.symbolOptions.dottedArrows.above = response[10].value;
+                        exports.symbolOptions.dottedArrows.below = response[11].value;
                         return [2 /*return*/];
                 }
             });
