@@ -172,8 +172,8 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
         }
         else {
             var color = rendererWithDonuts.classBreakInfos[0].symbol.color;
-            aboveSymbol = symbolUtils_1.selectedSymbols.above;
-            belowSymbol = symbolUtils_1.selectedSymbols.below;
+            aboveSymbol = colorSizeRendererUtils_1.useDonutsElement.checked ? symbolUtils_1.selectedSymbols.above : symbolUtils_1.symbolOptions.donuts.above;
+            belowSymbol = colorSizeRendererUtils_1.useDonutsElement.checked ? symbolUtils_1.selectedSymbols.below : symbolUtils_1.symbolOptions.donuts.above;
             aboveSymbol.color = color;
             belowSymbol.color = color;
         }
@@ -226,7 +226,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     }
     colorSizeRendererUtils_1.useDonutsElement.addEventListener("change", function () {
         var renderer = layerUtils_1.LayerVars.layer.renderer;
-        layerUtils_1.LayerVars.layer.renderer = colorSizeRendererUtils_1.useDonutsElement.checked ? createAboveAndBelowRenderer(renderer) : removeDonutFromRenderer(renderer);
+        layerUtils_1.LayerVars.layer.renderer = createAboveAndBelowRenderer(renderer);
     });
 });
 //# sourceMappingURL=rendererUtils.js.map

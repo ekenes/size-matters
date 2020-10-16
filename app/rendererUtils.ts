@@ -145,8 +145,8 @@ export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer): Clas
     updateSymbolStroke(belowSymbol, outline.width, outline.color);
   } else {
     const color = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).color;
-    aboveSymbol = selectedSymbols.above;
-    belowSymbol = selectedSymbols.below;
+    aboveSymbol = useDonutsElement.checked ? selectedSymbols.above : symbolOptions.donuts.above;
+    belowSymbol = useDonutsElement.checked ? selectedSymbols.below : symbolOptions.donuts.above;
     aboveSymbol.color = color;
     belowSymbol.color = color;
   }
@@ -210,5 +210,5 @@ function removeDonutFromRenderer(renderer: ClassBreaksRenderer): ClassBreaksRend
 
 useDonutsElement.addEventListener("change", () => {
   const renderer = LayerVars.layer.renderer as ClassBreaksRenderer;
-  LayerVars.layer.renderer = useDonutsElement.checked ? createAboveAndBelowRenderer(renderer) : removeDonutFromRenderer(renderer);
+  LayerVars.layer.renderer = createAboveAndBelowRenderer(renderer);
 });
