@@ -135,13 +135,17 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     function updateColorVariableToAboveAverageTheme(colorVariable, stats) {
         colorVariable.stops[0].value = stats.avg;
         colorVariable.stops[1].value = stats.avg;
+        // colorVariable.stops[1].color = colorVariable.stops[0].color;
         colorVariable.stops[2].value = stats.avg;
+        // colorVariable.stops[2].color = colorVariable.stops[0].color;
     }
     function updateColorVariableToBelowAverageTheme(colorVariable, stats) {
         reverseColors(colorVariable);
         colorVariable.stops[2].value = stats.avg;
         colorVariable.stops[3].value = stats.avg;
+        // colorVariable.stops[3].color = colorVariable.stops[2].color;
         colorVariable.stops[4].value = stats.avg;
+        // colorVariable.stops[4].color = colorVariable.stops[2].color;
     }
     function updateColorVariableTo9010Theme(colorVariable, stats) {
         colorVariable.stops[0].value = stats["10"];

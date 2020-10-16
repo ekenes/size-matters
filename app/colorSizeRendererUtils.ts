@@ -121,14 +121,18 @@ function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizePa
 function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
   colorVariable.stops[0].value = stats.avg;
   colorVariable.stops[1].value = stats.avg;
+  // colorVariable.stops[1].color = colorVariable.stops[0].color;
   colorVariable.stops[2].value = stats.avg;
+  // colorVariable.stops[2].color = colorVariable.stops[0].color;
 }
 
 function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
   reverseColors(colorVariable);
   colorVariable.stops[2].value = stats.avg;
   colorVariable.stops[3].value = stats.avg;
+  // colorVariable.stops[3].color = colorVariable.stops[2].color;
   colorVariable.stops[4].value = stats.avg;
+  // colorVariable.stops[4].color = colorVariable.stops[2].color;
 }
 
 function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
