@@ -139,7 +139,6 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                                 case 0: return [4 /*yield*/, layerView.queryExtent()];
                                 case 1:
                                     extent = (_a.sent()).extent;
-                                    console.log(extent);
                                     view.goTo(extent);
                                     return [2 /*return*/];
                             }

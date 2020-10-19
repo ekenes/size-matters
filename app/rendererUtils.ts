@@ -8,7 +8,7 @@ import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUt
 import { SliderVars } from "./sliderUtils";
 import { createOpacitySizeRenderer, opacityValuesContainer } from "./opacitySizeRendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { CIMSymbol, SimpleMarkerSymbol } from "esri/symbols";
+import { CIMSymbol, SimpleMarkerSymbol, Symbol } from "esri/symbols";
 import { donutSymbol, selectedSymbols, updateSymbolStroke, SymbolNames, symbolOptions } from "./symbolUtils";
 import { LayerVars } from "./layerUtils";
 
@@ -19,9 +19,12 @@ export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
 
 const useDonutsParentElement = document.getElementById("use-donuts-parent") as HTMLDivElement;
 const symbolColorContainer = document.getElementById("symbol-color-container") as HTMLDivElement;
+const symbolColor = document.getElementById("symbol-color") as HTMLDivElement;
+const symbolColorAbove = document.getElementById("symbol-color-above") as HTMLDivElement;
+const symbolColorBelow = document.getElementById("symbol-color-below") as HTMLDivElement;
 const sizeOptionsElement = document.getElementById("size-options") as HTMLDivElement;
 const opacityOptionsElement = document.getElementById("opacity-options") as HTMLDivElement;
-const colorRampsElement = document.getElementById("color-ramps") as HTMLDivElement;
+const colorRampsContainer = document.getElementById("color-ramps-container") as HTMLDivElement;
 
 export async function updateRenderer(params: SizeParams){
   const { layer, theme } = params;
@@ -42,10 +45,19 @@ export async function updateRenderer(params: SizeParams){
         SliderVars.opacitySlider = null;
       }
       result = await createSizeRenderer(params);
+      if(theme === "above-and-below"){
+        symbolColor.style.display = "none";
+        symbolColorAbove.style.display = "block";
+        symbolColorBelow.style.display = "block";
+      } else {
+        symbolColor.style.display = "block";
+        symbolColorAbove.style.display = "none";
+        symbolColorBelow.style.display = "none";
+      }
       useDonutsParentElement.style.display = "none";
       symbolColorContainer.style.display = "block";
       opacityOptionsElement.style.display = "none";
-      colorRampsElement.style.display = "none";
+      colorRampsContainer.style.display = "none";
       break;
     case "color-and-size":
       if(SliderVars.slider){
@@ -65,7 +77,7 @@ export async function updateRenderer(params: SizeParams){
       }
       symbolColorContainer.style.display = "none";
       opacityOptionsElement.style.display = "none";
-      colorRampsElement.style.display = "flex";
+      colorRampsContainer.style.display = "flex";
       result = await createColorSizeRenderer(params);
       break;
     case "opacity-and-size":
@@ -77,7 +89,7 @@ export async function updateRenderer(params: SizeParams){
       symbolColorContainer.style.display = "block";
       useDonutsParentElement.style.display = "none";
       opacityOptionsElement.style.display = "flex";
-      colorRampsElement.style.display = "none";
+      colorRampsContainer.style.display = "none";
       result = await createOpacitySizeRenderer(params);
       break;
     default:
@@ -120,7 +132,12 @@ export function getSizeRendererColor(renderer: ClassBreaksRenderer): Color {
   return solidSymbol.color;
 }
 
-export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer): ClassBreaksRenderer {
+export function getSymbolColor(symbol: Symbol | CIMSymbol): Color {
+  const color = symbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(symbol as CIMSymbol) : symbol.color;
+  return color;
+}
+
+export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer, useDefaults?: boolean): ClassBreaksRenderer {
   const rendererWithDonuts = renderer.clone();
   const sizeVariable = getVisualVariableByType(rendererWithDonuts, "size") as esri.SizeVariable;
   const { stops, field, normalizationField, valueExpression } = sizeVariable;
@@ -130,27 +147,19 @@ export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer): Clas
     return renderer;
   }
 
-  let aboveSymbol, belowSymbol;
+  // Set defaults for above and below
+  const aboveSymbol = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
+  const belowSymbol = donutSymbol;
+  cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
 
-  if( selectedSymbols.name === "donuts"){
-    aboveSymbol = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
-    belowSymbol = donutSymbol;
-    cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
+  const symbolSize = aboveSymbol.size;
+  const outline = aboveSymbol.outline;
 
-    const symbolSize = aboveSymbol.size;
-    const outline = aboveSymbol.outline;
+  cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
 
-    cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
+  updateSymbolStroke(belowSymbol, outline.width, outline.color);
 
-    updateSymbolStroke(belowSymbol, outline.width, outline.color);
-  } else {
-    const color = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).color;
-    aboveSymbol = useDonutsElement.checked ? selectedSymbols.above : symbolOptions.donuts.above;
-    belowSymbol = useDonutsElement.checked ? selectedSymbols.below : symbolOptions.donuts.above;
-    aboveSymbol.color = color;
-    belowSymbol.color = color;
-  }
-
+  // set class breaks
   rendererWithDonuts.field = field;
   rendererWithDonuts.normalizationField = normalizationField;
   rendererWithDonuts.valueExpression = valueExpression;
@@ -166,8 +175,10 @@ export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer): Clas
 
 export function updateAboveAndBelowRendererSymbols(renderer: ClassBreaksRenderer, symbolName: SymbolNames ): ClassBreaksRenderer {
   const rendererWithDonuts = renderer.clone();
-  const originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
-  const color = originalSymbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(originalSymbol as CIMSymbol) : originalSymbol.color;
+  const originalAboveSymbol = rendererWithDonuts.classBreakInfos[1].symbol;
+  const originalBelowSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
+  const aboveColor = getSymbolColor(originalAboveSymbol as Symbol | CIMSymbol);
+  const belowColor = getSymbolColor(originalBelowSymbol as Symbol | CIMSymbol);
 
   const symbols = selectedSymbols;
 
@@ -175,15 +186,15 @@ export function updateAboveAndBelowRendererSymbols(renderer: ClassBreaksRenderer
   const belowSymbol = symbols.below;
 
   if(aboveSymbol.type === "cim"){
-    cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, color);
+    cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, aboveColor);
   } else {
-    aboveSymbol.color = color;
+    aboveSymbol.color = aboveColor;
   }
 
   if(belowSymbol.type === "cim"){
-    cimSymbolUtils.applyCIMSymbolColor(belowSymbol, color);
+    cimSymbolUtils.applyCIMSymbolColor(belowSymbol, belowColor);
   } else {
-    belowSymbol.color = color;
+    belowSymbol.color = belowColor;
   }
 
   rendererWithDonuts.classBreakInfos[0].symbol = belowSymbol;

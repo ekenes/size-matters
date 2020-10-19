@@ -54,6 +54,8 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     var symbolSizesContainer = document.getElementById("symbol-sizes");
     var opacityValuesContainer = document.getElementById("opacity-values");
     exports.colorPicker = document.getElementById("color-picker");
+    exports.colorPickerAbove = document.getElementById("color-picker-above");
+    exports.colorPickerBelow = document.getElementById("color-picker-below");
     function updateSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, view, rendererResult, updateOpacity, theme, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, maxStop, minStop, midStop, histogramResult;
@@ -396,6 +398,30 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                 symbol.color = newColor;
             }
         });
+        layerUtils_1.LayerVars.layer.renderer = renderer;
+    });
+    exports.colorPickerBelow.addEventListener("input", function (event) {
+        var newColor = new Color(exports.colorPickerBelow.value);
+        var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
+        var symbol = renderer.classBreakInfos[0].symbol;
+        if (symbol.type === "cim") {
+            cimSymbolUtils.applyCIMSymbolColor(symbol, newColor);
+        }
+        else {
+            symbol.color = newColor;
+        }
+        layerUtils_1.LayerVars.layer.renderer = renderer;
+    });
+    exports.colorPickerAbove.addEventListener("input", function (event) {
+        var newColor = new Color(exports.colorPickerAbove.value);
+        var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
+        var symbol = renderer.classBreakInfos[1].symbol;
+        if (symbol.type === "cim") {
+            cimSymbolUtils.applyCIMSymbolColor(symbol, newColor);
+        }
+        else {
+            symbol.color = newColor;
+        }
         layerUtils_1.LayerVars.layer.renderer = renderer;
     });
     function destroySizeSlider() {

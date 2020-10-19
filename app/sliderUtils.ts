@@ -36,6 +36,8 @@ const opacitySlidersContainer = document.getElementById("opacity-slider-containe
 const symbolSizesContainer = document.getElementById("symbol-sizes");
 const opacityValuesContainer = document.getElementById("opacity-values");
 export const colorPicker = document.getElementById("color-picker") as HTMLInputElement;
+export const colorPickerAbove = document.getElementById("color-picker-above") as HTMLInputElement;
+export const colorPickerBelow = document.getElementById("color-picker-below") as HTMLInputElement;
 
 export async function updateSizeSlider(params: CreateSizeSliderParams) {
   const { layer, view, rendererResult, updateOpacity, theme } = params;
@@ -388,6 +390,34 @@ colorPicker.addEventListener("input", function(event){
       (symbol as SymbolWithColor).color = newColor;
     }
   });
+
+  LayerVars.layer.renderer = renderer;
+});
+
+colorPickerBelow.addEventListener("input", function(event){
+  const newColor = new Color(colorPickerBelow.value);
+  const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
+  const symbol = renderer.classBreakInfos[0].symbol;
+
+  if(symbol.type === "cim"){
+    cimSymbolUtils.applyCIMSymbolColor(symbol as CIMSymbol, newColor);
+  } else {
+    (symbol as SymbolWithColor).color = newColor;
+  }
+
+  LayerVars.layer.renderer = renderer;
+});
+
+colorPickerAbove.addEventListener("input", function(event){
+  const newColor = new Color(colorPickerAbove.value);
+  const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
+  const symbol = renderer.classBreakInfos[1].symbol;
+
+  if(symbol.type === "cim"){
+    cimSymbolUtils.applyCIMSymbolColor(symbol as CIMSymbol, newColor);
+  } else {
+    (symbol as SymbolWithColor).color = newColor;
+  }
 
   LayerVars.layer.renderer = renderer;
 });

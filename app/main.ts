@@ -70,7 +70,6 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
   watchUtils.whenFalseOnce(layerView, "updating", async () => {
     const { extent } = await layerView.queryExtent();
-    console.log(extent);
     view.goTo(extent);
   });
 
@@ -80,7 +79,6 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   const saveBtn = document.getElementById("save-map");
 
   const originalRenderer = (layer.renderer as esri.RendererWithVisualVariables).clone();
-
 
   const fieldContainer = document.getElementById("field-container");
   const normalizationFieldContainer = document.getElementById("normalization-field-container");

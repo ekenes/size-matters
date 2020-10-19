@@ -2,10 +2,11 @@ import esri = __esri;
 import sizeRendererCreator = require("esri/smartMapping/renderers/size");
 import SizeStop = require("esri/renderers/visualVariables/support/SizeStop");
 
-import { updateSizeSlider, colorPicker } from "./sliderUtils";
+import { updateSizeSlider, colorPicker, colorPickerBelow, colorPickerAbove } from "./sliderUtils";
 import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor, createAboveAndBelowRenderer } from "./rendererUtils";
+import { getVisualVariableByType, SizeParams, getVisualVariablesByType, getSizeRendererColor, createAboveAndBelowRenderer, getSymbolColor } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
+import { CIMSymbol, Symbol } from "esri/symbols";
 
 export function updateRendererFromSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.SizeSlider){
 
@@ -47,6 +48,10 @@ export async function createSizeRenderer(params: SizeParams): Promise<esri.sizeC
 
   if(theme === "above-and-below"){
     result.renderer = createAboveAndBelowRenderer(result.renderer);
+    const belowSymbol = result.renderer.classBreakInfos[0].symbol;
+    const aboveSymbol = result.renderer.classBreakInfos[1].symbol;
+    colorPickerBelow.value = getSymbolColor(belowSymbol as Symbol | CIMSymbol).toHex();
+    colorPickerAbove.value = getSymbolColor(aboveSymbol as Symbol | CIMSymbol).toHex();
   }
 
   await updateSizeSlider({

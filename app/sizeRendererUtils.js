@@ -52,7 +52,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     //////////////////////////////////////
     function createSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables;
+            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, belowSymbol, aboveSymbol;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -76,6 +76,10 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         result.visualVariables = sizeVariables;
                         if (theme === "above-and-below") {
                             result.renderer = rendererUtils_1.createAboveAndBelowRenderer(result.renderer);
+                            belowSymbol = result.renderer.classBreakInfos[0].symbol;
+                            aboveSymbol = result.renderer.classBreakInfos[1].symbol;
+                            sliderUtils_1.colorPickerBelow.value = rendererUtils_1.getSymbolColor(belowSymbol).toHex();
+                            sliderUtils_1.colorPickerAbove.value = rendererUtils_1.getSymbolColor(aboveSymbol).toHex();
                         }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,

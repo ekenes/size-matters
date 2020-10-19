@@ -39,9 +39,12 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     Object.defineProperty(exports, "__esModule", { value: true });
     var useDonutsParentElement = document.getElementById("use-donuts-parent");
     var symbolColorContainer = document.getElementById("symbol-color-container");
+    var symbolColor = document.getElementById("symbol-color");
+    var symbolColorAbove = document.getElementById("symbol-color-above");
+    var symbolColorBelow = document.getElementById("symbol-color-below");
     var sizeOptionsElement = document.getElementById("size-options");
     var opacityOptionsElement = document.getElementById("opacity-options");
-    var colorRampsElement = document.getElementById("color-ramps");
+    var colorRampsContainer = document.getElementById("color-ramps-container");
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, theme, style, result, _a;
@@ -72,10 +75,20 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         return [4 /*yield*/, sizeRendererUtils_1.createSizeRenderer(params)];
                     case 2:
                         result = _b.sent();
+                        if (theme === "above-and-below") {
+                            symbolColor.style.display = "none";
+                            symbolColorAbove.style.display = "block";
+                            symbolColorBelow.style.display = "block";
+                        }
+                        else {
+                            symbolColor.style.display = "block";
+                            symbolColorAbove.style.display = "none";
+                            symbolColorBelow.style.display = "none";
+                        }
                         useDonutsParentElement.style.display = "none";
                         symbolColorContainer.style.display = "block";
                         opacityOptionsElement.style.display = "none";
-                        colorRampsElement.style.display = "none";
+                        colorRampsContainer.style.display = "none";
                         return [3 /*break*/, 8];
                     case 3:
                         if (sliderUtils_1.SliderVars.slider) {
@@ -96,7 +109,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         }
                         symbolColorContainer.style.display = "none";
                         opacityOptionsElement.style.display = "none";
-                        colorRampsElement.style.display = "flex";
+                        colorRampsContainer.style.display = "flex";
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
                     case 4:
                         result = _b.sent();
@@ -110,7 +123,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                         symbolColorContainer.style.display = "block";
                         useDonutsParentElement.style.display = "none";
                         opacityOptionsElement.style.display = "flex";
-                        colorRampsElement.style.display = "none";
+                        colorRampsContainer.style.display = "none";
                         return [4 /*yield*/, opacitySizeRendererUtils_1.createOpacitySizeRenderer(params)];
                     case 6:
                         result = _b.sent();
@@ -152,7 +165,12 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
         return solidSymbol.color;
     }
     exports.getSizeRendererColor = getSizeRendererColor;
-    function createAboveAndBelowRenderer(renderer) {
+    function getSymbolColor(symbol) {
+        var color = symbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(symbol) : symbol.color;
+        return color;
+    }
+    exports.getSymbolColor = getSymbolColor;
+    function createAboveAndBelowRenderer(renderer, useDefaults) {
         var rendererWithDonuts = renderer.clone();
         var sizeVariable = getVisualVariableByType(rendererWithDonuts, "size");
         var stops = sizeVariable.stops, field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
@@ -160,23 +178,15 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
             console.error("The provided renderer does not use the above and below theme");
             return renderer;
         }
-        var aboveSymbol, belowSymbol;
-        if (symbolUtils_1.selectedSymbols.name === "donuts") {
-            aboveSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
-            belowSymbol = symbolUtils_1.donutSymbol;
-            cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
-            var symbolSize = aboveSymbol.size;
-            var outline = aboveSymbol.outline;
-            cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
-            symbolUtils_1.updateSymbolStroke(belowSymbol, outline.width, outline.color);
-        }
-        else {
-            var color = rendererWithDonuts.classBreakInfos[0].symbol.color;
-            aboveSymbol = colorSizeRendererUtils_1.useDonutsElement.checked ? symbolUtils_1.selectedSymbols.above : symbolUtils_1.symbolOptions.donuts.above;
-            belowSymbol = colorSizeRendererUtils_1.useDonutsElement.checked ? symbolUtils_1.selectedSymbols.below : symbolUtils_1.symbolOptions.donuts.above;
-            aboveSymbol.color = color;
-            belowSymbol.color = color;
-        }
+        // Set defaults for above and below
+        var aboveSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
+        var belowSymbol = symbolUtils_1.donutSymbol;
+        cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
+        var symbolSize = aboveSymbol.size;
+        var outline = aboveSymbol.outline;
+        cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
+        symbolUtils_1.updateSymbolStroke(belowSymbol, outline.width, outline.color);
+        // set class breaks
         rendererWithDonuts.field = field;
         rendererWithDonuts.normalizationField = normalizationField;
         rendererWithDonuts.valueExpression = valueExpression;
@@ -190,22 +200,24 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     exports.createAboveAndBelowRenderer = createAboveAndBelowRenderer;
     function updateAboveAndBelowRendererSymbols(renderer, symbolName) {
         var rendererWithDonuts = renderer.clone();
-        var originalSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
-        var color = originalSymbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(originalSymbol) : originalSymbol.color;
+        var originalAboveSymbol = rendererWithDonuts.classBreakInfos[1].symbol;
+        var originalBelowSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
+        var aboveColor = getSymbolColor(originalAboveSymbol);
+        var belowColor = getSymbolColor(originalBelowSymbol);
         var symbols = symbolUtils_1.selectedSymbols;
         var aboveSymbol = symbols.above;
         var belowSymbol = symbols.below;
         if (aboveSymbol.type === "cim") {
-            cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, color);
+            cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, aboveColor);
         }
         else {
-            aboveSymbol.color = color;
+            aboveSymbol.color = aboveColor;
         }
         if (belowSymbol.type === "cim") {
-            cimSymbolUtils.applyCIMSymbolColor(belowSymbol, color);
+            cimSymbolUtils.applyCIMSymbolColor(belowSymbol, belowColor);
         }
         else {
-            belowSymbol.color = color;
+            belowSymbol.color = belowColor;
         }
         rendererWithDonuts.classBreakInfos[0].symbol = belowSymbol;
         rendererWithDonuts.classBreakInfos[1].symbol = aboveSymbol;

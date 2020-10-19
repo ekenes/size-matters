@@ -58,7 +58,7 @@
           Theme
           <select id="theme-select" class="esri-select">
             <option value="high-to-low" selected>High to low</option>
-            <option value="90-10">90/10</option>
+            <option value="90-10">No outliers</option>
             <option value="above-average">Highlight Above</option>
             <option value="below-average">Highlight Below</option>
             <option value="above-and-below">Above and below</option>
@@ -98,6 +98,14 @@
           <div id="symbol-color-container" class="size-options-labels">Adjust symbol color
             <div id="symbol-color" class="size-options-labels">
               <input type="color" id="color-picker">
+            </div>
+            <div id="symbol-color-above" class="size-options-labels">
+              Above color
+              <input type="color" id="color-picker-above">
+            </div>
+            <div id="symbol-color-below" class="size-options-labels">
+              Below color
+              <input type="color" id="color-picker-below">
             </div>
           </div>
           <div id="color-ramps-container" class="size-options-labels">Change color ramp
