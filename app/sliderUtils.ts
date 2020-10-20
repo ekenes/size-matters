@@ -70,7 +70,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
     SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
     SliderVars.slider.container = document.createElement("div");
     sizeSlidersContainer.appendChild(SliderVars.slider.container);
-    SliderVars.slider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
+    // SliderVars.slider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
 
     SliderVars.slider.on([
       "thumb-change",
