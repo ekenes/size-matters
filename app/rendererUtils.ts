@@ -25,6 +25,7 @@ const symbolColorBelow = document.getElementById("symbol-color-below") as HTMLDi
 const sizeOptionsElement = document.getElementById("size-options") as HTMLDivElement;
 const opacityOptionsElement = document.getElementById("opacity-options") as HTMLDivElement;
 const colorRampsContainer = document.getElementById("color-ramps-container") as HTMLDivElement;
+const symbolsSelect = document.getElementById("symbols-select") as HTMLSelectElement;
 
 export async function updateRenderer(params: SizeParams){
   const { layer, theme } = params;
@@ -148,6 +149,7 @@ export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer, useDe
   }
 
   // Set defaults for above and below
+  symbolsSelect.value = "donuts";
   const aboveSymbol = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
   const belowSymbol = donutSymbol;
   cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);

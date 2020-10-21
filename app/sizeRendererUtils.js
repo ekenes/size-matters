@@ -121,12 +121,14 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         return renderer.visualVariables;
     }
     function updateVariableToAboveAverageTheme(sizeVariable, stats) {
-        sizeVariable.minDataValue = stats.avg;
+        var min = stats.min, stddev = stats.stddev, avg = stats.avg;
+        sizeVariable.minDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
     }
     exports.updateVariableToAboveAverageTheme = updateVariableToAboveAverageTheme;
     function updateVariableToBelowAverageTheme(sizeVariable, stats) {
         sizeVariable.flipSizes();
-        sizeVariable.maxDataValue = stats.avg;
+        var min = stats.min, stddev = stats.stddev, avg = stats.avg;
+        sizeVariable.maxDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
     }
     exports.updateVariableToBelowAverageTheme = updateVariableToBelowAverageTheme;
     function updateVariableTo9010Theme(sizeVariable, stats) {

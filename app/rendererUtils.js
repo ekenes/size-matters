@@ -45,6 +45,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     var sizeOptionsElement = document.getElementById("size-options");
     var opacityOptionsElement = document.getElementById("opacity-options");
     var colorRampsContainer = document.getElementById("color-ramps-container");
+    var symbolsSelect = document.getElementById("symbols-select");
     function updateRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, theme, style, result, _a;
@@ -179,6 +180,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
             return renderer;
         }
         // Set defaults for above and below
+        symbolsSelect.value = "donuts";
         var aboveSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
         var belowSymbol = symbolUtils_1.donutSymbol;
         cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);

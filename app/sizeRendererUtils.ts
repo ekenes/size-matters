@@ -97,12 +97,14 @@ function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizePa
 }
 
 export function updateVariableToAboveAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
-  sizeVariable.minDataValue = stats.avg;
+  const { min, stddev, avg } = stats;
+  sizeVariable.minDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg
 }
 
 export function updateVariableToBelowAverageTheme( sizeVariable: esri.SizeVariable, stats: esri.sizeContinuousRendererResult["statistics"] ){
   sizeVariable.flipSizes();
-  sizeVariable.maxDataValue = stats.avg;
+  const { min, stddev, avg } = stats;
+  sizeVariable.maxDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg
 }
 
 export function updateVariableTo9010Theme( sizeVariable: esri.SizeVariable, stats: PercentileStats ){
