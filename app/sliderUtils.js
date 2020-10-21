@@ -173,7 +173,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
                             SliderVars.colorSizeSlider.container = document.createElement("div");
                             sizeSlidersContainer.appendChild(SliderVars.colorSizeSlider.container);
-                            SliderVars.colorSizeSlider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
+                            // SliderVars.colorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
                             SliderVars.colorSizeSlider.on([
                                 "thumb-change",
                                 "thumb-drag",
@@ -340,7 +340,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.opacitySlider = OpacitySlider.fromVisualVariableResult(visualVariableResult, histogramResult);
                             SliderVars.opacitySlider.container = document.createElement("div");
                             opacitySlidersContainer.appendChild(SliderVars.opacitySlider.container);
-                            SliderVars.opacitySlider.labelFormatFunction = function (value) { return parseInt(value.toFixed(0)).toLocaleString(); };
+                            // SliderVars.opacitySlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
                             SliderVars.opacitySlider.on([
                                 "thumb-change",
                                 "thumb-drag",

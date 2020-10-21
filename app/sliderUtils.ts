@@ -160,7 +160,7 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
     SliderVars.colorSizeSlider = ColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
     SliderVars.colorSizeSlider.container = document.createElement("div");
     sizeSlidersContainer.appendChild(SliderVars.colorSizeSlider.container);
-    SliderVars.colorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
+    // SliderVars.colorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
 
     SliderVars.colorSizeSlider.on([
       "thumb-change",
@@ -338,7 +338,7 @@ export async function updateOpacitySlider(params: CreateOpacitySliderParams) {
     SliderVars.opacitySlider = OpacitySlider.fromVisualVariableResult(visualVariableResult, histogramResult);
     SliderVars.opacitySlider.container = document.createElement("div");
     opacitySlidersContainer.appendChild(SliderVars.opacitySlider.container);
-    SliderVars.opacitySlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
+    // SliderVars.opacitySlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
 
     SliderVars.opacitySlider.on([
       "thumb-change",
