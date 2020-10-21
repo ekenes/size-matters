@@ -115,7 +115,7 @@ export function updateVariableToAboveAndBelowTheme( sizeVariable: esri.SizeVaria
   const oldSizeVariable = sizeVariable.clone();
 
 
-  const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+  const midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
   const aboveAvgSpread = max - midDataValue;
   const belowAvgSpread = midDataValue - min;
   const maxSpread = aboveAvgSpread > belowAvgSpread ? aboveAvgSpread : belowAvgSpread;

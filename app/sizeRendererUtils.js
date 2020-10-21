@@ -137,7 +137,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     function updateVariableToAboveAndBelowTheme(sizeVariable, stats) {
         var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
         var oldSizeVariable = sizeVariable.clone();
-        var midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) ? 0 : avg;
+        var midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
         var aboveAvgSpread = max - midDataValue;
         var belowAvgSpread = midDataValue - min;
         var maxSpread = aboveAvgSpread > belowAvgSpread ? aboveAvgSpread : belowAvgSpread;

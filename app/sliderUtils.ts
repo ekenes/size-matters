@@ -117,7 +117,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
     SliderVars.slider.handlesSyncedToPrimary = false;
   }
 
-  updateSymbolSizesSlider({ values: symbolSizeSliderValues });
+  updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme });
 }
 
 interface CreateColorSizeSliderParams {
@@ -199,7 +199,7 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
     SliderVars.colorSizeSlider.handlesSyncedToPrimary = false;
   }
 
-  updateSymbolSizesSlider({ values: symbolSizeSliderValues });
+  updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme });
 }
 
 export function updateColorSizeSliderColors(colorVariable: esri.ColorVariable){
@@ -247,11 +247,51 @@ export function updateOpacitySliderValues(opacityVariable: esri.OpacityVariable)
 }
 
 interface UpdateSymbolSizesSlider {
-  values: number[]
+  values: number[],
+  theme?: SizeParams["theme"]
+}
+
+let symbolSizesSliderWatchHandle: esri.WatchHandle = null;
+
+function createSymbolSizesWatcher(values: number[], theme?: SizeParams["theme"]){
+
+  return function (values: number[]){
+    const renderer = (LayerVars.layer.renderer as esri.RendererWithVisualVariables).clone();
+    const sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
+    let { stops } = sizeVariable;
+
+    const minSize = theme !== "below-average" ? values[0] : values[1];
+    const maxSize = theme !== "below-average" ? values[1] : values[0];
+
+    if(stops && stops.length > 0){
+
+      const midSize = calcuateMidSize(minSize as number, maxSize as number);
+      stops[0].size = maxSize;
+      stops[1].size = midSize;
+      stops[2].size = minSize;
+      stops[3].size = midSize;
+      stops[4].size = maxSize;
+    } else {
+      sizeVariable.minSize = minSize;
+      sizeVariable.maxSize = maxSize;
+    }
+
+    LayerVars.layer.renderer = renderer;
+
+    if (SliderVars.colorSizeSlider){
+      updateColorSizeSliderSizes(sizeVariable);
+    }
+    if (SliderVars.slider) {
+      updateSizeSliderSizes(sizeVariable);
+    }
+  }
 }
 
 function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
-  const { values } = params;
+  const { values, theme } = params;
+  if(values[1] < values[0]){
+    values.reverse();
+  }
   if(!SliderVars.symbolSizesSlider){
     SliderVars.symbolSizesSlider = new Slider({
       values,
@@ -266,37 +306,15 @@ function updateSymbolSizesSlider(params: UpdateSymbolSizesSlider){
         labels: true
       }
     });
-    SliderVars.symbolSizesSlider.watch("values", function(values: number[]){
-      const renderer = (LayerVars.layer.renderer as esri.RendererWithVisualVariables).clone();
-      const sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
-      let { stops, minSize, maxSize } = sizeVariable;
-
-      if(stops && stops.length > 0){
-        const minSize = values[0];
-        const maxSize = values[1];
-        const midSize = calcuateMidSize(minSize as number, maxSize as number);
-        stops[0].size = maxSize;
-        stops[1].size = midSize;
-        stops[2].size = minSize;
-        stops[3].size = midSize;
-        stops[4].size = maxSize;
-      } else {
-        sizeVariable.minSize = values[0];
-        sizeVariable.maxSize = values[1];
-      }
-
-      LayerVars.layer.renderer = renderer;
-
-      if (SliderVars.colorSizeSlider){
-        updateColorSizeSliderSizes(sizeVariable);
-      }
-      if (SliderVars.slider) {
-        updateSizeSliderSizes(sizeVariable);
-      }
-    });
   } else {
     SliderVars.symbolSizesSlider.values = values;
   }
+
+  if(symbolSizesSliderWatchHandle){
+    symbolSizesSliderWatchHandle.remove();
+    symbolSizesSliderWatchHandle = null;
+  }
+  symbolSizesSliderWatchHandle = SliderVars.symbolSizesSlider.watch("values", createSymbolSizesWatcher(values, theme))
 }
 
 interface CreateOpacitySliderParams {

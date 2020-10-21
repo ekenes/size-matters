@@ -131,7 +131,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.slider.primaryHandleEnabled = false;
                             SliderVars.slider.handlesSyncedToPrimary = false;
                         }
-                        updateSymbolSizesSlider({ values: symbolSizeSliderValues });
+                        updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme: theme });
                         return [2 /*return*/];
                 }
             });
@@ -209,7 +209,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.colorSizeSlider.primaryHandleEnabled = false;
                             SliderVars.colorSizeSlider.handlesSyncedToPrimary = false;
                         }
-                        updateSymbolSizesSlider({ values: symbolSizeSliderValues });
+                        updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme: theme });
                         return [2 /*return*/];
                 }
             });
@@ -264,8 +264,40 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         });
     }
     exports.updateOpacitySliderValues = updateOpacitySliderValues;
+    var symbolSizesSliderWatchHandle = null;
+    function createSymbolSizesWatcher(values, theme) {
+        return function (values) {
+            var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
+            var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
+            var stops = sizeVariable.stops;
+            var minSize = theme !== "below-average" ? values[0] : values[1];
+            var maxSize = theme !== "below-average" ? values[1] : values[0];
+            if (stops && stops.length > 0) {
+                var midSize = sizeRendererUtils_1.calcuateMidSize(minSize, maxSize);
+                stops[0].size = maxSize;
+                stops[1].size = midSize;
+                stops[2].size = minSize;
+                stops[3].size = midSize;
+                stops[4].size = maxSize;
+            }
+            else {
+                sizeVariable.minSize = minSize;
+                sizeVariable.maxSize = maxSize;
+            }
+            layerUtils_1.LayerVars.layer.renderer = renderer;
+            if (SliderVars.colorSizeSlider) {
+                updateColorSizeSliderSizes(sizeVariable);
+            }
+            if (SliderVars.slider) {
+                updateSizeSliderSizes(sizeVariable);
+            }
+        };
+    }
     function updateSymbolSizesSlider(params) {
-        var values = params.values;
+        var values = params.values, theme = params.theme;
+        if (values[1] < values[0]) {
+            values.reverse();
+        }
         if (!SliderVars.symbolSizesSlider) {
             SliderVars.symbolSizesSlider = new Slider({
                 values: values,
@@ -280,36 +312,15 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                     labels: true
                 }
             });
-            SliderVars.symbolSizesSlider.watch("values", function (values) {
-                var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
-                var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
-                var stops = sizeVariable.stops, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize;
-                if (stops && stops.length > 0) {
-                    var minSize_1 = values[0];
-                    var maxSize_1 = values[1];
-                    var midSize = sizeRendererUtils_1.calcuateMidSize(minSize_1, maxSize_1);
-                    stops[0].size = maxSize_1;
-                    stops[1].size = midSize;
-                    stops[2].size = minSize_1;
-                    stops[3].size = midSize;
-                    stops[4].size = maxSize_1;
-                }
-                else {
-                    sizeVariable.minSize = values[0];
-                    sizeVariable.maxSize = values[1];
-                }
-                layerUtils_1.LayerVars.layer.renderer = renderer;
-                if (SliderVars.colorSizeSlider) {
-                    updateColorSizeSliderSizes(sizeVariable);
-                }
-                if (SliderVars.slider) {
-                    updateSizeSliderSizes(sizeVariable);
-                }
-            });
         }
         else {
             SliderVars.symbolSizesSlider.values = values;
         }
+        if (symbolSizesSliderWatchHandle) {
+            symbolSizesSliderWatchHandle.remove();
+            symbolSizesSliderWatchHandle = null;
+        }
+        symbolSizesSliderWatchHandle = SliderVars.symbolSizesSlider.watch("values", createSymbolSizesWatcher(values, theme));
     }
     function updateOpacitySlider(params) {
         return __awaiter(this, void 0, void 0, function () {
