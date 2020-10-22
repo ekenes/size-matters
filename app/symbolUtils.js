@@ -612,11 +612,11 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
         styleUrl: styleUrl,
         name: "down arrow circle"
     });
-    var plus = new WebStyleSymbol({
+    var plusCircle = new WebStyleSymbol({
         styleUrl: styleUrl,
         name: "plus circle"
     });
-    var minus = new WebStyleSymbol({
+    var minusCircle = new WebStyleSymbol({
         styleUrl: styleUrl,
         name: "minus circle"
     });
@@ -643,6 +643,22 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
     var downCaret = new WebStyleSymbol({
         styleUrl: styleUrl,
         name: "arrow down no circle"
+    });
+    var plus = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "plus "
+    });
+    var minus = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "minus"
+    });
+    var high = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "High"
+    });
+    var low = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "Low"
     });
     var triangleUp = new symbols_1.SimpleMarkerSymbol({
         style: "triangle",
@@ -691,6 +707,11 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             above: dottedUp,
             below: dottedDown
         },
+        plusMinusCircle: {
+            name: "plusMinusCircle",
+            above: plusCircle,
+            below: minusCircle
+        },
         plusMinus: {
             name: "plusMinus",
             above: plus,
@@ -705,6 +726,11 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             name: "triangles",
             above: triangleUp,
             below: triangleDown
+        },
+        highLow: {
+            name: "highLow",
+            above: high,
+            below: low
         },
         lines: {
             name: "lines",
@@ -733,14 +759,18 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
                             downCaretCircle.fetchCIMSymbol(),
                             upArrow.fetchCIMSymbol(),
                             downArrow.fetchCIMSymbol(),
-                            plus.fetchCIMSymbol(),
-                            minus.fetchCIMSymbol(),
+                            plusCircle.fetchCIMSymbol(),
+                            minusCircle.fetchCIMSymbol(),
                             filled.fetchCIMSymbol(),
                             empty.fetchCIMSymbol(),
                             upCaret.fetchCIMSymbol(),
                             downCaret.fetchCIMSymbol(),
                             dottedUp.fetchCIMSymbol(),
-                            dottedDown.fetchCIMSymbol()
+                            dottedDown.fetchCIMSymbol(),
+                            plus.fetchCIMSymbol(),
+                            minus.fetchCIMSymbol(),
+                            high.fetchCIMSymbol(),
+                            low.fetchCIMSymbol()
                         ])];
                     case 1:
                         response = _a.sent();
@@ -748,14 +778,18 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
                         exports.symbolOptions.caretsCircle.below = response[1].value;
                         exports.symbolOptions.arrows.above = response[2].value;
                         exports.symbolOptions.arrows.below = response[3].value;
-                        exports.symbolOptions.plusMinus.above = response[4].value;
-                        exports.symbolOptions.plusMinus.below = response[5].value;
+                        exports.symbolOptions.plusMinusCircle.above = response[4].value;
+                        exports.symbolOptions.plusMinusCircle.below = response[5].value;
                         exports.symbolOptions.radio.above = response[6].value;
                         exports.symbolOptions.radio.below = response[7].value;
                         exports.symbolOptions.carets.above = response[8].value;
                         exports.symbolOptions.carets.below = response[9].value;
                         exports.symbolOptions.dottedArrows.above = response[10].value;
                         exports.symbolOptions.dottedArrows.below = response[11].value;
+                        exports.symbolOptions.plusMinus.above = response[12].value;
+                        exports.symbolOptions.plusMinus.below = response[13].value;
+                        exports.symbolOptions.highLow.above = response[14].value;
+                        exports.symbolOptions.highLow.below = response[15].value;
                         return [2 /*return*/];
                 }
             });

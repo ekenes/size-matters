@@ -591,12 +591,12 @@ const downArrow = new WebStyleSymbol({
   name: "down arrow circle"
 });
 
-const plus = new WebStyleSymbol({
+const plusCircle = new WebStyleSymbol({
   styleUrl,
   name: "plus circle"
 });
 
-const minus = new WebStyleSymbol({
+const minusCircle = new WebStyleSymbol({
   styleUrl,
   name: "minus circle"
 });
@@ -631,6 +631,28 @@ const downCaret = new WebStyleSymbol({
   name: "arrow down no circle"
 });
 
+
+const plus = new WebStyleSymbol({
+  styleUrl,
+  name: "plus "
+});
+
+const minus = new WebStyleSymbol({
+  styleUrl,
+  name: "minus"
+});
+
+
+const high = new WebStyleSymbol({
+  styleUrl,
+  name: "High"
+});
+
+const low = new WebStyleSymbol({
+  styleUrl,
+  name: "Low"
+});
+
 const triangleUp = new SimpleMarkerSymbol({
   style: "triangle",
   angle: 0,
@@ -649,7 +671,7 @@ const triangleDown = new SimpleMarkerSymbol({
   }
 });
 
-export type SymbolNames = "donuts" | "rings" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles";
+export type SymbolNames = "donuts" | "rings" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles" | "plusMinusCircle" | "highLow";
 
 export const symbolOptions = {
   donuts: {
@@ -682,6 +704,11 @@ export const symbolOptions = {
     above: dottedUp,
     below: dottedDown
   },
+  plusMinusCircle: {
+    name: "plusMinusCircle",
+    above: plusCircle,
+    below: minusCircle
+  },
   plusMinus: {
     name: "plusMinus",
     above: plus,
@@ -696,6 +723,11 @@ export const symbolOptions = {
     name: "triangles",
     above: triangleUp,
     below: triangleDown
+  },
+  highLow: {
+    name: "highLow",
+    above: high,
+    below: low
   },
   lines: {
     name: "lines",
@@ -728,26 +760,34 @@ export async function fetchCIMdata(){
     downCaretCircle.fetchCIMSymbol(),
     upArrow.fetchCIMSymbol(),
     downArrow.fetchCIMSymbol(),
-    plus.fetchCIMSymbol(),
-    minus.fetchCIMSymbol(),
+    plusCircle.fetchCIMSymbol(),
+    minusCircle.fetchCIMSymbol(),
     filled.fetchCIMSymbol(),
     empty.fetchCIMSymbol(),
     upCaret.fetchCIMSymbol(),
     downCaret.fetchCIMSymbol(),
     dottedUp.fetchCIMSymbol(),
-    dottedDown.fetchCIMSymbol()
+    dottedDown.fetchCIMSymbol(),
+    plus.fetchCIMSymbol(),
+    minus.fetchCIMSymbol(),
+    high.fetchCIMSymbol(),
+    low.fetchCIMSymbol()
   ]);
 
   symbolOptions.caretsCircle.above = response[0].value;
   symbolOptions.caretsCircle.below = response[1].value;
   symbolOptions.arrows.above = response[2].value;
   symbolOptions.arrows.below = response[3].value;
-  symbolOptions.plusMinus.above = response[4].value;
-  symbolOptions.plusMinus.below = response[5].value;
+  symbolOptions.plusMinusCircle.above = response[4].value;
+  symbolOptions.plusMinusCircle.below = response[5].value;
   symbolOptions.radio.above = response[6].value;
   symbolOptions.radio.below = response[7].value;
   symbolOptions.carets.above = response[8].value;
   symbolOptions.carets.below = response[9].value;
   symbolOptions.dottedArrows.above = response[10].value;
   symbolOptions.dottedArrows.below = response[11].value;
+  symbolOptions.plusMinus.above = response[12].value;
+  symbolOptions.plusMinus.below = response[13].value;
+  symbolOptions.highLow.above = response[14].value;
+  symbolOptions.highLow.below = response[15].value;
 }
