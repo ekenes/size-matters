@@ -634,7 +634,7 @@ const downCaret = new WebStyleSymbol({
 
 const plus = new WebStyleSymbol({
   styleUrl,
-  name: "plus "
+  name: "plus"
 });
 
 const minus = new WebStyleSymbol({
@@ -651,6 +651,16 @@ const high = new WebStyleSymbol({
 const low = new WebStyleSymbol({
   styleUrl,
   name: "Low"
+});
+
+const happy = new WebStyleSymbol({
+  styleUrl,
+  name: "Happy"
+});
+
+const sad = new WebStyleSymbol({
+  styleUrl,
+  name: "Sad"
 });
 
 const triangleUp = new SimpleMarkerSymbol({
@@ -671,7 +681,7 @@ const triangleDown = new SimpleMarkerSymbol({
   }
 });
 
-export type SymbolNames = "donuts" | "rings" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles" | "plusMinusCircle" | "highLow";
+export type SymbolNames = "donuts" | "rings" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles" | "plusMinusCircle" | "highLow" | "happySad";
 
 export const symbolOptions = {
   donuts: {
@@ -729,6 +739,11 @@ export const symbolOptions = {
     above: high,
     below: low
   },
+  happySad: {
+    name: "happySad",
+    above: happy,
+    below: sad
+  },
   lines: {
     name: "lines",
     above: new SimpleLineSymbol({
@@ -771,7 +786,9 @@ export async function fetchCIMdata(){
     plus.fetchCIMSymbol(),
     minus.fetchCIMSymbol(),
     high.fetchCIMSymbol(),
-    low.fetchCIMSymbol()
+    low.fetchCIMSymbol(),
+    happy.fetchCIMSymbol(),
+    sad.fetchCIMSymbol()
   ]);
 
   symbolOptions.caretsCircle.above = response[0].value;
@@ -790,4 +807,6 @@ export async function fetchCIMdata(){
   symbolOptions.plusMinus.below = response[13].value;
   symbolOptions.highLow.above = response[14].value;
   symbolOptions.highLow.below = response[15].value;
+  symbolOptions.happySad.above = response[16].value;
+  symbolOptions.happySad.below = response[17].value;
 }

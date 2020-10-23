@@ -646,7 +646,7 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
     });
     var plus = new WebStyleSymbol({
         styleUrl: styleUrl,
-        name: "plus "
+        name: "plus"
     });
     var minus = new WebStyleSymbol({
         styleUrl: styleUrl,
@@ -659,6 +659,14 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
     var low = new WebStyleSymbol({
         styleUrl: styleUrl,
         name: "Low"
+    });
+    var happy = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "Happy"
+    });
+    var sad = new WebStyleSymbol({
+        styleUrl: styleUrl,
+        name: "Sad"
     });
     var triangleUp = new symbols_1.SimpleMarkerSymbol({
         style: "triangle",
@@ -732,6 +740,11 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
             above: high,
             below: low
         },
+        happySad: {
+            name: "happySad",
+            above: happy,
+            below: sad
+        },
         lines: {
             name: "lines",
             above: new symbols_1.SimpleLineSymbol({
@@ -770,7 +783,9 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
                             plus.fetchCIMSymbol(),
                             minus.fetchCIMSymbol(),
                             high.fetchCIMSymbol(),
-                            low.fetchCIMSymbol()
+                            low.fetchCIMSymbol(),
+                            happy.fetchCIMSymbol(),
+                            sad.fetchCIMSymbol()
                         ])];
                     case 1:
                         response = _a.sent();
@@ -790,6 +805,8 @@ define(["require", "exports", "esri/symbols/CIMSymbol", "esri/symbols/WebStyleSy
                         exports.symbolOptions.plusMinus.below = response[13].value;
                         exports.symbolOptions.highLow.above = response[14].value;
                         exports.symbolOptions.highLow.below = response[15].value;
+                        exports.symbolOptions.happySad.above = response[16].value;
+                        exports.symbolOptions.happySad.below = response[17].value;
                         return [2 /*return*/];
                 }
             });
