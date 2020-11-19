@@ -1,0 +1,72 @@
+"authoringInfo": {
+  "visualVariables": [
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "sizeInfo",
+      "theme": "below"
+    }
+  ]
+}
+
+
+"authoringInfo": {
+  "visualVariables": [
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "sizeInfo",
+      "theme": "above"
+    }
+  ]
+}
+
+"authoringInfo": {
+  "type": "univariateColorSize",
+  "theme": "above-and-below",
+  "symbolStyle": "caret",
+  "visualVariables": [
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "sizeInfo"
+    }
+  ]
+}
+
+"authoringInfo": {
+  "type": "univariateColorSize",
+  "theme": "above-and-below",
+  "symbolStyle": "none",
+  "visualVariables": [
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "colorInfo"
+    },
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "sizeInfo"
+    }
+  ]
+}
+
+
+"authoringInfo": {
+  "type": "univariateColorSize",
+  "theme": "above-and-below",
+  "symbolStyle": "caret",
+  "visualVariables": [
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "colorInfo"
+    },
+    {
+      "maxSliderValue": 77.61989342806395,
+      "minSliderValue": -100,
+      "type": "sizeInfo"
+    }
+  ]
+}
