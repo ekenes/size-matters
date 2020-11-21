@@ -111,7 +111,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
   if(theme === "above-and-below"){
     SliderVars.slider.stops = stops;
     SliderVars.slider.primaryHandleEnabled = true;
-    SliderVars.slider.handlesSyncedToPrimary = false;
+    SliderVars.slider.handlesSyncedToPrimary = true;
   } else {
     SliderVars.slider.primaryHandleEnabled = false;
     SliderVars.slider.handlesSyncedToPrimary = false;
