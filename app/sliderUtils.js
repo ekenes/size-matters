@@ -270,8 +270,8 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
             var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
             var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
             var stops = sizeVariable.stops;
-            var minSize = theme !== "below-average" ? values[0] : values[1];
-            var maxSize = theme !== "below-average" ? values[1] : values[0];
+            var minSize = theme !== "below" ? values[0] : values[1];
+            var maxSize = theme !== "below" ? values[1] : values[0];
             if (stops && stops.length > 0) {
                 var midSize = sizeRendererUtils_1.calcuateMidSize(minSize, maxSize);
                 stops[0].size = maxSize;

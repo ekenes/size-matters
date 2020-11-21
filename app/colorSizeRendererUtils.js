@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/smartMapping/symbology/support/colorRamps", "esri/symbols/support/symbolUtils", "esri/core/lang", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./layerUtils"], function (require, exports, colorSizeRendererCreator, colorRamps, symbolUtils, lang, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1, layerUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/smartMapping/symbology/support/colorRamps", "esri/symbols/support/symbolUtils", "esri/symbols/support/cimSymbolUtils", "./sliderUtils", "./rendererUtils", "./layerUtils"], function (require, exports, colorSizeRendererCreator, colorRamps, symbolUtils, cimSymbolUtils, sliderUtils_1, rendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.useDonutsElement = document.getElementById("use-donuts");
@@ -56,44 +56,53 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     //////////////////////////////////////
     function createColorSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, invalidColorThemes, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, colorVariables;
+            var layer, view, field, normalizationField, valueExpression, theme, useSizeSlider, result, rendererColor, aboveSymbol, belowSymbol, aboveColor, belowColor;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression;
-                        invalidColorThemes = ["90-10", "above-average", "below-average", "centered-on", "extremes"];
-                        theme = lang.clone(params.theme) || "high-to-low";
-                        params.theme = invalidColorThemes.indexOf(theme) > -1 ? "high-to-low" : params.theme;
+                        theme = params.theme || "high-to-low";
+                        useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
                         return [4 /*yield*/, colorSizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
                         result.renderer.authoringInfo.type = "univariate-color-size";
                         rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
                         sliderUtils_1.colorPicker.value = rendererColor.toHex();
-                        return [4 /*yield*/, statUtils_1.calculate9010Percentile({
+                        if (!useSizeSlider) return [3 /*break*/, 3];
+                        aboveSymbol = result.renderer.classBreakInfos[1].symbol;
+                        belowSymbol = result.renderer.classBreakInfos[0].symbol;
+                        aboveColor = (aboveSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(aboveSymbol) : aboveSymbol.color;
+                        belowColor = (belowSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(belowSymbol) : belowSymbol.color;
+                        sliderUtils_1.colorPickerAbove.value = aboveColor.toHex();
+                        sliderUtils_1.colorPickerBelow.value = belowColor.toHex();
+                        return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
                                 view: view,
-                                field: field, normalizationField: normalizationField, valueExpression: valueExpression
-                            })];
-                    case 2:
-                        percentileStats = _a.sent();
-                        visualVariables = updateVariablesFromTheme(result, theme, percentileStats);
-                        result.renderer.visualVariables = visualVariables;
-                        sizeVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "size");
-                        colorVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "color");
-                        result.size.visualVariables = sizeVariables;
-                        result.color.visualVariable = colorVariables[0];
-                        if (theme === "above-and-below" && exports.useDonutsElement.checked) {
-                            result.renderer = rendererUtils_1.createAboveAndBelowRenderer(result.renderer);
-                        }
-                        return [4 /*yield*/, sliderUtils_1.updateColorSizeSlider({
-                                layer: layer,
-                                view: view,
-                                rendererResult: result,
+                                rendererResult: {
+                                    renderer: result.renderer,
+                                    visualVariables: result.size.visualVariables,
+                                    sizeScheme: result.size.sizeScheme,
+                                    defaultValuesUsed: result.defaultValuesUsed,
+                                    statistics: result.statistics,
+                                    basemapId: result.basemapId,
+                                    basemapTheme: result.basemapTheme
+                                },
                                 theme: theme
                             })];
-                    case 3:
+                    case 2:
                         _a.sent();
+                        return [3 /*break*/, 5];
+                    case 3: return [4 /*yield*/, sliderUtils_1.updateColorSizeSlider({
+                            layer: layer,
+                            view: view,
+                            rendererResult: result,
+                            theme: theme
+                        })];
+                    case 4:
+                        _a.sent();
+                        _a.label = 5;
+                    case 5:
                         createColorRamps(theme);
                         return [2 /*return*/, result];
                 }
@@ -101,60 +110,6 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
         });
     }
     exports.createColorSizeRenderer = createColorSizeRenderer;
-    function updateVariablesFromTheme(rendererResult, theme, percentileStats) {
-        var stats = rendererResult.statistics;
-        var renderer = rendererResult.renderer.clone();
-        var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
-        var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
-        renderer.visualVariables.splice(sizeVariableIndex, 1);
-        var colorVariable = rendererUtils_1.getVisualVariableByType(renderer, "color");
-        var colorVariableIndex = renderer.visualVariables.indexOf(colorVariable);
-        renderer.visualVariables.splice(colorVariableIndex, 1);
-        switch (theme) {
-            case "above-average":
-                sizeRendererUtils_1.updateVariableToAboveAverageTheme(sizeVariable, stats);
-                updateColorVariableToAboveAverageTheme(colorVariable, stats);
-                break;
-            case "below-average":
-                sizeRendererUtils_1.updateVariableToBelowAverageTheme(sizeVariable, stats);
-                updateColorVariableToBelowAverageTheme(colorVariable, stats);
-                break;
-            case "90-10":
-                sizeRendererUtils_1.updateVariableTo9010Theme(sizeVariable, percentileStats);
-                updateColorVariableTo9010Theme(colorVariable, percentileStats);
-                break;
-            case "above-and-below":
-                sizeRendererUtils_1.updateVariableToAboveAndBelowTheme(sizeVariable, stats);
-            default:
-                // return variables without modifications
-                break;
-        }
-        renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, colorVariable]);
-        return renderer.visualVariables;
-    }
-    function updateColorVariableToAboveAverageTheme(colorVariable, stats) {
-        colorVariable.stops[0].value = stats.avg;
-        colorVariable.stops[1].value = stats.avg;
-        // colorVariable.stops[1].color = colorVariable.stops[0].color;
-        colorVariable.stops[2].value = stats.avg;
-        // colorVariable.stops[2].color = colorVariable.stops[0].color;
-    }
-    function updateColorVariableToBelowAverageTheme(colorVariable, stats) {
-        reverseColors(colorVariable);
-        colorVariable.stops[2].value = stats.avg;
-        colorVariable.stops[3].value = stats.avg;
-        // colorVariable.stops[3].color = colorVariable.stops[2].color;
-        colorVariable.stops[4].value = stats.avg;
-        // colorVariable.stops[4].color = colorVariable.stops[2].color;
-    }
-    function updateColorVariableTo9010Theme(colorVariable, stats) {
-        colorVariable.stops[0].value = stats["10"];
-        colorVariable.stops[4].value = stats["90"];
-    }
-    function reverseColors(colorVariable) {
-        var colors = colorVariable.stops.map(function (stop) { return stop.color; }).reverse();
-        colorVariable.stops.forEach(function (stop, i) { return stop.color = colors[i]; });
-    }
     var colorRampsElement = document.getElementById("color-ramps");
     function createColorRamps(theme) {
         colorRampsElement.innerHTML = null;

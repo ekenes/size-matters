@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderers/visualVariables/support/SizeStop", "./sliderUtils", "./statUtils", "./rendererUtils"], function (require, exports, sizeRendererCreator, SizeStop, sliderUtils_1, statUtils_1, rendererUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils", "./rendererUtils"], function (require, exports, sizeRendererCreator, sliderUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     function updateRendererFromSizeSlider(renderer, slider) {
@@ -52,42 +52,24 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     //////////////////////////////////////
     function createSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, belowSymbol, aboveSymbol;
+            var layer, view, theme, result, rendererColor;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        layer = params.layer, view = params.view, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression;
+                        layer = params.layer, view = params.view;
                         theme = params.theme || "high-to-low";
                         return [4 /*yield*/, sizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
                         rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
                         sliderUtils_1.colorPicker.value = rendererColor.toHex();
-                        return [4 /*yield*/, statUtils_1.calculate9010Percentile({
-                                layer: layer,
-                                view: view,
-                                field: field, normalizationField: normalizationField, valueExpression: valueExpression
-                            })];
-                    case 2:
-                        percentileStats = _a.sent();
-                        visualVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
-                        result.renderer.visualVariables = visualVariables;
-                        sizeVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "size");
-                        result.visualVariables = sizeVariables;
-                        if (theme === "above-and-below") {
-                            result.renderer = rendererUtils_1.createAboveAndBelowRenderer(result.renderer);
-                            belowSymbol = result.renderer.classBreakInfos[0].symbol;
-                            aboveSymbol = result.renderer.classBreakInfos[1].symbol;
-                            sliderUtils_1.colorPickerBelow.value = rendererUtils_1.getSymbolColor(belowSymbol).toHex();
-                            sliderUtils_1.colorPickerAbove.value = rendererUtils_1.getSymbolColor(aboveSymbol).toHex();
-                        }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
                                 view: view,
                                 rendererResult: result,
                                 theme: theme
                             })];
-                    case 3:
+                    case 2:
                         _a.sent();
                         return [2 /*return*/, result];
                 }
@@ -95,92 +77,6 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         });
     }
     exports.createSizeRenderer = createSizeRenderer;
-    function updateVariablesFromTheme(rendererResult, theme, percentileStats) {
-        var stats = rendererResult.statistics;
-        var renderer = rendererResult.renderer.clone();
-        var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
-        var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
-        renderer.visualVariables.splice(sizeVariableIndex, 1);
-        switch (theme) {
-            case "above-average":
-                updateVariableToAboveAverageTheme(sizeVariable, stats);
-                break;
-            case "below-average":
-                updateVariableToBelowAverageTheme(sizeVariable, stats);
-                break;
-            case "90-10":
-                updateVariableTo9010Theme(sizeVariable, percentileStats);
-                break;
-            case "above-and-below":
-                updateVariableToAboveAndBelowTheme(sizeVariable, stats);
-            default:
-                // return variables without modifications
-                break;
-        }
-        renderer.visualVariables.push(sizeVariable);
-        return renderer.visualVariables;
-    }
-    function updateVariableToAboveAverageTheme(sizeVariable, stats) {
-        var min = stats.min, stddev = stats.stddev, avg = stats.avg;
-        sizeVariable.minDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
-    }
-    exports.updateVariableToAboveAverageTheme = updateVariableToAboveAverageTheme;
-    function updateVariableToBelowAverageTheme(sizeVariable, stats) {
-        sizeVariable.flipSizes();
-        var min = stats.min, stddev = stats.stddev, avg = stats.avg;
-        sizeVariable.maxDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
-    }
-    exports.updateVariableToBelowAverageTheme = updateVariableToBelowAverageTheme;
-    function updateVariableTo9010Theme(sizeVariable, stats) {
-        sizeVariable.minDataValue = stats["10"];
-        sizeVariable.maxDataValue = stats["90"];
-    }
-    exports.updateVariableTo9010Theme = updateVariableTo9010Theme;
-    function updateVariableToAboveAndBelowTheme(sizeVariable, stats) {
-        var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
-        var oldSizeVariable = sizeVariable.clone();
-        var midDataValue = (avg + stddev) > 0 && 0 > (avg - stddev) && min < 0 ? 0 : avg;
-        var aboveAvgSpread = max - midDataValue;
-        var belowAvgSpread = midDataValue - min;
-        var maxSpread = aboveAvgSpread > belowAvgSpread ? aboveAvgSpread : belowAvgSpread;
-        var maxDataValue = midDataValue + maxSpread;
-        var minDataValue = midDataValue - maxSpread;
-        var minSize, maxSize = null;
-        if (typeof oldSizeVariable.minSize === "object") {
-            var stops_1 = oldSizeVariable.minSize.stops;
-            var numStops = stops_1.length;
-            var midIndex = Math.floor(numStops / 2);
-            minSize = stops_1[midIndex].size;
-        }
-        else {
-            minSize = oldSizeVariable.minSize;
-        }
-        if (typeof oldSizeVariable.maxSize === "object") {
-            var stops_2 = oldSizeVariable.maxSize.stops;
-            var numStops = stops_2.length;
-            var midIndex = Math.floor(numStops / 2);
-            maxSize = stops_2[midIndex].size;
-        }
-        else {
-            maxSize = oldSizeVariable.maxSize;
-        }
-        var midSize = calcuateMidSize(minSize, maxSize);
-        var minMidDataValue = midDataValue - ((midDataValue - minDataValue) / 2);
-        var maxMidDataValue = ((maxDataValue - midDataValue) / 2) + midDataValue;
-        var stops = [
-            new SizeStop({ value: minDataValue, size: maxSize }),
-            new SizeStop({ value: minMidDataValue, size: midSize }),
-            new SizeStop({ value: midDataValue, size: minSize }),
-            new SizeStop({ value: maxMidDataValue, size: midSize }),
-            new SizeStop({ value: maxDataValue, size: maxSize })
-        ];
-        sizeVariable.minDataValue = null;
-        sizeVariable.maxDataValue = null;
-        sizeVariable.minSize = null;
-        sizeVariable.maxSize = null;
-        sizeVariable.stops = stops;
-    }
-    exports.updateVariableToAboveAndBelowTheme = updateVariableToAboveAndBelowTheme;
     function calcuateMidSize(minSize, maxSize) {
         return Math.round((maxSize - minSize) / 2) + minSize;
     }

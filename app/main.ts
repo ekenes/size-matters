@@ -9,8 +9,8 @@ import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
 import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
-import { updateRenderer ,SizeParams, updateAboveAndBelowRendererSymbols } from './rendererUtils';
-import { fetchCIMdata, selectedSymbols, SymbolNames, updateSelectedSymbols } from "./symbolUtils";
+import { updateRenderer, SizeParams, Style } from './rendererUtils';
+import { fetchCIMdata, SymbolNames } from "./symbolUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 ( async () => {
@@ -63,10 +63,6 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   await layer.when();
   await fetchCIMdata();
 
-  if(layer.geometryType === "polyline"){
-    updateSelectedSymbols("lines");
-  }
-
   const layerView = await view.whenLayerView(layer) as esri.FeatureLayerView;
   watchUtils.whenFalseOnce(layerView, "updating", async () => {
     const { extent } = await layerView.queryExtent();
@@ -105,13 +101,10 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
   const symbolsContainer = document.getElementById("symbols-container") as HTMLSelectElement;
   const symbolsSelect = document.getElementById("symbols-select") as HTMLSelectElement;
+  const isBinaryElement = document.getElementById("binary-switch") as HTMLInputElement;
 
-  symbolsSelect.addEventListener("change", symbolChange);
-
-  function symbolChange (){
-    updateSelectedSymbols(symbolsSelect.value);
-    layer.renderer = updateAboveAndBelowRendererSymbols(layer.renderer as ClassBreaksRenderer, symbolsSelect.value as SymbolNames);
-  }
+  symbolsSelect.addEventListener("change", inputChange);
+  isBinaryElement.addEventListener("change", inputChange);
 
   fieldsSelect.addEventListener("change", inputChange);
   normalizationFieldSelect.addEventListener("change", () => {
@@ -122,7 +115,7 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
   valueExpressionTextArea.addEventListener("blur", inputChange);
   themeSelect.addEventListener("change", inputChange);
   themeSelect.addEventListener("change", () => {
-    symbolsContainer.style.display = themeSelect.value === "above-and-below" && selectedSymbols.name !== "lines" ? "block" : "none";
+    symbolsContainer.style.display = themeSelect.value === "above-and-below" ? "block" : "none";
   });
   styleSelect.addEventListener("change", inputChange);
 
@@ -137,7 +130,7 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
     }
 
     const theme = themeSelect.value as SizeParams["theme"];
-    const style = styleSelect.value as SizeParams["style"];
+    const style = styleSelect.value as Style;
 
     const params = {
       layer,
@@ -145,11 +138,10 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
       field,
       normalizationField,
       valueExpression,
-      theme,
-      style
+      theme
     };
 
-    updateRenderer(params);
+    updateRenderer(params, style);
   }
 
   function clearEverything(){

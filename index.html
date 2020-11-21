@@ -21,8 +21,7 @@
       };
     </script>
 
-    <!-- <script src="https://js.arcgis.com/next/"></script> -->
-    <script src="https://jscore.esri.com/testbuilds/jona0002-SizeSlider-primaryHandle/buildOutput/dojo/dojo.js"></script>
+    <script src="https://jsdev.arcgis.com/4.18/"></script>
   </head>
   <body>
     <div id="viewDiv"></div>
@@ -58,36 +57,37 @@
           Theme
           <select id="theme-select" class="esri-select">
             <option value="high-to-low" selected>High to low</option>
-            <option value="90-10">No outliers (90/10)</option>
-            <option value="above-average">Highlight Above</option>
-            <option value="below-average">Highlight Below</option>
+            <!-- <option value="90-10">No outliers (90/10)</option> -->
+            <option value="above">Above</option>
+            <option value="below">Below</option>
             <option value="above-and-below">Above and below</option>
             <!-- <option value="extremes">Extremes</option>
             <option value="centered-on">Centered on</option> -->
           </select>
         </div>
-        <div id="use-donuts-parent" style="margin-top: 10px;">
+        <div id="binary-parent" style="margin-top: 10px; display: none;">
           <label class="toggle-switch modifier-class">
-            <input type="checkbox" class="toggle-switch-input" id="use-donuts">
+            <input type="checkbox" class="toggle-switch-input" id="binary-switch">
             <span class="toggle-switch-track margin-right-1"></span>
-            <span class="toggle-switch-label font-size--1">Enable symbol style</span>
+            <span class="toggle-switch-label font-size--1">Use binary colors</span>
           </label>
         </div>
         <div id="symbols-container" style="margin-top: 10px;">
           Symbol styles
           <select id="symbols-select" class="esri-select">
-            <option value="donuts" selected>Donuts</option>
-            <option value="rings">Rings</option>
-            <option value="caretsCircle">Carets with circle</option>
-            <option value="carets">Carets</option>
-            <option value="arrows">Arrows</option>
-            <option value="dottedArrows">Dotted arrows</option>
-            <option value="plusMinusCircle">(+)/(-)</option>
-            <option value="plusMinus">+/-</option>
-            <option value="radio">Radio</option>
-            <option value="triangles">Triangles</option>
-            <option value="highLow">H/L</option>
-            <option value="happySad">:) / :(</option>
+            <option value="" selected>default</option>
+            <option value="caret">carets</option>
+            <option value="circle-caret">circle caret</option>
+            <option value="arrow">arrows</option>
+            <option value="circle-arrow">circle arrows</option>
+            <option value="plus-minus">plus/minus</option>
+            <option value="circle-plus-minus">circle plus/minus</option>
+            <option value="square">squares</option>
+            <option value="circle">circles</option>
+            <option value="triangle">triangles</option>
+            <option value="happy-sad">happy/sad</option>
+            <option value="thumb">thumbs</option>
+            <option value="custom">dotted arrows</option>
           </select>
         </div>
       </div>

@@ -8,16 +8,14 @@ import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUt
 import { SliderVars } from "./sliderUtils";
 import { createOpacitySizeRenderer, opacityValuesContainer } from "./opacitySizeRendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { CIMSymbol, SimpleMarkerSymbol, Symbol } from "esri/symbols";
-import { donutSymbol, selectedSymbols, updateSymbolStroke, SymbolNames, symbolOptions } from "./symbolUtils";
-import { LayerVars } from "./layerUtils";
+import { CIMSymbol, Symbol } from "esri/symbols";
+import {  symbolOptions } from "./symbolUtils";
 
-export interface SizeParams extends esri.sizeCreateContinuousRendererParams {
-  theme?: "high-to-low" | "90-10" | "above-average" | "below-average" | "above-and-below" | "extremes" | "centered-on",
-  style?: "size" | "color-and-size" | "opacity-and-size"
-}
+export type SizeParams = esri.sizeCreateContinuousRendererParams | esri.univariateColorSizeCreateContinuousRendererParams;
+export type Style = "size" | "color-and-size" | "opacity-and-size";
 
-const useDonutsParentElement = document.getElementById("use-donuts-parent") as HTMLDivElement;
+const binaryParentElement = document.getElementById("binary-parent") as HTMLDivElement;
+const isBinaryElement = document.getElementById("binary-switch") as HTMLInputElement;
 const symbolColorContainer = document.getElementById("symbol-color-container") as HTMLDivElement;
 const symbolColor = document.getElementById("symbol-color") as HTMLDivElement;
 const symbolColorAbove = document.getElementById("symbol-color-above") as HTMLDivElement;
@@ -26,10 +24,10 @@ const sizeOptionsElement = document.getElementById("size-options") as HTMLDivEle
 const opacityOptionsElement = document.getElementById("opacity-options") as HTMLDivElement;
 const colorRampsContainer = document.getElementById("color-ramps-container") as HTMLDivElement;
 const symbolsSelect = document.getElementById("symbols-select") as HTMLSelectElement;
+const themeSelect = document.getElementById("theme-select") as HTMLSelectElement;
 
-export async function updateRenderer(params: SizeParams){
+export async function updateRenderer(params: SizeParams, style: Style){
   const { layer, theme } = params;
-  const style = params.style || "size";
 
   let result = null;
 
@@ -45,41 +43,85 @@ export async function updateRenderer(params: SizeParams){
         SliderVars.opacitySlider.container = null;
         SliderVars.opacitySlider = null;
       }
-      result = await createSizeRenderer(params);
-      if(theme === "above-and-below"){
-        symbolColor.style.display = "none";
-        symbolColorAbove.style.display = "block";
-        symbolColorBelow.style.display = "block";
-      } else {
-        symbolColor.style.display = "block";
-        symbolColorAbove.style.display = "none";
-        symbolColorBelow.style.display = "none";
+      [].forEach.call(  themeSelect , function(option: HTMLOptionElement){
+        option.disabled = option.value === "above-and-below";
+      });
+      if(params.theme === "above-and-below"){
+        params.theme = "high-to-low";
+        themeSelect.value = "high-to-low";
       }
-      useDonutsParentElement.style.display = "none";
+
+      result = await createSizeRenderer(params as esri.sizeCreateContinuousRendererParams);
+
+      symbolColor.style.display = "block";
+      symbolColorAbove.style.display = "none";
+      symbolColorBelow.style.display = "none";
+
+      binaryParentElement.style.display = "none";
       symbolColorContainer.style.display = "block";
       opacityOptionsElement.style.display = "none";
       colorRampsContainer.style.display = "none";
       break;
     case "color-and-size":
-      if(SliderVars.slider){
+      const useSizeSlider = isBinaryElement.checked && theme === "above-and-below";
+      symbolColor.style.display = "none";
+      if(SliderVars.slider && !useSizeSlider ){
         SliderVars.slider.destroy();
         SliderVars.slider.container = null;
         SliderVars.slider = null;
+
+        symbolColorAbove.style.display = "none";
+        symbolColorBelow.style.display = "none";
+        symbolColorContainer.style.display = "none";
+        colorRampsContainer.style.display = "flex";
+      }
+      if(SliderVars.colorSizeSlider && useSizeSlider){
+        SliderVars.colorSizeSlider.destroy();
+        SliderVars.colorSizeSlider.container = null;
+        SliderVars.colorSizeSlider = null;
+
+        symbolColorAbove.style.display = "block";
+        symbolColorBelow.style.display = "block";
+        symbolColorContainer.style.display = "block";
+        colorRampsContainer.style.display = "none";
       }
       if(SliderVars.opacitySlider){
         SliderVars.opacitySlider.destroy();
         SliderVars.opacitySlider.container = null;
         SliderVars.opacitySlider = null;
       }
+      [].forEach.call(  themeSelect , function(option: HTMLOptionElement){
+        option.disabled = false;
+      });
       if(theme === "above-and-below"){
-        useDonutsParentElement.style.display = "block";
+        binaryParentElement.style.display = "block";
+        (params as esri.univariateColorSizeCreateContinuousRendererParams).colorOptions = {
+          isContinuous: !isBinaryElement.checked
+        };
+
+        if(symbolsSelect.value){
+          if(symbolsSelect.value === "custom"){
+            (params as esri.univariateColorSizeCreateContinuousRendererParams).symbolOptions = {
+              symbolStyle: null,
+              symbols: {
+                above: symbolOptions.dottedArrows.above,
+                below: symbolOptions.dottedArrows.below
+              }
+            }
+          } else {
+            (params as esri.univariateColorSizeCreateContinuousRendererParams).symbolOptions = {
+              symbolStyle: symbolsSelect.value !== "" ? symbolsSelect.value as any : null
+            }
+          }
+        }
+
       } else {
-        useDonutsParentElement.style.display = "none";
+        binaryParentElement.style.display = "none";
       }
-      symbolColorContainer.style.display = "none";
+      // symbolColorContainer.style.display = "none";
       opacityOptionsElement.style.display = "none";
-      colorRampsContainer.style.display = "flex";
-      result = await createColorSizeRenderer(params);
+      // colorRampsContainer.style.display = "flex";
+      result = await createColorSizeRenderer(params as esri.univariateColorSizeCreateContinuousRendererParams);
       break;
     case "opacity-and-size":
       if(SliderVars.colorSizeSlider){
@@ -88,7 +130,6 @@ export async function updateRenderer(params: SizeParams){
         SliderVars.colorSizeSlider = null;
       }
       symbolColorContainer.style.display = "block";
-      useDonutsParentElement.style.display = "none";
       opacityOptionsElement.style.display = "flex";
       colorRampsContainer.style.display = "none";
       result = await createOpacitySizeRenderer(params);
@@ -137,91 +178,3 @@ export function getSymbolColor(symbol: Symbol | CIMSymbol): Color {
   const color = symbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(symbol as CIMSymbol) : symbol.color;
   return color;
 }
-
-export function createAboveAndBelowRenderer(renderer: ClassBreaksRenderer, useDefaults?: boolean): ClassBreaksRenderer {
-  const rendererWithDonuts = renderer.clone();
-  const sizeVariable = getVisualVariableByType(rendererWithDonuts, "size") as esri.SizeVariable;
-  const { stops, field, normalizationField, valueExpression } = sizeVariable;
-
-  if(!stops || stops.length < 4){
-    console.error("The provided renderer does not use the above and below theme");
-    return renderer;
-  }
-
-  // Set defaults for above and below
-  symbolsSelect.value = "donuts";
-  const aboveSymbol = (rendererWithDonuts.classBreakInfos[0].symbol as SimpleMarkerSymbol).clone();
-  const belowSymbol = donutSymbol;
-  cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
-
-  const symbolSize = aboveSymbol.size;
-  const outline = aboveSymbol.outline;
-
-  cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
-
-  updateSymbolStroke(belowSymbol, outline.width, outline.color);
-
-  // set class breaks
-  rendererWithDonuts.field = field;
-  rendererWithDonuts.normalizationField = normalizationField;
-  rendererWithDonuts.valueExpression = valueExpression;
-  rendererWithDonuts.classBreakInfos = [
-    new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: belowSymbol }),
-    new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: aboveSymbol }),
-  ];
-
-  rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below";
-
-  return rendererWithDonuts;
-}
-
-export function updateAboveAndBelowRendererSymbols(renderer: ClassBreaksRenderer, symbolName: SymbolNames ): ClassBreaksRenderer {
-  const rendererWithDonuts = renderer.clone();
-  const originalAboveSymbol = rendererWithDonuts.classBreakInfos[1].symbol;
-  const originalBelowSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
-  const aboveColor = getSymbolColor(originalAboveSymbol as Symbol | CIMSymbol);
-  const belowColor = getSymbolColor(originalBelowSymbol as Symbol | CIMSymbol);
-
-  const symbols = selectedSymbols;
-
-  const aboveSymbol = symbols.above;
-  const belowSymbol = symbols.below;
-
-  if(aboveSymbol.type === "cim"){
-    cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, aboveColor);
-  } else {
-    aboveSymbol.color = aboveColor;
-  }
-
-  if(belowSymbol.type === "cim"){
-    cimSymbolUtils.applyCIMSymbolColor(belowSymbol, belowColor);
-  } else {
-    belowSymbol.color = belowColor;
-  }
-
-  rendererWithDonuts.classBreakInfos[0].symbol = belowSymbol;
-  rendererWithDonuts.classBreakInfos[1].symbol = aboveSymbol;
-
-  return rendererWithDonuts;
-}
-
-function removeDonutFromRenderer(renderer: ClassBreaksRenderer): ClassBreaksRenderer {
-  const rendererWithoutDonuts = renderer.clone();
-  const classBreakInfos = rendererWithoutDonuts.classBreakInfos;
-
-  if(classBreakInfos.length !== 2){
-    console.error("The provided renderer doesn't have the correct number of class breaks");
-    return renderer;
-  }
-
-  classBreakInfos.shift();
-  classBreakInfos[0].minValue = -9007199254740991;
-  classBreakInfos[0].maxValue = 9007199254740991;
-
-  return rendererWithoutDonuts;
-}
-
-useDonutsElement.addEventListener("change", () => {
-  const renderer = LayerVars.layer.renderer as ClassBreaksRenderer;
-  LayerVars.layer.renderer = createAboveAndBelowRenderer(renderer);
-});

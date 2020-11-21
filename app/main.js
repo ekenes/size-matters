@@ -38,10 +38,6 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
-        function symbolChange() {
-            symbolUtils_1.updateSelectedSymbols(symbolsSelect.value);
-            layer.renderer = rendererUtils_1.updateAboveAndBelowRendererSymbols(layer.renderer, symbolsSelect.value);
-        }
         function inputChange() {
             var field = fieldsSelect.value;
             var normalizationField = normalizationFieldSelect.value;
@@ -58,10 +54,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                 field: field,
                 normalizationField: normalizationField,
                 valueExpression: valueExpression,
-                theme: theme,
-                style: style
+                theme: theme
             };
-            rendererUtils_1.updateRenderer(params);
+            rendererUtils_1.updateRenderer(params, style);
         }
         function clearEverything() {
             layer.renderer = originalRenderer;
@@ -74,7 +69,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
             document.getElementById("info").innerHTML = info;
             overlay.style.visibility = "visible";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, overlay, ok;
+        var layer, webmap, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, isBinaryElement, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -126,9 +121,6 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                     return [4 /*yield*/, symbolUtils_1.fetchCIMdata()];
                 case 3:
                     _a.sent();
-                    if (layer.geometryType === "polyline") {
-                        symbolUtils_1.updateSelectedSymbols("lines");
-                    }
                     return [4 /*yield*/, view.whenLayerView(layer)];
                 case 4:
                     layerView = _a.sent();
@@ -167,7 +159,9 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                     styleSelect = document.getElementById("style-select");
                     symbolsContainer = document.getElementById("symbols-container");
                     symbolsSelect = document.getElementById("symbols-select");
-                    symbolsSelect.addEventListener("change", symbolChange);
+                    isBinaryElement = document.getElementById("binary-switch");
+                    symbolsSelect.addEventListener("change", inputChange);
+                    isBinaryElement.addEventListener("change", inputChange);
                     fieldsSelect.addEventListener("change", inputChange);
                     normalizationFieldSelect.addEventListener("change", function () {
                         if (fieldsSelect.value) {
@@ -177,7 +171,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                     valueExpressionTextArea.addEventListener("blur", inputChange);
                     themeSelect.addEventListener("change", inputChange);
                     themeSelect.addEventListener("change", function () {
-                        symbolsContainer.style.display = themeSelect.value === "above-and-below" && symbolUtils_1.selectedSymbols.name !== "lines" ? "block" : "none";
+                        symbolsContainer.style.display = themeSelect.value === "above-and-below" ? "block" : "none";
                     });
                     styleSelect.addEventListener("change", inputChange);
                     saveBtn.addEventListener("click", function () { return __awaiter(void 0, void 0, void 0, function () {

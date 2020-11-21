@@ -8,7 +8,7 @@ import Color = require("esri/Color");
 
 import { calculateHistogram } from "./statUtils";
 import { getVisualVariableByType, SizeParams, getSizeRendererColor } from "./rendererUtils";
-import { updateRendererFromSizeSlider, calcuateMidSize } from "./sizeRendererUtils";
+import { calcuateMidSize, updateRendererFromSizeSlider } from "./sizeRendererUtils";
 import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
 import { LayerVars } from "./layerUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
@@ -25,7 +25,7 @@ export class SliderVars {
 interface CreateSizeSliderParams {
   layer: esri.FeatureLayer,
   view: esri.MapView,
-  rendererResult: esri.sizeContinuousRendererResult,
+  rendererResult: esri.sizeContinuousRendererResult | esri.univariateColorSizeContinuousRendererResult,
   theme: SizeParams["theme"],
   updateOpacity?: boolean
 }
@@ -67,7 +67,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
   });
 
   if(!SliderVars.slider){
-    SliderVars.slider = SizeSlider.fromRendererResult(rendererResult, histogramResult);
+    SliderVars.slider = SizeSlider.fromRendererResult(rendererResult as esri.sizeContinuousRendererResult, histogramResult);
     SliderVars.slider.container = document.createElement("div");
     sizeSlidersContainer.appendChild(SliderVars.slider.container);
     // SliderVars.slider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
@@ -105,7 +105,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
     });
   } else {
     (SliderVars.slider.container as HTMLElement).style.display = "block";
-    SliderVars.slider.updateFromRendererResult(rendererResult, histogramResult);
+    SliderVars.slider.updateFromRendererResult(rendererResult as esri.sizeContinuousRendererResult, histogramResult);
   }
 
   if(theme === "above-and-below"){
@@ -260,8 +260,8 @@ function createSymbolSizesWatcher(values: number[], theme?: SizeParams["theme"])
     const sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
     let { stops } = sizeVariable;
 
-    const minSize = theme !== "below-average" ? values[0] : values[1];
-    const maxSize = theme !== "below-average" ? values[1] : values[0];
+    const minSize = theme !== "below" ? values[0] : values[1];
+    const maxSize = theme !== "below" ? values[1] : values[0];
 
     if(stops && stops.length > 0){
 

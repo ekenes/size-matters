@@ -34,10 +34,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/renderers/support/ClassBreakInfo", "./sizeRendererUtils", "./colorSizeRendererUtils", "./sliderUtils", "./opacitySizeRendererUtils", "./symbolUtils", "./layerUtils"], function (require, exports, cimSymbolUtils, ClassBreakInfo, sizeRendererUtils_1, colorSizeRendererUtils_1, sliderUtils_1, opacitySizeRendererUtils_1, symbolUtils_1, layerUtils_1) {
+define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./sliderUtils", "./opacitySizeRendererUtils", "./symbolUtils"], function (require, exports, cimSymbolUtils, sizeRendererUtils_1, colorSizeRendererUtils_1, sliderUtils_1, opacitySizeRendererUtils_1, symbolUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    var useDonutsParentElement = document.getElementById("use-donuts-parent");
+    var binaryParentElement = document.getElementById("binary-parent");
+    var isBinaryElement = document.getElementById("binary-switch");
     var symbolColorContainer = document.getElementById("symbol-color-container");
     var symbolColor = document.getElementById("symbol-color");
     var symbolColorAbove = document.getElementById("symbol-color-above");
@@ -46,14 +47,14 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
     var opacityOptionsElement = document.getElementById("opacity-options");
     var colorRampsContainer = document.getElementById("color-ramps-container");
     var symbolsSelect = document.getElementById("symbols-select");
-    function updateRenderer(params) {
+    var themeSelect = document.getElementById("theme-select");
+    function updateRenderer(params, style) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, theme, style, result, _a;
+            var layer, theme, result, _a, useSizeSlider;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         layer = params.layer, theme = params.theme;
-                        style = params.style || "size";
                         result = null;
                         _a = style;
                         switch (_a) {
@@ -73,46 +74,83 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                             sliderUtils_1.SliderVars.opacitySlider.container = null;
                             sliderUtils_1.SliderVars.opacitySlider = null;
                         }
+                        [].forEach.call(themeSelect, function (option) {
+                            option.disabled = option.value === "above-and-below";
+                        });
+                        if (params.theme === "above-and-below") {
+                            params.theme = "high-to-low";
+                            themeSelect.value = "high-to-low";
+                        }
                         return [4 /*yield*/, sizeRendererUtils_1.createSizeRenderer(params)];
                     case 2:
                         result = _b.sent();
-                        if (theme === "above-and-below") {
-                            symbolColor.style.display = "none";
-                            symbolColorAbove.style.display = "block";
-                            symbolColorBelow.style.display = "block";
-                        }
-                        else {
-                            symbolColor.style.display = "block";
-                            symbolColorAbove.style.display = "none";
-                            symbolColorBelow.style.display = "none";
-                        }
-                        useDonutsParentElement.style.display = "none";
+                        symbolColor.style.display = "block";
+                        symbolColorAbove.style.display = "none";
+                        symbolColorBelow.style.display = "none";
+                        binaryParentElement.style.display = "none";
                         symbolColorContainer.style.display = "block";
                         opacityOptionsElement.style.display = "none";
                         colorRampsContainer.style.display = "none";
                         return [3 /*break*/, 8];
                     case 3:
-                        if (sliderUtils_1.SliderVars.slider) {
+                        useSizeSlider = isBinaryElement.checked && theme === "above-and-below";
+                        symbolColor.style.display = "none";
+                        if (sliderUtils_1.SliderVars.slider && !useSizeSlider) {
                             sliderUtils_1.SliderVars.slider.destroy();
                             sliderUtils_1.SliderVars.slider.container = null;
                             sliderUtils_1.SliderVars.slider = null;
+                            symbolColorAbove.style.display = "none";
+                            symbolColorBelow.style.display = "none";
+                            symbolColorContainer.style.display = "none";
+                            colorRampsContainer.style.display = "flex";
+                        }
+                        if (sliderUtils_1.SliderVars.colorSizeSlider && useSizeSlider) {
+                            sliderUtils_1.SliderVars.colorSizeSlider.destroy();
+                            sliderUtils_1.SliderVars.colorSizeSlider.container = null;
+                            sliderUtils_1.SliderVars.colorSizeSlider = null;
+                            symbolColorAbove.style.display = "block";
+                            symbolColorBelow.style.display = "block";
+                            symbolColorContainer.style.display = "block";
+                            colorRampsContainer.style.display = "none";
                         }
                         if (sliderUtils_1.SliderVars.opacitySlider) {
                             sliderUtils_1.SliderVars.opacitySlider.destroy();
                             sliderUtils_1.SliderVars.opacitySlider.container = null;
                             sliderUtils_1.SliderVars.opacitySlider = null;
                         }
+                        [].forEach.call(themeSelect, function (option) {
+                            option.disabled = false;
+                        });
                         if (theme === "above-and-below") {
-                            useDonutsParentElement.style.display = "block";
+                            binaryParentElement.style.display = "block";
+                            params.colorOptions = {
+                                isContinuous: !isBinaryElement.checked
+                            };
+                            if (symbolsSelect.value) {
+                                if (symbolsSelect.value === "custom") {
+                                    params.symbolOptions = {
+                                        symbolStyle: null,
+                                        symbols: {
+                                            above: symbolUtils_1.symbolOptions.dottedArrows.above,
+                                            below: symbolUtils_1.symbolOptions.dottedArrows.below
+                                        }
+                                    };
+                                }
+                                else {
+                                    params.symbolOptions = {
+                                        symbolStyle: symbolsSelect.value !== "" ? symbolsSelect.value : null
+                                    };
+                                }
+                            }
                         }
                         else {
-                            useDonutsParentElement.style.display = "none";
+                            binaryParentElement.style.display = "none";
                         }
-                        symbolColorContainer.style.display = "none";
+                        // symbolColorContainer.style.display = "none";
                         opacityOptionsElement.style.display = "none";
-                        colorRampsContainer.style.display = "flex";
                         return [4 /*yield*/, colorSizeRendererUtils_1.createColorSizeRenderer(params)];
                     case 4:
+                        // colorRampsContainer.style.display = "flex";
                         result = _b.sent();
                         return [3 /*break*/, 8];
                     case 5:
@@ -122,7 +160,6 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
                         }
                         symbolColorContainer.style.display = "block";
-                        useDonutsParentElement.style.display = "none";
                         opacityOptionsElement.style.display = "flex";
                         colorRampsContainer.style.display = "none";
                         return [4 /*yield*/, opacitySizeRendererUtils_1.createOpacitySizeRenderer(params)];
@@ -171,76 +208,5 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "esri/rende
         return color;
     }
     exports.getSymbolColor = getSymbolColor;
-    function createAboveAndBelowRenderer(renderer, useDefaults) {
-        var rendererWithDonuts = renderer.clone();
-        var sizeVariable = getVisualVariableByType(rendererWithDonuts, "size");
-        var stops = sizeVariable.stops, field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
-        if (!stops || stops.length < 4) {
-            console.error("The provided renderer does not use the above and below theme");
-            return renderer;
-        }
-        // Set defaults for above and below
-        symbolsSelect.value = "donuts";
-        var aboveSymbol = rendererWithDonuts.classBreakInfos[0].symbol.clone();
-        var belowSymbol = symbolUtils_1.donutSymbol;
-        cimSymbolUtils.applyCIMSymbolColor(belowSymbol, aboveSymbol.color);
-        var symbolSize = aboveSymbol.size;
-        var outline = aboveSymbol.outline;
-        cimSymbolUtils.scaleCIMSymbolTo(belowSymbol, symbolSize);
-        symbolUtils_1.updateSymbolStroke(belowSymbol, outline.width, outline.color);
-        // set class breaks
-        rendererWithDonuts.field = field;
-        rendererWithDonuts.normalizationField = normalizationField;
-        rendererWithDonuts.valueExpression = valueExpression;
-        rendererWithDonuts.classBreakInfos = [
-            new ClassBreakInfo({ minValue: stops[0].value, maxValue: stops[2].value, symbol: belowSymbol }),
-            new ClassBreakInfo({ minValue: stops[2].value, maxValue: stops[4].value, symbol: aboveSymbol }),
-        ];
-        rendererWithDonuts.authoringInfo.visualVariables[0].theme = "above-and-below";
-        return rendererWithDonuts;
-    }
-    exports.createAboveAndBelowRenderer = createAboveAndBelowRenderer;
-    function updateAboveAndBelowRendererSymbols(renderer, symbolName) {
-        var rendererWithDonuts = renderer.clone();
-        var originalAboveSymbol = rendererWithDonuts.classBreakInfos[1].symbol;
-        var originalBelowSymbol = rendererWithDonuts.classBreakInfos[0].symbol;
-        var aboveColor = getSymbolColor(originalAboveSymbol);
-        var belowColor = getSymbolColor(originalBelowSymbol);
-        var symbols = symbolUtils_1.selectedSymbols;
-        var aboveSymbol = symbols.above;
-        var belowSymbol = symbols.below;
-        if (aboveSymbol.type === "cim") {
-            cimSymbolUtils.applyCIMSymbolColor(aboveSymbol, aboveColor);
-        }
-        else {
-            aboveSymbol.color = aboveColor;
-        }
-        if (belowSymbol.type === "cim") {
-            cimSymbolUtils.applyCIMSymbolColor(belowSymbol, belowColor);
-        }
-        else {
-            belowSymbol.color = belowColor;
-        }
-        rendererWithDonuts.classBreakInfos[0].symbol = belowSymbol;
-        rendererWithDonuts.classBreakInfos[1].symbol = aboveSymbol;
-        return rendererWithDonuts;
-    }
-    exports.updateAboveAndBelowRendererSymbols = updateAboveAndBelowRendererSymbols;
-    function removeDonutFromRenderer(renderer) {
-        var rendererWithoutDonuts = renderer.clone();
-        var classBreakInfos = rendererWithoutDonuts.classBreakInfos;
-        if (classBreakInfos.length !== 2) {
-            console.error("The provided renderer doesn't have the correct number of class breaks");
-            return renderer;
-        }
-        classBreakInfos.shift();
-        classBreakInfos[0].minValue = -9007199254740991;
-        classBreakInfos[0].maxValue = 9007199254740991;
-        return rendererWithoutDonuts;
-    }
-    colorSizeRendererUtils_1.useDonutsElement.addEventListener("change", function () {
-        var renderer = layerUtils_1.LayerVars.layer.renderer;
-        layerUtils_1.LayerVars.layer.renderer = createAboveAndBelowRenderer(renderer);
-    });
 });
 //# sourceMappingURL=rendererUtils.js.map

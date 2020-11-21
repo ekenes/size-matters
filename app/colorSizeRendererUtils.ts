@@ -3,12 +3,10 @@ import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariat
 import colorRamps = require("esri/smartMapping/symbology/support/colorRamps");
 import Color = require("esri/Color");
 import symbolUtils = require("esri/symbols/support/symbolUtils");
-import lang = require("esri/core/lang");
+import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
-import { updateColorSizeSlider, colorPicker, SliderVars, updateColorSizeSliderColors } from "./sliderUtils";
-import { calculate9010Percentile, PercentileStats } from "./statUtils";
-import { SizeParams, getVisualVariablesByType, getVisualVariableByType, getSizeRendererColor, createAboveAndBelowRenderer } from "./rendererUtils";
-import { updateVariableToAboveAverageTheme, updateVariableToBelowAverageTheme, updateVariableTo9010Theme, updateVariableToAboveAndBelowTheme } from "./sizeRendererUtils"
+import { updateColorSizeSlider, updateSizeSlider, colorPicker, updateColorSizeSliderColors, colorPickerAbove, colorPickerBelow } from "./sliderUtils";
+import { SizeParams, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { LayerVars } from "./layerUtils";
 
@@ -35,12 +33,11 @@ export function updateRendererFromColorSizeSlider(renderer: esri.RendererWithVis
 ///
 //////////////////////////////////////
 
-export async function createColorSizeRenderer(params: SizeParams): Promise<esri.univariateColorSizeContinuousRendererResult> {
+export async function createColorSizeRenderer(params: esri.univariateColorSizeCreateContinuousRendererParams): Promise<esri.univariateColorSizeContinuousRendererResult> {
   const { layer, view, field, normalizationField, valueExpression } = params;
 
-  const invalidColorThemes: SizeParams["theme"][] = [ "90-10", "above-average", "below-average", "centered-on", "extremes" ];
-  const theme = lang.clone(params.theme) || "high-to-low";
-  params.theme = invalidColorThemes.indexOf(theme) > -1 ? "high-to-low" : params.theme;
+  const theme = params.theme || "high-to-low";
+  const useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
 
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
   result.renderer.authoringInfo.type = "univariate-color-size";
@@ -48,101 +45,41 @@ export async function createColorSizeRenderer(params: SizeParams): Promise<esri.
   const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);
   colorPicker.value = rendererColor.toHex();
 
-  const percentileStats = await calculate9010Percentile({
-    layer: layer as esri.FeatureLayer,
-    view: view as esri.MapView,
-    field, normalizationField, valueExpression
-  });
+  if (useSizeSlider){
+    const aboveSymbol = result.renderer.classBreakInfos[1].symbol;
+    const belowSymbol = result.renderer.classBreakInfos[0].symbol;
 
-  const visualVariables = updateVariablesFromTheme(result, theme, percentileStats);
-  result.renderer.visualVariables = visualVariables;
+    const aboveColor = (aboveSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(aboveSymbol as esri.CIMSymbol) : aboveSymbol.color;
+    const belowColor = (belowSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(belowSymbol as esri.CIMSymbol) : belowSymbol.color;
 
-  const sizeVariables = getVisualVariablesByType(result.renderer, "size") as esri.SizeVariable[];
-  const colorVariables = getVisualVariablesByType(result.renderer, "color") as esri.ColorVariable[];
+    colorPickerAbove.value = aboveColor.toHex();
+    colorPickerBelow.value = belowColor.toHex();
 
-  result.size.visualVariables = sizeVariables;
-  result.color.visualVariable = colorVariables[0];
-
-  if(theme === "above-and-below" && useDonutsElement.checked){
-    result.renderer = createAboveAndBelowRenderer(result.renderer);
+    await updateSizeSlider({
+      layer: layer as esri.FeatureLayer,
+      view: view as esri.MapView,
+      rendererResult: {
+        renderer: result.renderer,
+        visualVariables: result.size.visualVariables,
+        sizeScheme: result.size.sizeScheme,
+        defaultValuesUsed: result.defaultValuesUsed,
+        statistics: result.statistics,
+        basemapId: result.basemapId,
+        basemapTheme: result.basemapTheme
+      } as esri.sizeContinuousRendererResult,
+      theme
+    });
+  } else {
+    await updateColorSizeSlider({
+      layer: layer as esri.FeatureLayer,
+      view: view as esri.MapView,
+      rendererResult: result,
+      theme
+    });
   }
-
-  await updateColorSizeSlider({
-    layer: layer as esri.FeatureLayer,
-    view: view as esri.MapView,
-    rendererResult: result,
-    theme
-  });
 
   createColorRamps(theme);
-
   return result;
-}
-
-type RendererResult = esri.univariateColorSizeContinuousRendererResult
-
-function updateVariablesFromTheme( rendererResult: RendererResult, theme: SizeParams["theme"], percentileStats?: PercentileStats){
-  const stats = rendererResult.statistics;
-  const renderer = rendererResult.renderer.clone();
-
-  let sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
-  const sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
-  renderer.visualVariables.splice(sizeVariableIndex, 1);
-
-  let colorVariable = getVisualVariableByType(renderer, "color") as esri.ColorVariable;
-  const colorVariableIndex = renderer.visualVariables.indexOf(colorVariable);
-  renderer.visualVariables.splice(colorVariableIndex, 1);
-
-  switch( theme ){
-    case "above-average":
-      updateVariableToAboveAverageTheme(sizeVariable, stats);
-      updateColorVariableToAboveAverageTheme( colorVariable, stats);
-      break;
-    case "below-average":
-      updateVariableToBelowAverageTheme(sizeVariable, stats);
-      updateColorVariableToBelowAverageTheme( colorVariable, stats);
-      break;
-    case "90-10":
-      updateVariableTo9010Theme(sizeVariable, percentileStats);
-      updateColorVariableTo9010Theme( colorVariable, percentileStats);
-      break;
-    case "above-and-below":
-      updateVariableToAboveAndBelowTheme(sizeVariable, stats);
-    default:
-      // return variables without modifications
-      break;
-  }
-
-  renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, colorVariable]);
-
-  return renderer.visualVariables;
-}
-
-function updateColorVariableToAboveAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-  colorVariable.stops[0].value = stats.avg;
-  colorVariable.stops[1].value = stats.avg;
-  // colorVariable.stops[1].color = colorVariable.stops[0].color;
-  colorVariable.stops[2].value = stats.avg;
-  // colorVariable.stops[2].color = colorVariable.stops[0].color;
-}
-
-function updateColorVariableToBelowAverageTheme( colorVariable: esri.ColorVariable, stats: esri.univariateColorSizeContinuousRendererResult["statistics"] ){
-  reverseColors(colorVariable);
-  colorVariable.stops[2].value = stats.avg;
-  colorVariable.stops[3].value = stats.avg;
-  // colorVariable.stops[3].color = colorVariable.stops[2].color;
-  colorVariable.stops[4].value = stats.avg;
-  // colorVariable.stops[4].color = colorVariable.stops[2].color;
-}
-
-function updateColorVariableTo9010Theme( colorVariable: esri.ColorVariable, stats: PercentileStats ){
-  colorVariable.stops[0].value = stats["10"];
-  colorVariable.stops[4].value = stats["90"];
-}
-
-function reverseColors( colorVariable: esri.ColorVariable ) {
-  const colors = colorVariable.stops.map( stop => stop.color ).reverse();
-  colorVariable.stops.forEach( (stop, i) => stop.color = colors[i] );
 }
 
 const colorRampsElement = document.getElementById("color-ramps") as HTMLDivElement;

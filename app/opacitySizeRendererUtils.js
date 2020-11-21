@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderers/visualVariables/support/OpacityStop", "esri/renderers/visualVariables/OpacityVariable", "./sliderUtils", "./statUtils", "./rendererUtils", "./sizeRendererUtils"], function (require, exports, sizeRendererCreator, OpacityStop, OpacityVariable, sliderUtils_1, statUtils_1, rendererUtils_1, sizeRendererUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils", "./rendererUtils"], function (require, exports, sizeRendererCreator, sliderUtils_1, rendererUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.opacityValuesContainer = document.getElementById("opacity-values-container");
@@ -56,7 +56,7 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
     //////////////////////////////////////
     function createOpacitySizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, percentileStats, visualVariables, sizeVariables, opacityVariable, opacityValues;
+            var layer, view, field, normalizationField, valueExpression, theme, result, rendererColor, sizeVariables, opacityVariable, opacityValues;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -67,15 +67,6 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                         result = _a.sent();
                         rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
                         sliderUtils_1.colorPicker.value = rendererColor.toHex();
-                        return [4 /*yield*/, statUtils_1.calculate9010Percentile({
-                                layer: layer,
-                                view: view,
-                                field: field, normalizationField: normalizationField, valueExpression: valueExpression
-                            })];
-                    case 2:
-                        percentileStats = _a.sent();
-                        visualVariables = updateVariablesFromTheme(result, params.theme, percentileStats);
-                        result.renderer.visualVariables = visualVariables;
                         sizeVariables = rendererUtils_1.getVisualVariablesByType(result.renderer, "size");
                         opacityVariable = rendererUtils_1.getVisualVariableByType(result.renderer, "opacity");
                         result.visualVariables = sizeVariables;
@@ -89,18 +80,15 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
                                     authoringInfo: result.renderer.authoringInfo
                                 }
                             })];
-                    case 3:
+                    case 2:
                         _a.sent();
-                        if (theme === "above-and-below") {
-                            return [2 /*return*/, result];
-                        }
                         return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
                                 layer: layer,
                                 view: view,
                                 rendererResult: result,
                                 theme: theme
                             })];
-                    case 4:
+                    case 3:
                         _a.sent();
                         opacityValues = opacityVariable.stops.map(function (stop) { return stop.opacity; });
                         sliderUtils_1.updateOpacityValuesSlider({ values: opacityValues });
@@ -110,136 +98,5 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "esri/renderer
         });
     }
     exports.createOpacitySizeRenderer = createOpacitySizeRenderer;
-    function updateVariablesFromTheme(rendererResult, theme, percentileStats) {
-        var stats = rendererResult.statistics;
-        var renderer = rendererResult.renderer.clone();
-        var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
-        var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
-        renderer.visualVariables.splice(sizeVariableIndex, 1);
-        var opacityStops = null;
-        switch (theme) {
-            case "above-average":
-                sizeRendererUtils_1.updateVariableToAboveAverageTheme(sizeVariable, stats);
-                opacityStops = createOpacityStopsWithAboveAverageTheme(stats);
-                break;
-            case "below-average":
-                sizeRendererUtils_1.updateVariableToBelowAverageTheme(sizeVariable, stats);
-                opacityStops = createOpacityStopsWithBelowAverageTheme(stats);
-                break;
-            case "90-10":
-                sizeRendererUtils_1.updateVariableTo9010Theme(sizeVariable, percentileStats);
-                opacityStops = createOpacityStopsWith9010Theme(percentileStats);
-                break;
-            case "above-and-below":
-                sizeRendererUtils_1.updateVariableToAboveAndBelowTheme(sizeVariable, stats);
-                opacityStops = createOpacityStopsWithAboveAndBelowTheme(stats);
-                break;
-            case "centered-on":
-                opacityStops = createOpacityStopsWithCenteredOnTheme(stats);
-                break;
-            case "extremes":
-                opacityStops = createOpacityStopsWithExtremesTheme(stats);
-                break;
-            default:
-                opacityStops = createOpacityStopsWithHighToLowTheme(stats);
-                break;
-        }
-        var opacityVariable = createOpacityVariable(sizeVariable, opacityStops);
-        renderer.visualVariables = renderer.visualVariables.concat([sizeVariable, opacityVariable]);
-        return renderer.visualVariables;
-    }
-    function createOpacityVariable(sizeVariable, stops) {
-        var field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression;
-        return new OpacityVariable({
-            field: field,
-            normalizationField: normalizationField,
-            valueExpression: valueExpression,
-            stops: stops
-        });
-    }
-    exports.minOpacity = 0.2;
-    exports.maxOpacity = 1.0;
-    function createOpacityStopsWithHighToLowTheme(stats) {
-        var max = stats.max, min = stats.min;
-        return [
-            new OpacityStop({
-                value: min, opacity: exports.minOpacity
-            }),
-            new OpacityStop({
-                value: max, opacity: exports.maxOpacity
-            })
-        ];
-    }
-    function createOpacityStopsWithAboveAverageTheme(stats) {
-        var max = stats.max, avg = stats.avg;
-        return [
-            new OpacityStop({
-                value: avg, opacity: exports.minOpacity
-            }),
-            new OpacityStop({
-                value: max, opacity: exports.maxOpacity
-            })
-        ];
-    }
-    function createOpacityStopsWithBelowAverageTheme(stats) {
-        var min = stats.min, avg = stats.avg;
-        return [
-            new OpacityStop({
-                value: min, opacity: exports.maxOpacity
-            }),
-            new OpacityStop({
-                value: avg, opacity: exports.minOpacity
-            })
-        ];
-    }
-    function createOpacityStopsWith9010Theme(stats) {
-        return [
-            new OpacityStop({
-                value: stats["10"], opacity: exports.minOpacity
-            }),
-            new OpacityStop({
-                value: stats["90"], opacity: exports.maxOpacity
-            })
-        ];
-    }
-    function createOpacityStopsWithAboveAndBelowTheme(stats) {
-        var max = stats.max, avg = stats.avg, stddev = stats.stddev;
-        return [
-            new OpacityStop({
-                value: avg, opacity: exports.minOpacity
-            }),
-            new OpacityStop({
-                value: avg + stddev, opacity: exports.maxOpacity
-            })
-        ];
-    }
-    function createOpacityStopsWithExtremesTheme(stats) {
-        var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
-        return [
-            new OpacityStop({
-                value: min, opacity: exports.maxOpacity
-            }),
-            new OpacityStop({
-                value: avg, opacity: exports.minOpacity
-            }),
-            new OpacityStop({
-                value: max, opacity: exports.maxOpacity
-            })
-        ];
-    }
-    function createOpacityStopsWithCenteredOnTheme(stats) {
-        var min = stats.min, max = stats.max, avg = stats.avg, stddev = stats.stddev;
-        return [
-            new OpacityStop({
-                value: min, opacity: exports.minOpacity
-            }),
-            new OpacityStop({
-                value: avg, opacity: exports.maxOpacity
-            }),
-            new OpacityStop({
-                value: max, opacity: exports.minOpacity
-            })
-        ];
-    }
 });
 //# sourceMappingURL=opacitySizeRendererUtils.js.map
