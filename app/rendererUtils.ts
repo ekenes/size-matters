@@ -110,7 +110,7 @@ export async function updateRenderer(params: SizeParams, style: Style){
             }
           } else {
             (params as esri.univariateColorSizeCreateContinuousRendererParams).symbolOptions = {
-              symbolStyle: symbolsSelect.value !== "" ? symbolsSelect.value as any : null
+              symbolStyle: symbolsSelect.value !== "default" ? symbolsSelect.value as any : null
             }
           }
         }
