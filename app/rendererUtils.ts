@@ -53,6 +53,8 @@ export async function updateRenderer(params: SizeParams, style: Style){
 
       result = await createSizeRenderer(params as esri.sizeCreateContinuousRendererParams);
 
+      console.log(result.renderer.toJSON());
+
       symbolColor.style.display = "block";
       symbolColorAbove.style.display = "none";
       symbolColorBelow.style.display = "none";
@@ -122,6 +124,7 @@ export async function updateRenderer(params: SizeParams, style: Style){
       opacityOptionsElement.style.display = "none";
       // colorRampsContainer.style.display = "flex";
       result = await createColorSizeRenderer(params as esri.univariateColorSizeCreateContinuousRendererParams);
+      console.log(result.renderer.toJSON());
       break;
     case "opacity-and-size":
       if(SliderVars.colorSizeSlider){

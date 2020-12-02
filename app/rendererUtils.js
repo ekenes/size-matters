@@ -84,6 +84,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                         return [4 /*yield*/, sizeRendererUtils_1.createSizeRenderer(params)];
                     case 2:
                         result = _b.sent();
+                        console.log(result.renderer.toJSON());
                         symbolColor.style.display = "block";
                         symbolColorAbove.style.display = "none";
                         symbolColorBelow.style.display = "none";
@@ -152,6 +153,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                     case 4:
                         // colorRampsContainer.style.display = "flex";
                         result = _b.sent();
+                        console.log(result.renderer.toJSON());
                         return [3 /*break*/, 8];
                     case 5:
                         if (sliderUtils_1.SliderVars.colorSizeSlider) {
