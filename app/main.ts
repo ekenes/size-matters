@@ -1,6 +1,6 @@
 import esri = __esri;
-import WebMap = require("esri/WebMap");
-import MapView = require("esri/views/MapView");
+import WebScene = require("esri/WebScene");
+import SceneView = require("esri/views/SceneView");
 import watchUtils = require("esri/core/watchUtils");
 
 import Expand = require("esri/widgets/Expand");
@@ -11,13 +11,12 @@ import Legend = require("esri/widgets/Legend");
 import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
 import { updateRenderer, SizeParams, Style } from './rendererUtils';
 import { fetchCIMdata, SymbolNames } from "./symbolUtils";
-import { ClassBreaksRenderer } from "esri/rasterRenderers";
 
 ( async () => {
 
   const layer = createLayer();
 
-  const webmap = new WebMap({
+  const webmap = new WebScene({
     basemap: {
       portalItem: {
         id: "3582b744bba84668b52a16b0b6942544"
@@ -26,7 +25,7 @@ import { ClassBreaksRenderer } from "esri/rasterRenderers";
     layers: [ layer ]
   });
 
-  const view = new MapView({
+  const view = new SceneView({
     map: webmap,
     container: "viewDiv"
   });

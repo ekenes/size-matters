@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/watchUtils", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebMap, MapView, watchUtils, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
+define(["require", "exports", "esri/WebScene", "esri/views/SceneView", "esri/core/watchUtils", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebScene, SceneView, watchUtils, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -74,7 +74,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
             switch (_a.label) {
                 case 0:
                     layer = layerUtils_1.createLayer();
-                    webmap = new WebMap({
+                    webmap = new WebScene({
                         basemap: {
                             portalItem: {
                                 id: "3582b744bba84668b52a16b0b6942544"
@@ -82,7 +82,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                         },
                         layers: [layer]
                     });
-                    view = new MapView({
+                    view = new SceneView({
                         map: webmap,
                         container: "viewDiv"
                     });
