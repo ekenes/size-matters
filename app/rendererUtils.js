@@ -204,8 +204,14 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
     }
     exports.getSizeRendererColor = getSizeRendererColor;
     function getSymbolColor(symbol) {
-        var color = symbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(symbol) : symbol.color;
-        return color;
+        if (symbol.type === "cim") {
+            return cimSymbolUtils.getCIMSymbolColor(symbol);
+        }
+        if (symbol.symbolLayers) {
+            var symbolLayer = symbol.symbolLayers.getItemAt(0);
+            return symbolLayer.material.color;
+        }
+        return symbol.color;
     }
     exports.getSymbolColor = getSymbolColor;
 });

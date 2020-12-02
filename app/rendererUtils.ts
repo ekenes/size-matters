@@ -8,7 +8,7 @@ import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUt
 import { SliderVars } from "./sliderUtils";
 import { createOpacitySizeRenderer, opacityValuesContainer } from "./opacitySizeRendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { CIMSymbol, Symbol } from "esri/symbols";
+import { CIMSymbol, Symbol, Symbol3D } from "esri/symbols";
 import {  symbolOptions } from "./symbolUtils";
 
 export type SizeParams = esri.sizeCreateContinuousRendererParams | esri.univariateColorSizeCreateContinuousRendererParams;
@@ -175,6 +175,14 @@ export function getSizeRendererColor(renderer: ClassBreaksRenderer): Color {
 }
 
 export function getSymbolColor(symbol: Symbol | CIMSymbol): Color {
-  const color = symbol.type === "cim" ? cimSymbolUtils.getCIMSymbolColor(symbol as CIMSymbol) : symbol.color;
-  return color;
+  if(symbol.type === "cim"){
+    return cimSymbolUtils.getCIMSymbolColor(symbol as CIMSymbol);
+  }
+
+  if((symbol as Symbol3D).symbolLayers){
+    const symbolLayer = (symbol as Symbol3D).symbolLayers.getItemAt(0);
+    return (symbolLayer as any).material.color;
+  }
+
+  return symbol.color;
 }
