@@ -40,8 +40,6 @@ export async function createColorSizeRenderer(params: esri.univariateColorSizeCr
   const theme = params.theme || "high-to-low";
   const useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
 
-  params.symbolType = "3d-volumetric";
-
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
   result.renderer.authoringInfo.type = "univariate-color-size";
 

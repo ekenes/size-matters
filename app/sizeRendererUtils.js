@@ -58,7 +58,6 @@ define(["require", "exports", "esri/smartMapping/renderers/size", "./sliderUtils
                     case 0:
                         layer = params.layer, view = params.view;
                         theme = params.theme || "high-to-low";
-                        params.symbolType = "2d";
                         return [4 /*yield*/, sizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();

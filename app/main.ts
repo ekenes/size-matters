@@ -98,12 +98,14 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
 
   const themeSelect = document.getElementById("theme-select") as HTMLSelectElement;
   const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
+  const symbolTypeSelect = document.getElementById("symbol-type-select") as HTMLSelectElement;
   const symbolsContainer = document.getElementById("symbols-container") as HTMLSelectElement;
   const symbolsSelect = document.getElementById("symbols-select") as HTMLSelectElement;
   const isBinaryElement = document.getElementById("binary-switch") as HTMLInputElement;
 
   symbolsSelect.addEventListener("change", inputChange);
   isBinaryElement.addEventListener("change", inputChange);
+  symbolTypeSelect.addEventListener("change", inputChange);
 
   fieldsSelect.addEventListener("change", inputChange);
   normalizationFieldSelect.addEventListener("change", () => {
@@ -122,6 +124,7 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
     const field = fieldsSelect.value;
     const normalizationField = normalizationFieldSelect.value;
     const valueExpression = valueExpressionTextArea.value;
+    const symbolType = symbolTypeSelect.value;
 
     if(!field && !valueExpression && !normalizationField){
       clearEverything();
@@ -137,10 +140,11 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
       field,
       normalizationField,
       valueExpression,
-      theme
+      theme,
+      symbolType
     };
 
-    updateRenderer(params, style);
+    updateRenderer(params as any, style);
   }
 
   function clearEverything(){

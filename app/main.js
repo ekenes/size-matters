@@ -42,6 +42,7 @@ define(["require", "exports", "esri/WebScene", "esri/views/SceneView", "esri/cor
             var field = fieldsSelect.value;
             var normalizationField = normalizationFieldSelect.value;
             var valueExpression = valueExpressionTextArea.value;
+            var symbolType = symbolTypeSelect.value;
             if (!field && !valueExpression && !normalizationField) {
                 clearEverything();
                 return;
@@ -54,7 +55,8 @@ define(["require", "exports", "esri/WebScene", "esri/views/SceneView", "esri/cor
                 field: field,
                 normalizationField: normalizationField,
                 valueExpression: valueExpression,
-                theme: theme
+                theme: theme,
+                symbolType: symbolType
             };
             rendererUtils_1.updateRenderer(params, style);
         }
@@ -69,7 +71,7 @@ define(["require", "exports", "esri/WebScene", "esri/views/SceneView", "esri/cor
             document.getElementById("info").innerHTML = info;
             overlay.style.visibility = "visible";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, isBinaryElement, overlay, ok;
+        var layer, webmap, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolTypeSelect, symbolsContainer, symbolsSelect, isBinaryElement, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -157,11 +159,13 @@ define(["require", "exports", "esri/WebScene", "esri/views/SceneView", "esri/cor
                     });
                     themeSelect = document.getElementById("theme-select");
                     styleSelect = document.getElementById("style-select");
+                    symbolTypeSelect = document.getElementById("symbol-type-select");
                     symbolsContainer = document.getElementById("symbols-container");
                     symbolsSelect = document.getElementById("symbols-select");
                     isBinaryElement = document.getElementById("binary-switch");
                     symbolsSelect.addEventListener("change", inputChange);
                     isBinaryElement.addEventListener("change", inputChange);
+                    symbolTypeSelect.addEventListener("change", inputChange);
                     fieldsSelect.addEventListener("change", inputChange);
                     normalizationFieldSelect.addEventListener("change", function () {
                         if (fieldsSelect.value) {

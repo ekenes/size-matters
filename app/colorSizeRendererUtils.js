@@ -63,7 +63,6 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         layer = params.layer, view = params.view, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression;
                         theme = params.theme || "high-to-low";
                         useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
-                        params.symbolType = "3d-volumetric";
                         return [4 /*yield*/, colorSizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();

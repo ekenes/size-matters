@@ -27,8 +27,6 @@ export async function createSizeRenderer(params: esri.sizeCreateContinuousRender
 
   const theme = params.theme || "high-to-low";
 
-  params.symbolType = "2d";
-
   let result = await sizeRendererCreator.createContinuousRenderer(params);
 
   const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);

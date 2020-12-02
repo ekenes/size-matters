@@ -46,23 +46,28 @@
           <textarea id="value-expression"></textarea>
         </div>
         <div style="margin-top: 10px;">
+          Symbol type
+          <select id="symbol-type-select" class="esri-select">
+            <option value="2d" selected>2d</option>
+            <option value="3d-flat">3d flat</option>
+            <option value="3d-volumetric">3d volumetric</option>
+            <option value="3d-volumetric-uniform">3d volumetric uniform</option>
+          </select>
+        </div>
+        <div style="margin-top: 10px;">
           Style
           <select id="style-select" class="esri-select">
             <option value="size" selected>Size</option>
             <option value="color-and-size">Color and size</option>
-            <!-- <option value="opacity-and-size">Opacity and size</option> -->
           </select>
         </div>
         <div style="margin-top: 10px;">
           Theme
           <select id="theme-select" class="esri-select">
             <option value="high-to-low" selected>High to low</option>
-            <!-- <option value="90-10">No outliers (90/10)</option> -->
             <option value="above">Above</option>
             <option value="below">Below</option>
             <option value="above-and-below">Above and below</option>
-            <!-- <option value="extremes">Extremes</option>
-            <option value="centered-on">Centered on</option> -->
           </select>
         </div>
         <div id="binary-parent" style="margin-top: 10px; display: none;">
