@@ -6,9 +6,10 @@ import symbolUtils = require("esri/symbols/support/symbolUtils");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
 import { updateColorSizeSlider, updateSizeSlider, colorPicker, updateColorSizeSliderColors, colorPickerAbove, colorPickerBelow } from "./sliderUtils";
-import { SizeParams, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
+import { SizeParams, getVisualVariableByType, getSizeRendererColor, getSymbolColor } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { LayerVars } from "./layerUtils";
+import { CIMSymbol, Symbol3D } from "esri/symbols";
 
 export const useDonutsElement = document.getElementById("use-donuts") as HTMLInputElement;
 
@@ -39,6 +40,8 @@ export async function createColorSizeRenderer(params: esri.univariateColorSizeCr
   const theme = params.theme || "high-to-low";
   const useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
 
+  params.symbolType = "3d-volumetric";
+
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
   result.renderer.authoringInfo.type = "univariate-color-size";
 
@@ -49,8 +52,8 @@ export async function createColorSizeRenderer(params: esri.univariateColorSizeCr
     const aboveSymbol = result.renderer.classBreakInfos[1].symbol;
     const belowSymbol = result.renderer.classBreakInfos[0].symbol;
 
-    const aboveColor = (aboveSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(aboveSymbol as esri.CIMSymbol) : aboveSymbol.color;
-    const belowColor = (belowSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(belowSymbol as esri.CIMSymbol) : belowSymbol.color;
+    const aboveColor = getSymbolColor(aboveSymbol as any);
+    const belowColor = getSymbolColor(belowSymbol as any)
 
     colorPickerAbove.value = aboveColor.toHex();
     colorPickerBelow.value = belowColor.toHex();

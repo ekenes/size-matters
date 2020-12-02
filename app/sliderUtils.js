@@ -195,13 +195,13 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                             SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
                         }
                         if (theme === "above-and-below") {
-                            SliderVars.colorSizeSlider.stops = [
-                                { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
-                                { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
-                                { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
-                                { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
-                                { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
-                            ];
+                            // SliderVars.colorSizeSlider.stops = [
+                            //   { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
+                            //   { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
+                            //   { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
+                            //   { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
+                            //   { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
+                            // ];
                             SliderVars.colorSizeSlider.primaryHandleEnabled = true;
                             SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
                         }
@@ -405,6 +405,12 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
             if (symbol.type === "cim") {
                 cimSymbolUtils.applyCIMSymbolColor(symbol, newColor);
             }
+            if (symbol.symbolLayers) {
+                var sl = symbol.symbolLayers.getItemAt(0);
+                sl.material = {
+                    color: newColor
+                };
+            }
             else {
                 symbol.color = newColor;
             }
@@ -418,6 +424,12 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         if (symbol.type === "cim") {
             cimSymbolUtils.applyCIMSymbolColor(symbol, newColor);
         }
+        if (symbol.symbolLayers) {
+            var sl = symbol.symbolLayers.getItemAt(0);
+            sl.material = {
+                color: newColor
+            };
+        }
         else {
             symbol.color = newColor;
         }
@@ -429,6 +441,12 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         var symbol = renderer.classBreakInfos[1].symbol;
         if (symbol.type === "cim") {
             cimSymbolUtils.applyCIMSymbolColor(symbol, newColor);
+        }
+        if (symbol.symbolLayers) {
+            var sl = symbol.symbolLayers.getItemAt(0);
+            sl.material = {
+                color: newColor
+            };
         }
         else {
             symbol.color = newColor;
