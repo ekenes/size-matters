@@ -111,9 +111,9 @@ export async function updateRenderer(params: SizeParams, style: Style){
               }
             }
           } else {
-            (params as esri.univariateColorSizeCreateContinuousRendererParams).symbolOptions = {
-              symbolStyle: symbolsSelect.value !== "default" ? symbolsSelect.value as any : null
-            }
+            (params as esri.univariateColorSizeCreateContinuousRendererParams).symbolOptions = symbolsSelect.value !== "default" ? {
+              symbolStyle: symbolsSelect.value as any
+            } : null;
           }
         }
 

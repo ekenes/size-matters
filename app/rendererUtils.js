@@ -138,9 +138,9 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                                     };
                                 }
                                 else {
-                                    params.symbolOptions = {
-                                        symbolStyle: symbolsSelect.value !== "default" ? symbolsSelect.value : null
-                                    };
+                                    params.symbolOptions = symbolsSelect.value !== "default" ? {
+                                        symbolStyle: symbolsSelect.value
+                                    } : null;
                                 }
                             }
                         }
