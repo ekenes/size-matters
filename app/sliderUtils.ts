@@ -1,6 +1,7 @@
 import esri = __esri;
 import SizeSlider = require("esri/widgets/smartMapping/SizeSlider");
 import ColorSizeSlider = require("esri/widgets/smartMapping/ColorSizeSlider");
+import BinaryColorSizeSlider = require("esri/widgets/smartMapping/BinaryColorSizeSlider");
 import Slider = require("esri/widgets/Slider");
 import OpacitySlider = require("esri/widgets/smartMapping/OpacitySlider");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
@@ -18,6 +19,7 @@ export class SliderVars {
   public static slider: SizeSlider = null;
   public static symbolSizesSlider: Slider = null;
   public static colorSizeSlider: ColorSizeSlider = null;
+  public static binaryColorSizeSlider: BinaryColorSizeSlider = null;
   public static opacitySlider: OpacitySlider = null;
   public static opacityValuesSlider: Slider = null;
 }
@@ -118,6 +120,63 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme });
+}
+
+interface CreateBinarySliderParams {
+  layer: esri.FeatureLayer,
+  view: esri.MapView,
+  rendererResult: esri.univariateColorSizeContinuousRendererResult,
+  updateOpacity?: boolean
+}
+
+export async function updateBinaryColorSizeSlider(params: CreateBinarySliderParams) {
+  const { layer, view, rendererResult } = params;
+  const { renderer: { authoringInfo: { univariateTheme } } } = rendererResult;
+
+  let sizeVariable = getVisualVariableByType(rendererResult.renderer, "size") as esri.SizeVariable;
+
+  const { field, normalizationField, valueExpression, minSize, maxSize, stops } = sizeVariable;
+  let symbolSizeSliderValues: number[] = [];
+
+  if(stops && stops.length > 0){
+    const maxStop = stops[stops.length-1];
+    const minStop = stops[0];
+
+    if(univariateTheme === "above-and-below"){
+      const midStop = stops[Math.floor(stops.length / 2)];
+      symbolSizeSliderValues = [ midStop.size, maxStop.size ];
+    } else {
+      symbolSizeSliderValues = [ minStop.size, maxStop.size ];
+    }
+  }
+  if(minSize && maxSize){
+    symbolSizeSliderValues = [ minSize as number, maxSize as number ];
+  }
+
+  const histogramResult = await calculateHistogram({
+    layer, view, field, normalizationField, valueExpression
+  });
+
+  if(!SliderVars.binaryColorSizeSlider){
+    (SliderVars.binaryColorSizeSlider as any) = BinaryColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
+    SliderVars.binaryColorSizeSlider.container = document.createElement("div");
+    sizeSlidersContainer.appendChild(SliderVars.binaryColorSizeSlider.container);
+    // SliderVars.binaryColorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
+
+    SliderVars.binaryColorSizeSlider.on([
+      "thumb-change",
+      "thumb-drag",
+      "min-change",
+      "max-change"
+    ] as any, () => {
+      LayerVars.layer.renderer = SliderVars.binaryColorSizeSlider.updateRenderer(LayerVars.layer.renderer as ClassBreaksRenderer);
+    });
+  } else {
+    (SliderVars.binaryColorSizeSlider.container as HTMLElement).style.display = "block";
+    SliderVars.binaryColorSizeSlider.updateFromRendererResult(rendererResult as esri.univariateColorSizeContinuousRendererResult, histogramResult);
+  }
+
+  updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme: univariateTheme });
 }
 
 interface CreateColorSizeSliderParams {
@@ -414,6 +473,11 @@ colorPicker.addEventListener("input", function(event){
 
 colorPickerBelow.addEventListener("input", function(event){
   const newColor = new Color(colorPickerBelow.value);
+
+  if(SliderVars.binaryColorSizeSlider){
+    SliderVars.binaryColorSizeSlider.style.trackBelowFillColor = newColor;
+  }
+
   const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
   const symbol = renderer.classBreakInfos[0].symbol;
 
@@ -428,6 +492,11 @@ colorPickerBelow.addEventListener("input", function(event){
 
 colorPickerAbove.addEventListener("input", function(event){
   const newColor = new Color(colorPickerAbove.value);
+
+  if(SliderVars.binaryColorSizeSlider){
+    SliderVars.binaryColorSizeSlider.style.trackAboveFillColor = newColor;
+  }
+
   const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
   const symbol = renderer.classBreakInfos[1].symbol;
 

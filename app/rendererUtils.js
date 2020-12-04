@@ -50,7 +50,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
     var themeSelect = document.getElementById("theme-select");
     function updateRenderer(params, style) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, theme, result, _a, useSizeSlider;
+            var layer, theme, result, _a, useBinaryColorSizeSlider;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
@@ -94,18 +94,18 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                         colorRampsContainer.style.display = "none";
                         return [3 /*break*/, 8];
                     case 3:
-                        useSizeSlider = isBinaryElement.checked && theme === "above-and-below";
+                        useBinaryColorSizeSlider = isBinaryElement.checked && theme === "above-and-below";
                         symbolColor.style.display = "none";
-                        if (sliderUtils_1.SliderVars.slider && !useSizeSlider) {
-                            sliderUtils_1.SliderVars.slider.destroy();
-                            sliderUtils_1.SliderVars.slider.container = null;
-                            sliderUtils_1.SliderVars.slider = null;
+                        if (sliderUtils_1.SliderVars.binaryColorSizeSlider && !useBinaryColorSizeSlider) {
+                            sliderUtils_1.SliderVars.binaryColorSizeSlider.destroy();
+                            sliderUtils_1.SliderVars.binaryColorSizeSlider.container = null;
+                            sliderUtils_1.SliderVars.binaryColorSizeSlider = null;
                             symbolColorAbove.style.display = "none";
                             symbolColorBelow.style.display = "none";
                             symbolColorContainer.style.display = "none";
                             colorRampsContainer.style.display = "flex";
                         }
-                        if (sliderUtils_1.SliderVars.colorSizeSlider && useSizeSlider) {
+                        if (sliderUtils_1.SliderVars.colorSizeSlider && useBinaryColorSizeSlider) {
                             sliderUtils_1.SliderVars.colorSizeSlider.destroy();
                             sliderUtils_1.SliderVars.colorSizeSlider.container = null;
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
@@ -118,6 +118,11 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                             sliderUtils_1.SliderVars.opacitySlider.destroy();
                             sliderUtils_1.SliderVars.opacitySlider.container = null;
                             sliderUtils_1.SliderVars.opacitySlider = null;
+                        }
+                        if (sliderUtils_1.SliderVars.slider) {
+                            sliderUtils_1.SliderVars.slider.destroy();
+                            sliderUtils_1.SliderVars.slider.container = null;
+                            sliderUtils_1.SliderVars.slider = null;
                         }
                         [].forEach.call(themeSelect, function (option) {
                             option.disabled = false;

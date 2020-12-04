@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "esri/symbols/support/cimSymbolUtils", "esri/Color", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, Slider, OpacitySlider, cimSymbolUtils, Color, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1, layerUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/smartMapping/BinaryColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "esri/symbols/support/cimSymbolUtils", "esri/Color", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, BinaryColorSizeSlider, Slider, OpacitySlider, cimSymbolUtils, Color, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
@@ -43,6 +43,7 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         SliderVars.slider = null;
         SliderVars.symbolSizesSlider = null;
         SliderVars.colorSizeSlider = null;
+        SliderVars.binaryColorSizeSlider = null;
         SliderVars.opacitySlider = null;
         SliderVars.opacityValuesSlider = null;
         return SliderVars;
@@ -138,6 +139,61 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
         });
     }
     exports.updateSizeSlider = updateSizeSlider;
+    function updateBinaryColorSizeSlider(params) {
+        return __awaiter(this, void 0, void 0, function () {
+            var layer, view, rendererResult, univariateTheme, sizeVariable, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, maxStop, minStop, midStop, histogramResult;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        layer = params.layer, view = params.view, rendererResult = params.rendererResult;
+                        univariateTheme = rendererResult.renderer.authoringInfo.univariateTheme;
+                        sizeVariable = rendererUtils_1.getVisualVariableByType(rendererResult.renderer, "size");
+                        field = sizeVariable.field, normalizationField = sizeVariable.normalizationField, valueExpression = sizeVariable.valueExpression, minSize = sizeVariable.minSize, maxSize = sizeVariable.maxSize, stops = sizeVariable.stops;
+                        symbolSizeSliderValues = [];
+                        if (stops && stops.length > 0) {
+                            maxStop = stops[stops.length - 1];
+                            minStop = stops[0];
+                            if (univariateTheme === "above-and-below") {
+                                midStop = stops[Math.floor(stops.length / 2)];
+                                symbolSizeSliderValues = [midStop.size, maxStop.size];
+                            }
+                            else {
+                                symbolSizeSliderValues = [minStop.size, maxStop.size];
+                            }
+                        }
+                        if (minSize && maxSize) {
+                            symbolSizeSliderValues = [minSize, maxSize];
+                        }
+                        return [4 /*yield*/, statUtils_1.calculateHistogram({
+                                layer: layer, view: view, field: field, normalizationField: normalizationField, valueExpression: valueExpression
+                            })];
+                    case 1:
+                        histogramResult = _a.sent();
+                        if (!SliderVars.binaryColorSizeSlider) {
+                            SliderVars.binaryColorSizeSlider = BinaryColorSizeSlider.fromRendererResult(rendererResult, histogramResult);
+                            SliderVars.binaryColorSizeSlider.container = document.createElement("div");
+                            sizeSlidersContainer.appendChild(SliderVars.binaryColorSizeSlider.container);
+                            // SliderVars.binaryColorSizeSlider.labelFormatFunction = (value: number) => { return parseInt(value.toFixed(0)).toLocaleString() };
+                            SliderVars.binaryColorSizeSlider.on([
+                                "thumb-change",
+                                "thumb-drag",
+                                "min-change",
+                                "max-change"
+                            ], function () {
+                                layerUtils_1.LayerVars.layer.renderer = SliderVars.binaryColorSizeSlider.updateRenderer(layerUtils_1.LayerVars.layer.renderer);
+                            });
+                        }
+                        else {
+                            SliderVars.binaryColorSizeSlider.container.style.display = "block";
+                            SliderVars.binaryColorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
+                        }
+                        updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme: univariateTheme });
+                        return [2 /*return*/];
+                }
+            });
+        });
+    }
+    exports.updateBinaryColorSizeSlider = updateBinaryColorSizeSlider;
     function updateColorSizeSlider(params) {
         return __awaiter(this, void 0, void 0, function () {
             var layer, view, rendererResult, theme, sizeVariable, colorVariable, colorStops, field, normalizationField, valueExpression, minSize, maxSize, stops, symbolSizeSliderValues, maxStop, minStop, midStop, histogramResult;
@@ -413,6 +469,9 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     });
     exports.colorPickerBelow.addEventListener("input", function (event) {
         var newColor = new Color(exports.colorPickerBelow.value);
+        if (SliderVars.binaryColorSizeSlider) {
+            SliderVars.binaryColorSizeSlider.style.trackBelowFillColor = newColor;
+        }
         var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
         var symbol = renderer.classBreakInfos[0].symbol;
         if (symbol.type === "cim") {
@@ -425,6 +484,9 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
     });
     exports.colorPickerAbove.addEventListener("input", function (event) {
         var newColor = new Color(exports.colorPickerAbove.value);
+        if (SliderVars.binaryColorSizeSlider) {
+            SliderVars.binaryColorSizeSlider.style.trackAboveFillColor = newColor;
+        }
         var renderer = layerUtils_1.LayerVars.layer.renderer.clone();
         var symbol = renderer.classBreakInfos[1].symbol;
         if (symbol.type === "cim") {

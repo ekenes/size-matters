@@ -56,39 +56,29 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     //////////////////////////////////////
     function createColorSizeRenderer(params) {
         return __awaiter(this, void 0, void 0, function () {
-            var layer, view, field, normalizationField, valueExpression, theme, useSizeSlider, result, rendererColor, aboveSymbol, belowSymbol, aboveColor, belowColor;
+            var layer, view, field, normalizationField, valueExpression, theme, useBinarySizeSlider, result, rendererColor, aboveSymbol, belowSymbol, aboveColor, belowColor;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         layer = params.layer, view = params.view, field = params.field, normalizationField = params.normalizationField, valueExpression = params.valueExpression;
                         theme = params.theme || "high-to-low";
-                        useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
+                        useBinarySizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
                         return [4 /*yield*/, colorSizeRendererCreator.createContinuousRenderer(params)];
                     case 1:
                         result = _a.sent();
-                        result.renderer.authoringInfo.type = "univariate-color-size";
                         rendererColor = rendererUtils_1.getSizeRendererColor(result.renderer);
                         sliderUtils_1.colorPicker.value = rendererColor.toHex();
-                        if (!useSizeSlider) return [3 /*break*/, 3];
+                        if (!useBinarySizeSlider) return [3 /*break*/, 3];
                         aboveSymbol = result.renderer.classBreakInfos[1].symbol;
                         belowSymbol = result.renderer.classBreakInfos[0].symbol;
                         aboveColor = (aboveSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(aboveSymbol) : aboveSymbol.color;
                         belowColor = (belowSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(belowSymbol) : belowSymbol.color;
                         sliderUtils_1.colorPickerAbove.value = aboveColor.toHex();
                         sliderUtils_1.colorPickerBelow.value = belowColor.toHex();
-                        return [4 /*yield*/, sliderUtils_1.updateSizeSlider({
+                        return [4 /*yield*/, sliderUtils_1.updateBinaryColorSizeSlider({
                                 layer: layer,
                                 view: view,
-                                rendererResult: {
-                                    renderer: result.renderer,
-                                    visualVariables: result.size.visualVariables,
-                                    sizeScheme: result.size.sizeScheme,
-                                    defaultValuesUsed: result.defaultValuesUsed,
-                                    statistics: result.statistics,
-                                    basemapId: result.basemapId,
-                                    basemapTheme: result.basemapTheme
-                                },
-                                theme: theme
+                                rendererResult: result
                             })];
                     case 2:
                         _a.sent();

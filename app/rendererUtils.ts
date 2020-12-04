@@ -65,19 +65,19 @@ export async function updateRenderer(params: SizeParams, style: Style){
       colorRampsContainer.style.display = "none";
       break;
     case "color-and-size":
-      const useSizeSlider = isBinaryElement.checked && theme === "above-and-below";
+      const useBinaryColorSizeSlider = isBinaryElement.checked && theme === "above-and-below";
       symbolColor.style.display = "none";
-      if(SliderVars.slider && !useSizeSlider ){
-        SliderVars.slider.destroy();
-        SliderVars.slider.container = null;
-        SliderVars.slider = null;
+      if(SliderVars.binaryColorSizeSlider && !useBinaryColorSizeSlider ){
+        SliderVars.binaryColorSizeSlider.destroy();
+        SliderVars.binaryColorSizeSlider.container = null;
+        SliderVars.binaryColorSizeSlider = null;
 
         symbolColorAbove.style.display = "none";
         symbolColorBelow.style.display = "none";
         symbolColorContainer.style.display = "none";
         colorRampsContainer.style.display = "flex";
       }
-      if(SliderVars.colorSizeSlider && useSizeSlider){
+      if(SliderVars.colorSizeSlider && useBinaryColorSizeSlider){
         SliderVars.colorSizeSlider.destroy();
         SliderVars.colorSizeSlider.container = null;
         SliderVars.colorSizeSlider = null;
@@ -91,6 +91,11 @@ export async function updateRenderer(params: SizeParams, style: Style){
         SliderVars.opacitySlider.destroy();
         SliderVars.opacitySlider.container = null;
         SliderVars.opacitySlider = null;
+      }
+      if(SliderVars.slider){
+        SliderVars.slider.destroy();
+        SliderVars.slider.container = null;
+        SliderVars.slider = null;
       }
       [].forEach.call(  themeSelect , function(option: HTMLOptionElement){
         option.disabled = false;

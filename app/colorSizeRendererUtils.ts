@@ -5,7 +5,7 @@ import Color = require("esri/Color");
 import symbolUtils = require("esri/symbols/support/symbolUtils");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
-import { updateColorSizeSlider, updateSizeSlider, colorPicker, updateColorSizeSliderColors, colorPickerAbove, colorPickerBelow } from "./sliderUtils";
+import { updateColorSizeSlider, updateSizeSlider, colorPicker, updateColorSizeSliderColors, colorPickerAbove, colorPickerBelow, updateBinaryColorSizeSlider } from "./sliderUtils";
 import { SizeParams, getVisualVariableByType, getSizeRendererColor } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { LayerVars } from "./layerUtils";
@@ -37,15 +37,14 @@ export async function createColorSizeRenderer(params: esri.univariateColorSizeCr
   const { layer, view, field, normalizationField, valueExpression } = params;
 
   const theme = params.theme || "high-to-low";
-  const useSizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
+  const useBinarySizeSlider = params.colorOptions && !params.colorOptions.isContinuous && theme === "above-and-below";
 
   let result = await colorSizeRendererCreator.createContinuousRenderer(params);
-  result.renderer.authoringInfo.type = "univariate-color-size";
 
   const rendererColor = getSizeRendererColor(result.renderer as ClassBreaksRenderer);
   colorPicker.value = rendererColor.toHex();
 
-  if (useSizeSlider){
+  if (useBinarySizeSlider){
     const aboveSymbol = result.renderer.classBreakInfos[1].symbol;
     const belowSymbol = result.renderer.classBreakInfos[0].symbol;
 
@@ -55,19 +54,10 @@ export async function createColorSizeRenderer(params: esri.univariateColorSizeCr
     colorPickerAbove.value = aboveColor.toHex();
     colorPickerBelow.value = belowColor.toHex();
 
-    await updateSizeSlider({
+    await updateBinaryColorSizeSlider({
       layer: layer as esri.FeatureLayer,
       view: view as esri.MapView,
-      rendererResult: {
-        renderer: result.renderer,
-        visualVariables: result.size.visualVariables,
-        sizeScheme: result.size.sizeScheme,
-        defaultValuesUsed: result.defaultValuesUsed,
-        statistics: result.statistics,
-        basemapId: result.basemapId,
-        basemapTheme: result.basemapTheme
-      } as esri.sizeContinuousRendererResult,
-      theme
+      rendererResult: result
     });
   } else {
     await updateColorSizeSlider({

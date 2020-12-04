@@ -21,6 +21,6 @@
     "tslib": "^2.0.1"
   },
   "devDependencies": {
-    "@types/arcgis-js-api": "http://jscore.esri.com/javascript/latest/api-reference/typings/arcgis-js-api-4.18.tgz"
+    "@types/arcgis-js-api": "http://localhost/javascript/latest/api-reference/typings/arcgis-js-api-4.18.tgz"
   }
 }
