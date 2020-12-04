@@ -1,8 +1,6 @@
 import CIMSymbol = require("esri/symbols/CIMSymbol");
-import Color = require("esri/Color");
 import WebStyleSymbol = require("esri/symbols/WebStyleSymbol");
 import promiseUtils = require("esri/core/promiseUtils");
-import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 import { SimpleLineSymbol, SimpleMarkerSymbol } from "esri/symbols";
 
 const styleUrl = "https://www.arcgis.com/sharing/rest/content/items/a19aa7c44b824838a8bb1ba3492f7780/data";

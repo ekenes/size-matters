@@ -10,7 +10,7 @@ import BasemapGallery = require("esri/widgets/BasemapGallery");
 import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
-import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos, getUrlParams } from './layerUtils';
+import { getNumberFields, createFieldSelect, createLayer, getUrlParams } from './layerUtils';
 import { updateRenderer, SizeParams, Style } from './rendererUtils';
 import { fetchCIMdata } from "./symbolUtils";
 
@@ -75,9 +75,6 @@ import { fetchCIMdata } from "./symbolUtils";
     const { extent } = await layerView.queryExtent();
     view.goTo(extent);
   });
-
-  // const { extent } = await layer.queryExtent();
-  // view.goTo(extent);
 
   const saveBtn = document.getElementById("save-map");
 

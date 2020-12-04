@@ -3,13 +3,11 @@ import colorSizeRendererCreator = require("esri/smartMapping/renderers/univariat
 import colorRamps = require("esri/smartMapping/symbology/support/colorRamps");
 import Color = require("esri/Color");
 import symbolUtils = require("esri/symbols/support/symbolUtils");
-import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
 import { updateColorSizeSlider, colorPicker, updateColorSizeSliderColors, colorPickerAbove, colorPickerBelow, updateBinaryColorSizeSlider } from "./sliderUtils";
 import { SizeParams, getVisualVariableByType, getSizeRendererColor, getSymbolColor } from "./rendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { LayerVars } from "./layerUtils";
-import { CIMSymbol, Symbol3D } from "esri/symbols";
 
 export const useDonutsElement = document.getElementById("use-donuts") as HTMLInputElement;
 

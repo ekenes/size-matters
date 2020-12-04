@@ -1,7 +1,6 @@
 import esri = __esri;
 import Color = require("esri/Color");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
-import ClassBreakInfo = require("esri/renderers/support/ClassBreakInfo");
 
 import { createSizeRenderer } from "./sizeRendererUtils";
 import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUtils";
