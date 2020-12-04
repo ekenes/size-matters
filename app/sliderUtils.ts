@@ -124,7 +124,7 @@ export async function updateSizeSlider(params: CreateSizeSliderParams) {
 
 interface CreateBinarySliderParams {
   layer: esri.FeatureLayer,
-  view: esri.MapView,
+  view: esri.View,
   rendererResult: esri.univariateColorSizeContinuousRendererResult,
   updateOpacity?: boolean
 }
@@ -181,7 +181,7 @@ export async function updateBinaryColorSizeSlider(params: CreateBinarySliderPara
 
 interface CreateColorSizeSliderParams {
   layer: esri.FeatureLayer,
-  view: esri.MapView,
+  view: esri.View,
   rendererResult: esri.univariateColorSizeContinuousRendererResult,
   theme: SizeParams["theme"]
 }
@@ -244,13 +244,13 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
   }
 
   if(theme === "above-and-below"){
-    // SliderVars.colorSizeSlider.stops = [
-    //   { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
-    //   { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
-    //   { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
-    //   { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
-    //   { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
-    // ];
+    SliderVars.colorSizeSlider.stops = [
+      { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
+      { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
+      { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
+      { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
+      { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
+    ];
     SliderVars.colorSizeSlider.primaryHandleEnabled = true;
     SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
   } else {

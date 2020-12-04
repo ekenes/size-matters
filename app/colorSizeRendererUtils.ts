@@ -55,13 +55,13 @@ export async function createColorSizeRenderer(params: esri.univariateColorSizeCr
 
     await updateBinaryColorSizeSlider({
       layer: layer as esri.FeatureLayer,
-      view: view as esri.MapView,
+      view: view,
       rendererResult: result
     });
   } else {
     await updateColorSizeSlider({
       layer: layer as esri.FeatureLayer,
-      view: view as esri.MapView,
+      view: view,
       rendererResult: result,
       theme
     });

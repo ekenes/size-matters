@@ -7,7 +7,7 @@ interface StatParams {
   field?: string,
   normalizationField?: string,
   valueExpression?: string,
-  view: esri.MapView
+  view: esri.View
 }
 
 export interface PercentileStats {
