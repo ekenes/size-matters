@@ -7,13 +7,14 @@ export class LayerVars {
 
 // function to retrieve query parameters (in this case only id)
 interface UrlParams {
-  id?: string,
-  portal?: string,
-  layerId?: string | number,
-  url?: string
+  id?: string;
+  portal?: string;
+  layerId?: string | number;
+  url?: string;
+  viewType?: string;
 }
 
-function getUrlParams() {
+export function getUrlParams() {
   const queryParams = document.location.search.substr(1);
   let result: UrlParams = {};
 
@@ -28,13 +29,17 @@ function getUrlParams() {
 let layer: FeatureLayer = null;
 
 // function to set an id as a url param
-function setUrlParams(id: UrlParams["id"], layerId: UrlParams["layerId"], portal: UrlParams["portal"]) {
-  window.history.pushState("", "", `${window.location.pathname}?id=${id}&layerId=${layerId}&portal=${portal}`);
+function setUrlParams(id: UrlParams["id"], layerId: UrlParams["layerId"], portal: UrlParams["portal"], viewType: UrlParams["viewType"]) {
+  window.history.pushState("", "", `${window.location.pathname}?id=${id}&layerId=${layerId}&portal=${portal}&viewType=${viewType}`);
 }
 
 export function createLayer(){
 
-  let { id, portal, layerId, url } = getUrlParams();
+  let { id, portal, layerId, url, viewType } = getUrlParams();
+
+  if(!viewType){
+    viewType = "2d";
+  }
 
   if(!url){
     if(!id){
@@ -49,7 +54,7 @@ export function createLayer(){
       portal = "https://www.arcgis.com/";
     }
 
-    setUrlParams(id, layerId, portal);
+    setUrlParams(id, layerId, portal, viewType);
 
     layer = new FeatureLayer({
       portalItem: {

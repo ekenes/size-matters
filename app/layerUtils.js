@@ -53,13 +53,17 @@ define(["require", "exports", "esri/layers/FeatureLayer"], function (require, ex
         });
         return result;
     }
+    exports.getUrlParams = getUrlParams;
     var layer = null;
     // function to set an id as a url param
-    function setUrlParams(id, layerId, portal) {
-        window.history.pushState("", "", window.location.pathname + "?id=" + id + "&layerId=" + layerId + "&portal=" + portal);
+    function setUrlParams(id, layerId, portal, viewType) {
+        window.history.pushState("", "", window.location.pathname + "?id=" + id + "&layerId=" + layerId + "&portal=" + portal + "&viewType=" + viewType);
     }
     function createLayer() {
-        var _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId, url = _a.url;
+        var _a = getUrlParams(), id = _a.id, portal = _a.portal, layerId = _a.layerId, url = _a.url, viewType = _a.viewType;
+        if (!viewType) {
+            viewType = "2d";
+        }
         if (!url) {
             if (!id) {
                 id = "993b8c64a67a4c6faa44a91846547786";
@@ -70,7 +74,7 @@ define(["require", "exports", "esri/layers/FeatureLayer"], function (require, ex
             if (!portal) {
                 portal = "https://www.arcgis.com/";
             }
-            setUrlParams(id, layerId, portal);
+            setUrlParams(id, layerId, portal, viewType);
             layer = new FeatureLayer({
                 portalItem: {
                     id: id,

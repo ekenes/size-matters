@@ -1,6 +1,8 @@
 import esri = __esri;
 import WebScene = require("esri/WebScene");
+import WebMap = require("esri/WebMap");
 import SceneView = require("esri/views/SceneView");
+import MapView = require("esri/views/MapView");
 import watchUtils = require("esri/core/watchUtils");
 
 import Expand = require("esri/widgets/Expand");
@@ -8,27 +10,33 @@ import BasemapGallery = require("esri/widgets/BasemapGallery");
 import PortalItem = require("esri/portal/PortalItem");
 import Legend = require("esri/widgets/Legend");
 
-import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos } from './layerUtils';
+import { getNumberFields, createFieldSelect, createLayer, addArcadeFieldInfos, getUrlParams } from './layerUtils';
 import { updateRenderer, SizeParams, Style } from './rendererUtils';
-import { fetchCIMdata, SymbolNames } from "./symbolUtils";
+import { fetchCIMdata } from "./symbolUtils";
 
 ( async () => {
 
   const layer = createLayer();
 
-  const webmap = new WebScene({
+  const { viewType } = getUrlParams();
+  const mapParams = {
     basemap: {
       portalItem: {
         id: "3582b744bba84668b52a16b0b6942544"
       }
     },
     layers: [ layer ]
-  });
+  };
 
-  const view = new SceneView({
+
+  const webmap = viewType === "3d" ? new WebScene(mapParams) : new WebMap(mapParams);
+
+  const viewParams = {
     map: webmap,
     container: "viewDiv"
-  });
+  };
+
+  const view = viewType === "3d" ? new SceneView(viewParams) : new MapView(viewParams);
 
   view.ui.add(new Expand({
     view,
@@ -99,6 +107,7 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
   const themeSelect = document.getElementById("theme-select") as HTMLSelectElement;
   const styleSelect = document.getElementById("style-select") as HTMLSelectElement;
   const symbolTypeSelect = document.getElementById("symbol-type-select") as HTMLSelectElement;
+  const symbolTypeContainer = document.getElementById("symbol-type-container") as HTMLDivElement;
   const symbolsContainer = document.getElementById("symbols-container") as HTMLSelectElement;
   const symbolsSelect = document.getElementById("symbols-select") as HTMLSelectElement;
   const isBinaryElement = document.getElementById("binary-switch") as HTMLInputElement;
@@ -106,6 +115,8 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
   symbolsSelect.addEventListener("change", inputChange);
   isBinaryElement.addEventListener("change", inputChange);
   symbolTypeSelect.addEventListener("change", inputChange);
+
+  symbolTypeContainer.style.display = viewType === "2d" ? "none" : "block";
 
   fieldsSelect.addEventListener("change", inputChange);
   normalizationFieldSelect.addEventListener("change", () => {
@@ -124,7 +135,7 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
     const field = fieldsSelect.value;
     const normalizationField = normalizationFieldSelect.value;
     const valueExpression = valueExpressionTextArea.value;
-    const symbolType = symbolTypeSelect.value;
+    const symbolType = viewType === "3d" ? symbolTypeSelect.value : null;
 
     if(!field && !valueExpression && !normalizationField){
       clearEverything();
@@ -156,7 +167,7 @@ import { fetchCIMdata, SymbolNames } from "./symbolUtils";
 
   saveBtn.addEventListener("click", async () => {
 
-    await webmap.updateFrom(view);
+    await (webmap as any).updateFrom(view);
 
     try{
       const item = await webmap.saveAs(new PortalItem({
