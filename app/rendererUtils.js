@@ -192,6 +192,9 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                 if (type === "outline") {
                     return vv.type === "size" && vv.target === "outline";
                 }
+                if (type === "size" && (!vv.field && !vv.valueExpression) && vv.axis) {
+                    return false;
+                }
                 return vv.type === type;
             })[0]);
     }
@@ -207,7 +210,7 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
     function getSizeRendererColor(renderer) {
         var classBreakInfos = renderer.classBreakInfos;
         var solidSymbol = classBreakInfos[classBreakInfos.length - 1].symbol;
-        return solidSymbol.color;
+        return getSymbolColor(solidSymbol);
     }
     exports.getSizeRendererColor = getSizeRendererColor;
     function getSymbolColor(symbol) {

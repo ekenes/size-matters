@@ -161,6 +161,9 @@ export function getVisualVariableByType(renderer: esri.RendererWithVisualVariabl
       if (type === "outline"){
         return vv.type === "size" && (vv as esri.SizeVariable).target === "outline";
       }
+      if (type === "size" && (!vv.field && !vv.valueExpression) && (vv as esri.SizeVariable).axis) {
+        return false;
+      }
       return vv.type === type;
     })[0]
   );
@@ -179,10 +182,10 @@ export function getVisualVariablesByType(renderer: esri.RendererWithVisualVariab
 export function getSizeRendererColor(renderer: ClassBreaksRenderer): Color {
   const classBreakInfos = renderer.classBreakInfos;
   const solidSymbol = classBreakInfos[classBreakInfos.length-1].symbol;
-  return solidSymbol.color;
+  return getSymbolColor(solidSymbol as Symbol | CIMSymbol | Symbol3D);
 }
 
-export function getSymbolColor(symbol: Symbol | CIMSymbol): Color {
+export function getSymbolColor(symbol: Symbol | CIMSymbol | Symbol3D): Color {
   if(symbol.type === "cim"){
     return cimSymbolUtils.getCIMSymbolColor(symbol as CIMSymbol);
   }

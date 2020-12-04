@@ -17,8 +17,6 @@ const dottedDown = new WebStyleSymbol({
   name: "dotted arrow down"
 });
 
-export type SymbolNames = "donuts" | "rings" | "carets" | "arrows" | "plusMinus" | "radio" | "triangles" | "plusMinusCircle" | "highLow" | "happySad";
-
 export const symbolOptions = {
   dottedArrows: {
     name: "dottedArrows",

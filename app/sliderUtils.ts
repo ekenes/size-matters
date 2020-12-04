@@ -13,7 +13,7 @@ import { calcuateMidSize, updateRendererFromSizeSlider } from "./sizeRendererUti
 import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
 import { LayerVars } from "./layerUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
-import { CIMSymbol, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol } from "esri/symbols";
+import { CIMSymbol, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, Symbol3D } from "esri/symbols";
 
 export class SliderVars {
   public static slider: SizeSlider = null;
@@ -244,13 +244,13 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
   }
 
   if(theme === "above-and-below"){
-    SliderVars.colorSizeSlider.stops = [
-      { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
-      { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
-      { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
-      { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
-      { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
-    ];
+    // SliderVars.colorSizeSlider.stops = [
+    //   { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
+    //   { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
+    //   { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
+    //   { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
+    //   { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
+    // ];
     SliderVars.colorSizeSlider.primaryHandleEnabled = true;
     SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
   } else {
@@ -461,8 +461,14 @@ colorPicker.addEventListener("input", function(event){
   classBreakInfos.forEach( (info) => {
     const symbol = info.symbol;
 
-    if(symbol.type === "cim"){
+    if(symbol.type === "cim") {
       cimSymbolUtils.applyCIMSymbolColor(symbol as CIMSymbol, newColor);
+    }
+    if ((symbol as Symbol3D).symbolLayers) {
+      const sl = (symbol as Symbol3D).symbolLayers.getItemAt(0);
+      (sl as any).material = {
+        color: newColor
+      };
     } else {
       (symbol as SymbolWithColor).color = newColor;
     }
@@ -481,8 +487,14 @@ colorPickerBelow.addEventListener("input", function(event){
   const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
   const symbol = renderer.classBreakInfos[0].symbol;
 
-  if(symbol.type === "cim"){
+  if(symbol.type === "cim") {
     cimSymbolUtils.applyCIMSymbolColor(symbol as CIMSymbol, newColor);
+  }
+  if ((symbol as Symbol3D).symbolLayers) {
+    const sl = (symbol as Symbol3D).symbolLayers.getItemAt(0);
+    (sl as any).material = {
+      color: newColor
+    };
   } else {
     (symbol as SymbolWithColor).color = newColor;
   }
@@ -500,8 +512,14 @@ colorPickerAbove.addEventListener("input", function(event){
   const renderer = (LayerVars.layer.renderer as ClassBreaksRenderer).clone();
   const symbol = renderer.classBreakInfos[1].symbol;
 
-  if(symbol.type === "cim"){
+  if(symbol.type === "cim") {
     cimSymbolUtils.applyCIMSymbolColor(symbol as CIMSymbol, newColor);
+  }
+  if ((symbol as Symbol3D).symbolLayers) {
+    const sl = (symbol as Symbol3D).symbolLayers.getItemAt(0);
+    (sl as any).material = {
+      color: newColor
+    };
   } else {
     (symbol as SymbolWithColor).color = newColor;
   }

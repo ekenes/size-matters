@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/watchUtils", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebMap, MapView, watchUtils, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
+define(["require", "exports", "esri/WebScene", "esri/WebMap", "esri/views/SceneView", "esri/views/MapView", "esri/core/watchUtils", "esri/widgets/Expand", "esri/widgets/BasemapGallery", "esri/portal/PortalItem", "esri/widgets/Legend", "./layerUtils", "./rendererUtils", "./symbolUtils"], function (require, exports, WebScene, WebMap, SceneView, MapView, watchUtils, Expand, BasemapGallery, PortalItem, Legend, layerUtils_1, rendererUtils_1, symbolUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     (function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -42,6 +42,7 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
             var field = fieldsSelect.value;
             var normalizationField = normalizationFieldSelect.value;
             var valueExpression = valueExpressionTextArea.value;
+            var symbolType = viewType === "3d" ? symbolTypeSelect.value : null;
             if (!field && !valueExpression && !normalizationField) {
                 clearEverything();
                 return;
@@ -54,7 +55,8 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                 field: field,
                 normalizationField: normalizationField,
                 valueExpression: valueExpression,
-                theme: theme
+                theme: theme,
+                symbolType: symbolType
             };
             rendererUtils_1.updateRenderer(params, style);
         }
@@ -69,23 +71,26 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
             document.getElementById("info").innerHTML = info;
             overlay.style.visibility = "visible";
         }
-        var layer, webmap, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolsContainer, symbolsSelect, isBinaryElement, overlay, ok;
+        var layer, viewType, mapParams, webmap, viewParams, view, basemapGallery, sliderExpand, layerView, saveBtn, originalRenderer, fieldContainer, normalizationFieldContainer, numberFields, fieldsSelect, normalizationFieldSelect, arcadeFieldsContainer, arcadeFieldsSelect, valueExpressionTextArea, themeSelect, styleSelect, symbolTypeSelect, symbolTypeContainer, symbolsContainer, symbolsSelect, isBinaryElement, overlay, ok;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     layer = layerUtils_1.createLayer();
-                    webmap = new WebMap({
+                    viewType = layerUtils_1.getUrlParams().viewType;
+                    mapParams = {
                         basemap: {
                             portalItem: {
                                 id: "3582b744bba84668b52a16b0b6942544"
                             }
                         },
                         layers: [layer]
-                    });
-                    view = new MapView({
+                    };
+                    webmap = viewType === "3d" ? new WebScene(mapParams) : new WebMap(mapParams);
+                    viewParams = {
                         map: webmap,
                         container: "viewDiv"
-                    });
+                    };
+                    view = viewType === "3d" ? new SceneView(viewParams) : new MapView(viewParams);
                     view.ui.add(new Expand({
                         view: view,
                         expanded: true,
@@ -157,11 +162,15 @@ define(["require", "exports", "esri/WebMap", "esri/views/MapView", "esri/core/wa
                     });
                     themeSelect = document.getElementById("theme-select");
                     styleSelect = document.getElementById("style-select");
+                    symbolTypeSelect = document.getElementById("symbol-type-select");
+                    symbolTypeContainer = document.getElementById("symbol-type-container");
                     symbolsContainer = document.getElementById("symbols-container");
                     symbolsSelect = document.getElementById("symbols-select");
                     isBinaryElement = document.getElementById("binary-switch");
                     symbolsSelect.addEventListener("change", inputChange);
                     isBinaryElement.addEventListener("change", inputChange);
+                    symbolTypeSelect.addEventListener("change", inputChange);
+                    symbolTypeContainer.style.display = viewType === "2d" ? "none" : "block";
                     fieldsSelect.addEventListener("change", inputChange);
                     normalizationFieldSelect.addEventListener("change", function () {
                         if (fieldsSelect.value) {

@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/smartMapping/symbology/support/colorRamps", "esri/symbols/support/symbolUtils", "esri/symbols/support/cimSymbolUtils", "./sliderUtils", "./rendererUtils", "./layerUtils"], function (require, exports, colorSizeRendererCreator, colorRamps, symbolUtils, cimSymbolUtils, sliderUtils_1, rendererUtils_1, layerUtils_1) {
+define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize", "esri/smartMapping/symbology/support/colorRamps", "esri/symbols/support/symbolUtils", "./sliderUtils", "./rendererUtils", "./layerUtils"], function (require, exports, colorSizeRendererCreator, colorRamps, symbolUtils, sliderUtils_1, rendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.useDonutsElement = document.getElementById("use-donuts");
@@ -71,8 +71,8 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
                         if (!useBinarySizeSlider) return [3 /*break*/, 3];
                         aboveSymbol = result.renderer.classBreakInfos[1].symbol;
                         belowSymbol = result.renderer.classBreakInfos[0].symbol;
-                        aboveColor = (aboveSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(aboveSymbol) : aboveSymbol.color;
-                        belowColor = (belowSymbol.type === "cim") ? cimSymbolUtils.getCIMSymbolColor(belowSymbol) : belowSymbol.color;
+                        aboveColor = rendererUtils_1.getSymbolColor(aboveSymbol);
+                        belowColor = rendererUtils_1.getSymbolColor(belowSymbol);
                         sliderUtils_1.colorPickerAbove.value = aboveColor.toHex();
                         sliderUtils_1.colorPickerBelow.value = belowColor.toHex();
                         return [4 /*yield*/, sliderUtils_1.updateBinaryColorSizeSlider({
