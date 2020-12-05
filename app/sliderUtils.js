@@ -34,7 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/smartMapping/BinaryColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "esri/symbols/support/cimSymbolUtils", "esri/Color", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./colorSizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, BinaryColorSizeSlider, Slider, OpacitySlider, cimSymbolUtils, Color, statUtils_1, rendererUtils_1, sizeRendererUtils_1, colorSizeRendererUtils_1, layerUtils_1) {
+define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widgets/smartMapping/ColorSizeSlider", "esri/widgets/smartMapping/BinaryColorSizeSlider", "esri/widgets/Slider", "esri/widgets/smartMapping/OpacitySlider", "esri/symbols/support/cimSymbolUtils", "esri/Color", "./statUtils", "./rendererUtils", "./sizeRendererUtils", "./layerUtils"], function (require, exports, SizeSlider, ColorSizeSlider, BinaryColorSizeSlider, Slider, OpacitySlider, cimSymbolUtils, Color, statUtils_1, rendererUtils_1, sizeRendererUtils_1, layerUtils_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var SliderVars = /** @class */ (function () {
@@ -236,34 +236,12 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
                                 "min-change",
                                 "max-change"
                             ], function () {
-                                var newRenderer = colorSizeRendererUtils_1.updateRendererFromColorSizeSlider(layerUtils_1.LayerVars.layer.renderer, SliderVars.colorSizeSlider);
-                                if (newRenderer.classBreakInfos.length > 1) {
-                                    var midIndex = SliderVars.colorSizeSlider.stops.length === 5 ? 2 : 1;
-                                    var midValue = SliderVars.colorSizeSlider.stops[midIndex].value;
-                                    newRenderer.classBreakInfos[0].maxValue = midValue;
-                                    newRenderer.classBreakInfos[1].minValue = midValue;
-                                }
-                                layerUtils_1.LayerVars.layer.renderer = newRenderer;
+                                layerUtils_1.LayerVars.layer.renderer = SliderVars.colorSizeSlider.updateRenderer(layerUtils_1.LayerVars.layer.renderer);
                             });
                         }
                         else {
                             SliderVars.colorSizeSlider.container.style.display = "block";
                             SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
-                        }
-                        if (theme === "above-and-below") {
-                            SliderVars.colorSizeSlider.stops = [
-                                { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
-                                { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
-                                { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
-                                { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
-                                { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
-                            ];
-                            SliderVars.colorSizeSlider.primaryHandleEnabled = true;
-                            SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
-                        }
-                        else {
-                            SliderVars.colorSizeSlider.primaryHandleEnabled = false;
-                            SliderVars.colorSizeSlider.handlesSyncedToPrimary = false;
                         }
                         updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme: theme });
                         return [2 /*return*/];

@@ -38,17 +38,6 @@ define(["require", "exports", "esri/smartMapping/renderers/univariateColorSize",
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.useDonutsElement = document.getElementById("use-donuts");
-    function updateRendererFromColorSizeSlider(renderer, slider) {
-        var sizeVariable = rendererUtils_1.getVisualVariableByType(renderer, "size");
-        var sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
-        renderer.visualVariables.splice(sizeVariableIndex, 1);
-        var colorVariable = rendererUtils_1.getVisualVariableByType(renderer, "color");
-        var colorVariableIndex = renderer.visualVariables.indexOf(colorVariable);
-        renderer.visualVariables.splice(colorVariableIndex, 1);
-        renderer.visualVariables = slider.updateVisualVariables([sizeVariable, colorVariable]);
-        return renderer.clone();
-    }
-    exports.updateRendererFromColorSizeSlider = updateRendererFromColorSizeSlider;
     /////////////////////////////////////
     ///
     /// Color and Size Renderer

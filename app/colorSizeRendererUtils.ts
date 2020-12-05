@@ -11,21 +11,6 @@ import { LayerVars } from "./layerUtils";
 
 export const useDonutsElement = document.getElementById("use-donuts") as HTMLInputElement;
 
-export function updateRendererFromColorSizeSlider(renderer: esri.RendererWithVisualVariables, slider: esri.ColorSizeSlider){
-
-  let sizeVariable = getVisualVariableByType(renderer, "size") as esri.SizeVariable;
-  const sizeVariableIndex = renderer.visualVariables.indexOf(sizeVariable);
-  renderer.visualVariables.splice(sizeVariableIndex, 1);
-
-  let colorVariable = getVisualVariableByType(renderer, "color") as esri.ColorVariable;
-  const colorVariableIndex = renderer.visualVariables.indexOf(colorVariable);
-  renderer.visualVariables.splice(colorVariableIndex, 1);
-
-  renderer.visualVariables = slider.updateVisualVariables([sizeVariable, colorVariable]);
-
-  return renderer.clone();
-}
-
 /////////////////////////////////////
 ///
 /// Color and Size Renderer

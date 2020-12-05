@@ -69,6 +69,11 @@ define(["require", "exports", "esri/symbols/support/cimSymbolUtils", "./sizeRend
                             sliderUtils_1.SliderVars.colorSizeSlider.container = null;
                             sliderUtils_1.SliderVars.colorSizeSlider = null;
                         }
+                        if (sliderUtils_1.SliderVars.binaryColorSizeSlider) {
+                            sliderUtils_1.SliderVars.binaryColorSizeSlider.destroy();
+                            sliderUtils_1.SliderVars.binaryColorSizeSlider.container = null;
+                            sliderUtils_1.SliderVars.binaryColorSizeSlider = null;
+                        }
                         if (sliderUtils_1.SliderVars.opacitySlider) {
                             sliderUtils_1.SliderVars.opacitySlider.destroy();
                             sliderUtils_1.SliderVars.opacitySlider.container = null;

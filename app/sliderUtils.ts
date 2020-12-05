@@ -8,9 +8,8 @@ import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 import Color = require("esri/Color");
 
 import { calculateHistogram } from "./statUtils";
-import { getVisualVariableByType, SizeParams, getSizeRendererColor } from "./rendererUtils";
+import { getVisualVariableByType, SizeParams } from "./rendererUtils";
 import { calcuateMidSize, updateRendererFromSizeSlider } from "./sizeRendererUtils";
-import { updateRendererFromColorSizeSlider } from "./colorSizeRendererUtils";
 import { LayerVars } from "./layerUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { CIMSymbol, SimpleLineSymbol, SimpleFillSymbol, SimpleMarkerSymbol, Symbol3D } from "esri/symbols";
@@ -227,35 +226,11 @@ export async function updateColorSizeSlider(params: CreateColorSizeSliderParams)
       "min-change",
       "max-change"
     ] as any, () => {
-      const newRenderer = updateRendererFromColorSizeSlider(LayerVars.layer.renderer as esri.RendererWithVisualVariables, SliderVars.colorSizeSlider) as ClassBreaksRenderer;
-
-      if (newRenderer.classBreakInfos.length > 1){
-        const midIndex = SliderVars.colorSizeSlider.stops.length === 5 ? 2 : 1;
-        const midValue = SliderVars.colorSizeSlider.stops[midIndex].value;
-        newRenderer.classBreakInfos[0].maxValue = midValue;
-        newRenderer.classBreakInfos[1].minValue = midValue;
-      }
-
-      LayerVars.layer.renderer = newRenderer;
+      LayerVars.layer.renderer = SliderVars.colorSizeSlider.updateRenderer(LayerVars.layer.renderer as ClassBreaksRenderer);
     });
   } else {
     (SliderVars.colorSizeSlider.container as HTMLElement).style.display = "block";
     SliderVars.colorSizeSlider.updateFromRendererResult(rendererResult, histogramResult);
-  }
-
-  if(theme === "above-and-below"){
-    SliderVars.colorSizeSlider.stops = [
-      { color: colorStops[0].color, size: stops[0].size, value: stops[0].value },
-      { color: colorStops[1].color, size: stops[1].size, value: stops[1].value },
-      { color: colorStops[2].color, size: stops[2].size, value: stops[2].value },
-      { color: colorStops[3].color, size: stops[3].size, value: stops[3].value },
-      { color: colorStops[4].color, size: stops[4].size, value: stops[4].value }
-    ];
-    SliderVars.colorSizeSlider.primaryHandleEnabled = true;
-    SliderVars.colorSizeSlider.handlesSyncedToPrimary = true;
-  } else {
-    SliderVars.colorSizeSlider.primaryHandleEnabled = false;
-    SliderVars.colorSizeSlider.handlesSyncedToPrimary = false;
   }
 
   updateSymbolSizesSlider({ values: symbolSizeSliderValues, theme });

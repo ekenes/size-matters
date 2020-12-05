@@ -3,9 +3,9 @@ import Color = require("esri/Color");
 import cimSymbolUtils = require("esri/symbols/support/cimSymbolUtils");
 
 import { createSizeRenderer } from "./sizeRendererUtils";
-import { createColorSizeRenderer, useDonutsElement } from "./colorSizeRendererUtils";
+import { createColorSizeRenderer } from "./colorSizeRendererUtils";
 import { SliderVars } from "./sliderUtils";
-import { createOpacitySizeRenderer, opacityValuesContainer } from "./opacitySizeRendererUtils";
+import { createOpacitySizeRenderer } from "./opacitySizeRendererUtils";
 import { ClassBreaksRenderer } from "esri/rasterRenderers";
 import { CIMSymbol, Symbol, Symbol3D } from "esri/symbols";
 import {  symbolOptions } from "./symbolUtils";
@@ -36,6 +36,11 @@ export async function updateRenderer(params: SizeParams, style: Style){
         SliderVars.colorSizeSlider.destroy();
         SliderVars.colorSizeSlider.container = null;
         SliderVars.colorSizeSlider = null;
+      }
+      if(SliderVars.binaryColorSizeSlider){
+        SliderVars.binaryColorSizeSlider.destroy();
+        SliderVars.binaryColorSizeSlider.container = null;
+        SliderVars.binaryColorSizeSlider = null;
       }
       if(SliderVars.opacitySlider){
         SliderVars.opacitySlider.destroy();
