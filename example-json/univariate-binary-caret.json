@@ -1,7 +1,7 @@
 {
   "operationalLayers": [
     {
-      "id": "175e19fe8a1-layer-0",
+      "id": "1764006e6bb-layer-0",
       "title": "U.S. presidential election results by county 2000-2016",
       "url": "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/elections_2000_2016_clean/FeatureServer/0",
       "itemId": "eeedc75c82f24ca49ccaf824665a10d0",
@@ -12,31 +12,36 @@
         "drawingInfo": {
           "renderer": {
             "authoringInfo": {
+              "statistics": {
+                "min": -100,
+                "max": 77.61989342806395
+              },
               "type": "univariateColorSize",
-              "theme": "above-and-below",
-              "symbolStyle": "caret",
               "visualVariables": [
                 {
-                  "maxSliderValue": 77.61989342806395,
+                  "maxSliderValue": 100,
                   "minSliderValue": -100,
+                  "theme": "above-and-below",
                   "type": "sizeInfo"
                 }
-              ]
+              ],
+              "univariateSymbolStyle": "caret",
+              "univariateTheme": "above-and-below"
             },
             "type": "classBreaks",
             "visualVariables": [
               {
                 "type": "sizeInfo",
                 "field": "",
-                "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100",
+                "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100",
                 "normalizationField": "",
                 "stops": [
                   {
-                    "size": 10.5,
+                    "size": 14.5,
                     "value": -50
                   },
                   {
-                    "size": 6,
+                    "size": 8,
                     "value": -25
                   },
                   {
@@ -44,11 +49,11 @@
                     "value": 0
                   },
                   {
-                    "size": 6,
+                    "size": 8,
                     "value": 25
                   },
                   {
-                    "size": 10.5,
+                    "size": 14.5,
                     "value": 50
                   }
                 ],
@@ -62,6 +67,9 @@
                   "type": "CIMSymbolReference",
                   "symbol": {
                     "type": "CIMPointSymbol",
+                    "haloSize": 1,
+                    "scaleX": 1,
+                    "angleAlignment": "Display",
                     "symbolLayers": [
                       {
                         "type": "CIMVectorMarker",
@@ -70,68 +78,14 @@
                         "dominantSizeAxis3D": "Y",
                         "size": 10,
                         "billboardMode3D": "FaceNearPlane",
+                        "scaleSymbolsProportionally": true,
+                        "respectFrame": true,
                         "frame": {
                           "xmin": 0,
                           "ymin": 0,
-                          "xmax": 16,
-                          "ymax": 13
+                          "xmax": 32,
+                          "ymax": 32
                         },
-                        "markerGraphics": [
-                          {
-                            "type": "CIMMarkerGraphic",
-                            "geometry": {
-                              "rings": [
-                                [
-                                  [
-                                    16,
-                                    8
-                                  ],
-                                  [
-                                    16,
-                                    13
-                                  ],
-                                  [
-                                    8,
-                                    5
-                                  ],
-                                  [
-                                    0,
-                                    13
-                                  ],
-                                  [
-                                    0,
-                                    8
-                                  ],
-                                  [
-                                    8,
-                                    0
-                                  ],
-                                  [
-                                    16,
-                                    8
-                                  ]
-                                ]
-                              ]
-                            },
-                            "symbol": {
-                              "type": "CIMPolygonSymbol",
-                              "symbolLayers": [
-                                {
-                                  "type": "CIMSolidFill",
-                                  "enable": true,
-                                  "color": [
-                                    111,
-                                    79,
-                                    227,
-                                    255
-                                  ]
-                                }
-                              ]
-                            }
-                          }
-                        ],
-                        "scaleSymbolsProportionally": true,
-                        "respectFrame": true,
                         "clippingPath": {
                           "type": "CIMClippingPath",
                           "clippingType": "Intersect",
@@ -143,16 +97,16 @@
                                   0
                                 ],
                                 [
-                                  16,
+                                  32,
                                   0
                                 ],
                                 [
-                                  16,
-                                  13
+                                  32,
+                                  32
                                 ],
                                 [
                                   0,
-                                  13
+                                  32
                                 ],
                                 [
                                   0,
@@ -161,21 +115,76 @@
                               ]
                             ]
                           }
-                        }
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    39,
+                                    153,
+                                    255,
+                                    255
+                                  ],
+                                  "colorLocked": false
+                                }
+                              ]
+                            },
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    32,
+                                    16
+                                  ],
+                                  [
+                                    32,
+                                    23.3
+                                  ],
+                                  [
+                                    16,
+                                    7.3
+                                  ],
+                                  [
+                                    0,
+                                    23.3
+                                  ],
+                                  [
+                                    0,
+                                    16
+                                  ],
+                                  [
+                                    16,
+                                    0
+                                  ],
+                                  [
+                                    32,
+                                    16
+                                  ]
+                                ]
+                              ]
+                            }
+                          }
+                        ]
                       }
-                    ],
-                    "haloSize": 1,
-                    "scaleX": 1,
-                    "angleAlignment": "Display"
+                    ]
                   }
                 }
               },
               {
-                "classMaxValue": 100,
+                "classMaxValue": 9007199254740991,
                 "symbol": {
                   "type": "CIMSymbolReference",
                   "symbol": {
                     "type": "CIMPointSymbol",
+                    "haloSize": 1,
+                    "scaleX": 1,
+                    "angleAlignment": "Display",
                     "symbolLayers": [
                       {
                         "type": "CIMVectorMarker",
@@ -184,68 +193,14 @@
                         "dominantSizeAxis3D": "Y",
                         "size": 10,
                         "billboardMode3D": "FaceNearPlane",
+                        "scaleSymbolsProportionally": true,
+                        "respectFrame": true,
                         "frame": {
                           "xmin": 0,
                           "ymin": 0,
-                          "xmax": 15.95,
-                          "ymax": 13
+                          "xmax": 32,
+                          "ymax": 32
                         },
-                        "markerGraphics": [
-                          {
-                            "type": "CIMMarkerGraphic",
-                            "geometry": {
-                              "rings": [
-                                [
-                                  [
-                                    8,
-                                    8
-                                  ],
-                                  [
-                                    15.95,
-                                    0
-                                  ],
-                                  [
-                                    15.95,
-                                    5
-                                  ],
-                                  [
-                                    8,
-                                    13
-                                  ],
-                                  [
-                                    0,
-                                    5
-                                  ],
-                                  [
-                                    0,
-                                    0
-                                  ],
-                                  [
-                                    8,
-                                    8
-                                  ]
-                                ]
-                              ]
-                            },
-                            "symbol": {
-                              "type": "CIMPolygonSymbol",
-                              "symbolLayers": [
-                                {
-                                  "type": "CIMSolidFill",
-                                  "enable": true,
-                                  "color": [
-                                    227,
-                                    79,
-                                    79,
-                                    255
-                                  ]
-                                }
-                              ]
-                            }
-                          }
-                        ],
-                        "scaleSymbolsProportionally": true,
-                        "respectFrame": true,
                         "clippingPath": {
                           "type": "CIMClippingPath",
                           "clippingType": "Intersect",
@@ -257,16 +212,16 @@
                                   0
                                 ],
                                 [
-                                  15.95,
+                                  32,
                                   0
                                 ],
                                 [
-                                  15.95,
-                                  13
+                                  32,
+                                  32
                                 ],
                                 [
                                   0,
-                                  13
+                                  32
                                 ],
                                 [
                                   0,
@@ -275,12 +230,64 @@
                               ]
                             ]
                           }
-                        }
+                        },
+                        "markerGraphics": [
+                          {
+                            "type": "CIMMarkerGraphic",
+                            "symbol": {
+                              "type": "CIMPolygonSymbol",
+                              "symbolLayers": [
+                                {
+                                  "type": "CIMSolidFill",
+                                  "enable": true,
+                                  "color": [
+                                    255,
+                                    51,
+                                    51,
+                                    255
+                                  ],
+                                  "colorLocked": false
+                                }
+                              ]
+                            },
+                            "geometry": {
+                              "rings": [
+                                [
+                                  [
+                                    16,
+                                    16
+                                  ],
+                                  [
+                                    32,
+                                    0
+                                  ],
+                                  [
+                                    32,
+                                    7.3
+                                  ],
+                                  [
+                                    16,
+                                    23.3
+                                  ],
+                                  [
+                                    0,
+                                    7.3
+                                  ],
+                                  [
+                                    0,
+                                    0
+                                  ],
+                                  [
+                                    16,
+                                    16
+                                  ]
+                                ]
+                              ]
+                            }
+                          }
+                        ]
                       }
-                    ],
-                    "haloSize": 1,
-                    "scaleX": 1,
-                    "angleAlignment": "Display"
+                    ]
                   }
                 }
               }
@@ -302,9 +309,9 @@
               "outline": {
                 "type": "esriSLS",
                 "color": [
-                  255,
-                  255,
-                  255,
+                  92,
+                  92,
+                  92,
                   64
                 ],
                 "width": 0.75,
@@ -312,9 +319,9 @@
               }
             },
             "field": "",
-            "minValue": -100,
+            "minValue": -9007199254740991,
             "normalizationField": "",
-            "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100"
+            "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100"
           }
         }
       }
@@ -323,23 +330,16 @@
   "baseMap": {
     "baseMapLayers": [
       {
-        "id": "VectorTile_1970",
-        "title": "Light Gray Base",
+        "id": "VectorTile_1188",
+        "title": "World Street Map (Night)",
         "layerType": "VectorTileLayer",
-        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/291da5eab3a0412593b66d384379f89f/resources/styles/root.json"
-      },
-      {
-        "id": "VectorTile_7117",
-        "title": "Light Gray Reference",
-        "layerType": "VectorTileLayer",
-        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/1768e8369a214dfab4e2167d5c5f2454/resources/styles/root.json",
-        "isReference": true
+        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/86f556a2d1fd468181855a35e344567f/resources/styles/root.json"
       }
     ],
-    "title": "Light Gray Canvas"
+    "title": "Streets (Night)"
   },
   "authoringApp": "ArcGIS API for JavaScript",
-  "authoringAppVersion": "4.17",
+  "authoringAppVersion": "4.18",
   "initialState": {
     "viewpoint": {
       "targetGeometry": {
@@ -347,10 +347,10 @@
           "latestWkid": 3857,
           "wkid": 102100
         },
-        "xmin": -1.4922151317373607E7,
-        "ymin": 2803328.0123611065,
-        "xmax": -6341636.270195145,
-        "ymax": 6760931.58885334
+        "xmin": -1.4171520590356354E7,
+        "ymin": 2811525.8836446884,
+        "xmax": -7538009.527657382,
+        "ymax": 6548990.818675673
       }
     }
   },
@@ -358,5 +358,5 @@
     "latestWkid": 3857,
     "wkid": 102100
   },
-  "version": "2.18"
+  "version": "2.19"
 }

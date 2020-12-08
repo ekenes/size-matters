@@ -1,7 +1,7 @@
 {
   "operationalLayers": [
     {
-      "id": "175e19fe8a1-layer-0",
+      "id": "1764006e6bb-layer-0",
       "title": "U.S. presidential election results by county 2000-2016",
       "url": "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/elections_2000_2016_clean/FeatureServer/0",
       "itemId": "eeedc75c82f24ca49ccaf824665a10d0",
@@ -12,49 +12,54 @@
         "drawingInfo": {
           "renderer": {
             "authoringInfo": {
+              "statistics": {
+                "min": -100,
+                "max": 77.61989342806395
+              },
               "type": "univariateColorSize",
-              "theme": "above-and-below",
-              "symbolStyle": "none",
               "visualVariables": [
                 {
-                  "maxSliderValue": 77.61989342806395,
+                  "maxSliderValue": 100,
                   "minSliderValue": -100,
+                  "theme": "above-and-below",
                   "type": "colorInfo"
                 },
                 {
-                  "maxSliderValue": 77.61989342806395,
+                  "maxSliderValue": 100,
                   "minSliderValue": -100,
+                  "theme": "above-and-below",
                   "type": "sizeInfo"
                 }
-              ]
+              ],
+              "univariateTheme": "above-and-below"
             },
             "type": "classBreaks",
             "visualVariables": [
               {
                 "type": "sizeInfo",
                 "field": "",
-                "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100",
+                "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100",
                 "normalizationField": "",
                 "stops": [
                   {
-                    "size": 24.5,
-                    "value": -100
+                    "size": 12,
+                    "value": -50
                   },
                   {
-                    "size": 13,
-                    "value": -50
+                    "size": 7,
+                    "value": -25
                   },
                   {
                     "size": 1,
                     "value": 0
                   },
                   {
-                    "size": 13,
-                    "value": 50
+                    "size": 7,
+                    "value": 25
                   },
                   {
-                    "size": 24.5,
-                    "value": 100
+                    "size": 12,
+                    "value": 50
                   }
                 ],
                 "valueUnit": "unknown"
@@ -62,53 +67,53 @@
               {
                 "type": "colorInfo",
                 "field": "",
-                "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100",
+                "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100",
                 "normalizationField": "",
                 "stops": [
                   {
                     "color": [
-                      102,
-                      144,
+                      39,
+                      153,
                       255,
                       255
                     ],
-                    "value": -2
+                    "value": -50
                   },
                   {
                     "color": [
-                      82,
-                      106,
-                      173,
+                      48,
+                      112,
+                      170,
                       255
                     ],
-                    "value": 3.7
+                    "value": -25
                   },
                   {
                     "color": [
                       66,
-                      56,
-                      59,
+                      58,
+                      58,
                       255
                     ],
-                    "value": 9.5
+                    "value": 0
                   },
                   {
                     "color": [
-                      162,
-                      35,
-                      67,
+                      165,
+                      54,
+                      54,
                       255
                     ],
-                    "value": 15.2
+                    "value": 25
                   },
                   {
                     "color": [
                       255,
-                      0,
-                      64,
+                      51,
+                      51,
                       255
                     ],
-                    "value": 21
+                    "value": 50
                   }
                 ]
               }
@@ -132,9 +137,9 @@
                   "outline": {
                     "type": "esriSLS",
                     "color": [
-                      255,
-                      255,
-                      255,
+                      92,
+                      92,
+                      92,
                       64
                     ],
                     "width": 0.75,
@@ -160,9 +165,9 @@
               "outline": {
                 "type": "esriSLS",
                 "color": [
-                  255,
-                  255,
-                  255,
+                  92,
+                  92,
+                  92,
                   64
                 ],
                 "width": 0.75,
@@ -172,7 +177,7 @@
             "field": "",
             "minValue": -9007199254740991,
             "normalizationField": "",
-            "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100"
+            "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100"
           }
         }
       }
@@ -190,7 +195,7 @@
     "title": "Streets (Night)"
   },
   "authoringApp": "ArcGIS API for JavaScript",
-  "authoringAppVersion": "4.17",
+  "authoringAppVersion": "4.18",
   "initialState": {
     "viewpoint": {
       "targetGeometry": {
@@ -198,10 +203,10 @@
           "latestWkid": 3857,
           "wkid": 102100
         },
-        "xmin": -1.4716210853916325E7,
-        "ymin": 2809538.520909276,
-        "xmax": -6135695.806737859,
-        "ymax": 6767142.097401509
+        "xmin": -1.4324738613553932E7,
+        "ymin": 2704877.1199298264,
+        "xmax": -7691227.55085496,
+        "ymax": 6442342.0549608115
       }
     }
   },
@@ -209,5 +214,5 @@
     "latestWkid": 3857,
     "wkid": 102100
   },
-  "version": "2.18"
+  "version": "2.19"
 }

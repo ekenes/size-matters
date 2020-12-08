@@ -1,7 +1,7 @@
 {
   "operationalLayers": [
     {
-      "id": "175e19fe8a1-layer-0",
+      "id": "1764006e6bb-layer-0",
       "title": "U.S. presidential election results by county 2000-2016",
       "url": "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/elections_2000_2016_clean/FeatureServer/0",
       "itemId": "eeedc75c82f24ca49ccaf824665a10d0",
@@ -16,8 +16,8 @@
                 {
                   "maxSliderValue": 77.61989342806395,
                   "minSliderValue": -100,
-                  "type": "sizeInfo",
-                  "theme": "below"
+                  "theme": "below",
+                  "type": "sizeInfo"
                 }
               ]
             },
@@ -26,11 +26,11 @@
               {
                 "type": "sizeInfo",
                 "field": "",
-                "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100",
+                "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100",
                 "maxDataValue": 0,
                 "maxSize": 1,
-                "minDataValue": -50,
-                "minSize": 20.5,
+                "minDataValue": -100,
+                "minSize": 30,
                 "normalizationField": "",
                 "valueUnit": "unknown"
               }
@@ -41,9 +41,9 @@
                 "symbol": {
                   "type": "esriSMS",
                   "color": [
-                    118,
-                    79,
-                    227,
+                    60,
+                    16,
+                    218,
                     255
                   ],
                   "angle": 0,
@@ -94,7 +94,7 @@
             "field": "",
             "minValue": -9007199254740991,
             "normalizationField": "",
-            "valueExpression": "(($feature[\"rep_2016\"] - $feature[\"rep_2012\"]) / $feature[\"rep_2012\"] ) * 100"
+            "valueExpression": "(($feature[\"rep_2016\"]-$feature[\"rep_2012\"]) / $feature[\"rep_2012\"]) *100"
           }
         }
       }
@@ -103,23 +103,33 @@
   "baseMap": {
     "baseMapLayers": [
       {
-        "id": "VectorTile_1970",
-        "title": "Light Gray Base",
+        "id": "VectorTile_3714",
+        "title": "Human Geography Base",
         "layerType": "VectorTileLayer",
-        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/291da5eab3a0412593b66d384379f89f/resources/styles/root.json"
+        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/2afe5b807fa74006be6363fd243ffb30/resources/styles/root.json"
       },
       {
-        "id": "VectorTile_7117",
-        "title": "Light Gray Reference",
+        "id": "VectorTile_9220",
+        "opacity": 0.38,
+        "title": "Human Geography Detail",
         "layerType": "VectorTileLayer",
-        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/1768e8369a214dfab4e2167d5c5f2454/resources/styles/root.json",
+        "minScale": 2.95828763795777E8,
+        "maxScale": 71,
+        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/97fa1365da1e43eabb90d0364326bc2d/resources/styles/root.json",
+        "isReference": true
+      },
+      {
+        "id": "VectorTile_1103",
+        "title": "Human Geography Label",
+        "layerType": "VectorTileLayer",
+        "styleUrl": "https://cdn.arcgis.com/sharing/rest/content/items/018d570994c34c1884f078fe056f5d4a/resources/styles/root.json",
         "isReference": true
       }
     ],
-    "title": "Light Gray Canvas"
+    "title": "Human Geography Map"
   },
   "authoringApp": "ArcGIS API for JavaScript",
-  "authoringAppVersion": "4.17",
+  "authoringAppVersion": "4.18",
   "initialState": {
     "viewpoint": {
       "targetGeometry": {
@@ -127,10 +137,10 @@
           "latestWkid": 3857,
           "wkid": 102100
         },
-        "xmin": -1.4922151317373607E7,
-        "ymin": 2803328.0123611065,
-        "xmax": -6341636.270195145,
-        "ymax": 6760931.58885334
+        "xmin": -1.423284219629815E7,
+        "ymin": 2951233.66209288,
+        "xmax": -7599331.133599179,
+        "ymax": 6688698.597123865
       }
     }
   },
@@ -138,5 +148,5 @@
     "latestWkid": 3857,
     "wkid": 102100
   },
-  "version": "2.18"
+  "version": "2.19"
 }

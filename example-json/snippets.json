@@ -3,8 +3,8 @@
     {
       "maxSliderValue": 77.61989342806395,
       "minSliderValue": -100,
-      "type": "sizeInfo",
-      "theme": "below"
+      "theme": "above",
+      "type": "sizeInfo"
     }
   ]
 }
@@ -15,58 +15,74 @@
     {
       "maxSliderValue": 77.61989342806395,
       "minSliderValue": -100,
-      "type": "sizeInfo",
-      "theme": "above"
-    }
-  ]
-}
-
-"authoringInfo": {
-  "type": "univariateColorSize",
-  "theme": "above-and-below",
-  "symbolStyle": "caret",
-  "visualVariables": [
-    {
-      "maxSliderValue": 77.61989342806395,
-      "minSliderValue": -100,
+      "theme": "below",
       "type": "sizeInfo"
     }
   ]
 }
 
 "authoringInfo": {
+  "statistics": {
+    "min": -100,
+    "max": 77.61989342806395
+  },
   "type": "univariateColorSize",
-  "theme": "above-and-below",
-  "symbolStyle": "none",
   "visualVariables": [
     {
-      "maxSliderValue": 77.61989342806395,
+      "maxSliderValue": 100,
       "minSliderValue": -100,
+      "theme": "above-and-below",
+      "type": "sizeInfo"
+    }
+  ],
+  "univariateSymbolStyle": "caret",
+  "univariateTheme": "above-and-below"
+}
+
+"authoringInfo": {
+  "statistics": {
+    "min": -100,
+    "max": 77.61989342806395
+  },
+  "type": "univariateColorSize",
+  "visualVariables": [
+    {
+      "maxSliderValue": 100,
+      "minSliderValue": -100,
+      "theme": "above-and-below",
       "type": "colorInfo"
     },
     {
-      "maxSliderValue": 77.61989342806395,
+      "maxSliderValue": 100,
       "minSliderValue": -100,
+      "theme": "above-and-below",
       "type": "sizeInfo"
     }
-  ]
+  ],
+  "univariateSymbolStyle": "caret",
+  "univariateTheme": "above-and-below"
 }
 
 
 "authoringInfo": {
+  "statistics": {
+    "min": -100,
+    "max": 77.61989342806395
+  },
   "type": "univariateColorSize",
-  "theme": "above-and-below",
-  "symbolStyle": "caret",
   "visualVariables": [
     {
-      "maxSliderValue": 77.61989342806395,
+      "maxSliderValue": 100,
       "minSliderValue": -100,
+      "theme": "above-and-below",
       "type": "colorInfo"
     },
     {
-      "maxSliderValue": 77.61989342806395,
+      "maxSliderValue": 100,
       "minSliderValue": -100,
+      "theme": "above-and-below",
       "type": "sizeInfo"
     }
-  ]
+  ],
+  "univariateTheme": "above-and-below"
 }
