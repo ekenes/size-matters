@@ -307,12 +307,18 @@ define(["require", "exports", "esri/widgets/smartMapping/SizeSlider", "esri/widg
             var minSize = theme !== "below" ? values[0] : values[1];
             var maxSize = theme !== "below" ? values[1] : values[0];
             if (stops && stops.length > 0) {
-                var midSize = sizeRendererUtils_1.calcuateMidSize(minSize, maxSize);
-                stops[0].size = maxSize;
-                stops[1].size = midSize;
-                stops[2].size = minSize;
-                stops[3].size = midSize;
-                stops[4].size = maxSize;
+                var maxValue = Math.max.apply(Math, stops.map(function (stop) { return stop.value; }));
+                var midValue_1 = stops[2].value; // assumes 5 stops
+                var minValue = Math.min.apply(Math, stops.map(function (stop) { return stop.value; }));
+                var upperRange = Math.abs(maxValue - midValue_1);
+                var lowerRange = Math.abs(minValue - midValue_1);
+                var maxRange_1 = upperRange > lowerRange ? upperRange : lowerRange;
+                var sizeRange_1 = maxSize - minSize;
+                stops.forEach(function (stop) {
+                    var value = stop.value, size = stop.size;
+                    size = ((Math.abs(value - midValue_1) / maxRange_1) * sizeRange_1) + minSize;
+                    stop.size = size;
+                });
             }
             else {
                 sizeVariable.minSize = minSize;

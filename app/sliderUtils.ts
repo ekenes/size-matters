@@ -299,12 +299,20 @@ function createSymbolSizesWatcher(values: number[], theme?: SizeParams["theme"])
 
     if(stops && stops.length > 0){
 
-      const midSize = calcuateMidSize(minSize as number, maxSize as number);
-      stops[0].size = maxSize;
-      stops[1].size = midSize;
-      stops[2].size = minSize;
-      stops[3].size = midSize;
-      stops[4].size = maxSize;
+      const maxValue = Math.max(...stops.map(stop => stop.value));
+      const midValue = stops[2].value;  // assumes 5 stops
+      const minValue = Math.min(...stops.map(stop => stop.value));
+
+      const upperRange = Math.abs(maxValue - midValue);
+      const lowerRange = Math.abs(minValue - midValue);
+      const maxRange = upperRange > lowerRange ? upperRange : lowerRange;
+      const sizeRange = maxSize - minSize;
+
+      stops.forEach( stop => {
+        let { value, size } = stop;
+        size = (( Math.abs(value - midValue) / maxRange ) * sizeRange ) + minSize;
+        stop.size = size;
+      });
     } else {
       sizeVariable.minSize = minSize;
       sizeVariable.maxSize = maxSize;
